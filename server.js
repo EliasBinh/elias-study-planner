@@ -205,6 +205,127 @@ function saveDatabase() {
   }
 }
 
+// Top-Level Helper: Conflict-Free Last-Write-Wins (LWW) Task & History Merge
+function mergePlannerTasks(localPlanner, incomingPlanner) {
+  if (!incomingPlanner) return false;
+  let changed = false;
+  if (!localPlanner.tasks) localPlanner.tasks = [];
+  if (!localPlanner.deletedTasks) localPlanner.deletedTasks = {};
+
+  // 1. Merge deletedTasks tombstones
+  const incDeleted = incomingPlanner.deletedTasks || {};
+  for (const [delId, delTime] of Object.entries(incDeleted)) {
+    if ((localPlanner.deletedTasks[delId] || 0) < delTime) {
+      localPlanner.deletedTasks[delId] = delTime;
+      changed = true;
+    }
+  }
+
+  // Prune tombstones older than 7 days
+  const SEVEN_DAYS = 7 * 24 * 3600 * 1000;
+  const now = Date.now();
+  for (const [delId, delTime] of Object.entries(localPlanner.deletedTasks)) {
+    if (now - delTime > SEVEN_DAYS) delete localPlanner.deletedTasks[delId];
+  }
+
+  // Remove local tasks that have been deleted
+  const prevCount = localPlanner.tasks.length;
+  localPlanner.tasks = localPlanner.tasks.filter(t => {
+    const delTime = localPlanner.deletedTasks[t.id];
+    if (!delTime) return true;
+    const taskUpdated = t.updatedAt || (t.createdAt ? new Date(t.createdAt).getTime() : 0);
+    return taskUpdated > delTime;
+  });
+  if (localPlanner.tasks.length !== prevCount) changed = true;
+
+  // 2. Merge incoming tasks (Last-Write-Wins based on updatedAt)
+  const incomingTasks = Array.isArray(incomingPlanner.tasks) ? incomingPlanner.tasks : [];
+  for (const inc of incomingTasks) {
+    if (!inc || !inc.id) continue;
+    const delTime = localPlanner.deletedTasks[inc.id];
+    const incUpdated = inc.updatedAt || (inc.createdAt ? new Date(inc.createdAt).getTime() : 0);
+    if (delTime && delTime >= incUpdated) {
+      continue; // Skip deleted task
+    }
+
+    const existing = localPlanner.tasks.find(t => t.id === inc.id);
+    if (!existing) {
+      localPlanner.tasks.push({
+        ...inc,
+        updatedAt: incUpdated || Date.now()
+      });
+      changed = true;
+    } else {
+      const existingUpdated = existing.updatedAt || (existing.createdAt ? new Date(existing.createdAt).getTime() : 0);
+      if (incUpdated > existingUpdated) {
+        if (inc.title !== undefined) existing.title = inc.title;
+        if (inc.section !== undefined) existing.section = inc.section;
+        if (inc.date !== undefined) existing.date = inc.date;
+        if (inc.deadline !== undefined) existing.deadline = inc.deadline;
+        existing.status = inc.status || (inc.completed ? 'completed' : 'incomplete');
+        existing.completed = (existing.status === 'completed');
+        existing.completedAt = inc.completedAt || null;
+        existing.updatedAt = incUpdated;
+        changed = true;
+      }
+      // Always take highest cumulative spentSeconds
+      if ((inc.spentSeconds || 0) > (existing.spentSeconds || 0)) {
+        existing.spentSeconds = inc.spentSeconds;
+        changed = true;
+      }
+    }
+  }
+
+  // 3. Merge daysHistory
+  const incHistory = incomingPlanner.daysHistory || {};
+  if (!localPlanner.daysHistory) localPlanner.daysHistory = {};
+  for (const [dateKey, dayData] of Object.entries(incHistory)) {
+    if (!localPlanner.daysHistory[dateKey]) {
+      localPlanner.daysHistory[dateKey] = { ...dayData };
+      changed = true;
+    } else {
+      const cur = localPlanner.daysHistory[dateKey];
+      if ((dayData.totalSeconds || 0) > (cur.totalSeconds || 0)) {
+        cur.totalSeconds = dayData.totalSeconds;
+        changed = true;
+      }
+      if ((dayData.maxFocusSeconds || 0) > (cur.maxFocusSeconds || 0)) {
+        cur.maxFocusSeconds = dayData.maxFocusSeconds;
+        changed = true;
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Top-Level Helper: Conflict-Free Habits Merge
+function mergeHabits(localHabits, incomingHabits) {
+  if (!incomingHabits) return false;
+  let changed = false;
+  const incChangedAt = incomingHabits.changedAt || 0;
+  const localChangedAt = localHabits.changedAt || 0;
+
+  if (incChangedAt > localChangedAt) {
+    if (incomingHabits.list) localHabits.list = incomingHabits.list;
+    if (incomingHabits.history) localHabits.history = incomingHabits.history;
+    localHabits.changedAt = incChangedAt;
+    changed = true;
+  } else if (localChangedAt === 0 && incChangedAt === 0) {
+    const incHist = incomingHabits.history || {};
+    if (!localHabits.history) localHabits.history = {};
+    for (const [d, arr] of Object.entries(incHist)) {
+      const localArr = localHabits.history[d] || [];
+      const merged = Array.from(new Set([...localArr, ...arr]));
+      if (merged.length !== localArr.length) {
+        localHabits.history[d] = merged;
+        changed = true;
+      }
+    }
+  }
+  return changed;
+}
+
 // Subject detection logic
 function detectSubject(title = '', altText = '') {
   const t = (title + ' ' + altText).toLowerCase();
@@ -2270,127 +2391,6 @@ async function runBatchFetchSafe() {
     return res.end(JSON.stringify(appSettings.habits));
   }
 
-  // Helper: Conflict-Free Last-Write-Wins (LWW) Task & History Merge
-  function mergePlannerTasks(localPlanner, incomingPlanner) {
-    if (!incomingPlanner) return false;
-    let changed = false;
-    if (!localPlanner.tasks) localPlanner.tasks = [];
-    if (!localPlanner.deletedTasks) localPlanner.deletedTasks = {};
-
-    // 1. Merge deletedTasks tombstones
-    const incDeleted = incomingPlanner.deletedTasks || {};
-    for (const [delId, delTime] of Object.entries(incDeleted)) {
-      if ((localPlanner.deletedTasks[delId] || 0) < delTime) {
-        localPlanner.deletedTasks[delId] = delTime;
-        changed = true;
-      }
-    }
-
-    // Prune tombstones older than 7 days
-    const SEVEN_DAYS = 7 * 24 * 3600 * 1000;
-    const now = Date.now();
-    for (const [delId, delTime] of Object.entries(localPlanner.deletedTasks)) {
-      if (now - delTime > SEVEN_DAYS) delete localPlanner.deletedTasks[delId];
-    }
-
-    // Remove local tasks that have been deleted
-    const prevCount = localPlanner.tasks.length;
-    localPlanner.tasks = localPlanner.tasks.filter(t => {
-      const delTime = localPlanner.deletedTasks[t.id];
-      if (!delTime) return true;
-      const taskUpdated = t.updatedAt || (t.createdAt ? new Date(t.createdAt).getTime() : 0);
-      return taskUpdated > delTime;
-    });
-    if (localPlanner.tasks.length !== prevCount) changed = true;
-
-    // 2. Merge incoming tasks (Last-Write-Wins based on updatedAt)
-    const incomingTasks = Array.isArray(incomingPlanner.tasks) ? incomingPlanner.tasks : [];
-    for (const inc of incomingTasks) {
-      if (!inc || !inc.id) continue;
-      const delTime = localPlanner.deletedTasks[inc.id];
-      const incUpdated = inc.updatedAt || (inc.createdAt ? new Date(inc.createdAt).getTime() : 0);
-      if (delTime && delTime >= incUpdated) {
-        continue; // Skip deleted task
-      }
-
-      const existing = localPlanner.tasks.find(t => t.id === inc.id);
-      if (!existing) {
-        localPlanner.tasks.push({
-          ...inc,
-          updatedAt: incUpdated || Date.now()
-        });
-        changed = true;
-      } else {
-        const existingUpdated = existing.updatedAt || (existing.createdAt ? new Date(existing.createdAt).getTime() : 0);
-        if (incUpdated > existingUpdated) {
-          if (inc.title !== undefined) existing.title = inc.title;
-          if (inc.section !== undefined) existing.section = inc.section;
-          if (inc.date !== undefined) existing.date = inc.date;
-          if (inc.deadline !== undefined) existing.deadline = inc.deadline;
-          existing.status = inc.status || (inc.completed ? 'completed' : 'incomplete');
-          existing.completed = (existing.status === 'completed');
-          existing.completedAt = inc.completedAt || null;
-          existing.updatedAt = incUpdated;
-          changed = true;
-        }
-        // Always take highest cumulative spentSeconds
-        if ((inc.spentSeconds || 0) > (existing.spentSeconds || 0)) {
-          existing.spentSeconds = inc.spentSeconds;
-          changed = true;
-        }
-      }
-    }
-
-    // 3. Merge daysHistory
-    const incHistory = incomingPlanner.daysHistory || {};
-    if (!localPlanner.daysHistory) localPlanner.daysHistory = {};
-    for (const [dateKey, dayData] of Object.entries(incHistory)) {
-      if (!localPlanner.daysHistory[dateKey]) {
-        localPlanner.daysHistory[dateKey] = { ...dayData };
-        changed = true;
-      } else {
-        const cur = localPlanner.daysHistory[dateKey];
-        if ((dayData.totalSeconds || 0) > (cur.totalSeconds || 0)) {
-          cur.totalSeconds = dayData.totalSeconds;
-          changed = true;
-        }
-        if ((dayData.maxFocusSeconds || 0) > (cur.maxFocusSeconds || 0)) {
-          cur.maxFocusSeconds = dayData.maxFocusSeconds;
-          changed = true;
-        }
-      }
-    }
-
-    return changed;
-  }
-
-  // Helper: Conflict-Free Habits Merge
-  function mergeHabits(localHabits, incomingHabits) {
-    if (!incomingHabits) return false;
-    let changed = false;
-    const incChangedAt = incomingHabits.changedAt || 0;
-    const localChangedAt = localHabits.changedAt || 0;
-
-    if (incChangedAt > localChangedAt) {
-      if (incomingHabits.list) localHabits.list = incomingHabits.list;
-      if (incomingHabits.history) localHabits.history = incomingHabits.history;
-      localHabits.changedAt = incChangedAt;
-      changed = true;
-    } else if (localChangedAt === 0 && incChangedAt === 0) {
-      const incHist = incomingHabits.history || {};
-      if (!localHabits.history) localHabits.history = {};
-      for (const [d, arr] of Object.entries(incHist)) {
-        const localArr = localHabits.history[d] || [];
-        const merged = Array.from(new Set([...localArr, ...arr]));
-        if (merged.length !== localArr.length) {
-          localHabits.history[d] = merged;
-          changed = true;
-        }
-      }
-    }
-    return changed;
-  }
-
   // 10.2 API: Daily Planner & YPT Focus Timer
   if (parsedUrl.pathname === '/api/daily-todos') {
     if (!appSettings.dailyPlanner) {
@@ -3002,7 +3002,7 @@ async function triggerCloudSync() {
       }
     }
   } catch (err) {
-    // Cloud sync silent fail
+    console.error('[Cloud Sync] Lỗi đồng bộ:', err.message);
   } finally {
     isSyncing = false;
   }

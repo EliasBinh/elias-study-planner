@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-24T17:09:41.323Z",
+  "updatedAt": "2026-10-24T17:17:29.296Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -115,12 +115,12 @@
           "section": "evening",
           "date": "2026-10-24",
           "deadline": "",
-          "completed": true,
-          "status": "completed",
+          "completed": false,
+          "status": "partial",
           "spentSeconds": 7,
           "createdAt": "2026-10-24T09:37:08.350Z",
-          "completedAt": "2026-10-24T14:45:15.156Z",
-          "updatedAt": 1792834628350
+          "completedAt": null,
+          "updatedAt": 1792861851849
         },
         {
           "id": "dp_1792834636314",
@@ -128,12 +128,12 @@
           "section": "evening",
           "date": "2026-10-24",
           "deadline": "",
-          "completed": true,
-          "status": "completed",
+          "completed": false,
+          "status": "partial",
           "spentSeconds": 0,
           "createdAt": "2026-10-24T09:37:16.314Z",
           "completedAt": null,
-          "updatedAt": 1792834636314
+          "updatedAt": 1792861931100
         },
         {
           "id": "dp_1792834640107",
@@ -141,12 +141,12 @@
           "section": "evening",
           "date": "2026-10-24",
           "deadline": "",
-          "completed": true,
-          "status": "completed",
+          "completed": false,
+          "status": "failed",
           "spentSeconds": 165,
           "createdAt": "2026-10-24T09:37:20.107Z",
           "completedAt": null,
-          "updatedAt": 1792834640107
+          "updatedAt": 1792861929394
         },
         {
           "id": "dp_1792834648386",
@@ -154,11 +154,12 @@
           "section": "evening",
           "date": "2026-10-24",
           "deadline": "",
-          "completed": false,
-          "status": "incomplete",
+          "completed": true,
+          "status": "completed",
           "spentSeconds": 126,
           "createdAt": "2026-10-24T09:37:28.386Z",
-          "updatedAt": 1792834648386
+          "updatedAt": 1792862233393,
+          "completedAt": "2026-10-24T17:17:13.393Z"
         }
       ],
       "daysHistory": {

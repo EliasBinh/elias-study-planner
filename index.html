@@ -6091,20 +6091,9 @@
           const isRunningNow = !!freshData.activeTimer;
           const taskChanged = plannerData.activeTimer?.taskId !== freshData.activeTimer?.taskId;
 
-          // Check if tasks list or task properties changed
-          const prevTasks = plannerData.tasks || [];
-          const nextTasks = freshData.tasks || [];
-          let tasksChanged = prevTasks.length !== nextTasks.length;
-          if (!tasksChanged) {
-            for (let i = 0; i < prevTasks.length; i++) {
-              const pt = prevTasks[i];
-              const nt = nextTasks.find(t => t.id === pt.id);
-              if (!nt || pt.status !== nt.status || pt.completed !== nt.completed || pt.title !== nt.title || pt.deadline !== nt.deadline || pt.section !== nt.section || pt.date !== nt.date || pt.spentSeconds !== nt.spentSeconds) {
-                tasksChanged = true;
-                break;
-              }
-            }
-          }
+          // Check if tasks list, statuses, or study history changed
+          const tasksChanged = JSON.stringify(plannerData.tasks || []) !== JSON.stringify(freshData.tasks || []);
+          const historyChanged = JSON.stringify(plannerData.daysHistory || {}) !== JSON.stringify(freshData.daysHistory || {});
 
           // Avoid re-rendering while user is actively typing in an input field
           const activeEl = document.activeElement;
@@ -6115,7 +6104,7 @@
           );
           plannerData = freshData;
           if (!isUserTyping) {
-            if (wasRunning !== isRunningNow || taskChanged || tasksChanged) {
+            if (wasRunning !== isRunningNow || taskChanged || tasksChanged || historyChanged) {
               renderDailyPlannerPage();
             }
           }
