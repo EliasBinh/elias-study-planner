@@ -113,31 +113,50 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    /* Status Dot */
-    .status-dot-box {
-      display: flex;
+    .header-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 9px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.12s ease;
+      font-family: inherit;
+    }
+
+    .header-action-btn:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: #D3D1CB;
+    }
+
+    .header-badge-connected {
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 12px;
-      color: var(--text-secondary);
-      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #15803D;
+      background: #F0FDF4;
+      border: 1px solid #DCFCE7;
+      padding: 3px 8px;
       border-radius: var(--radius-sm);
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-subtle);
     }
 
-    .status-dot {
-      width: 7px;
-      height: 7px;
+    .subtle-dot-solid {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      background: #10B981;
-    }
-
-    .status-dot.offline {
-      background: #EF4444;
+      background: #16A34A;
+      display: inline-block;
     }
 
     /* Ghost Buttons */
@@ -1299,6 +1318,120 @@
       justify-content: flex-end;
       gap: 8px;
       margin-top: 10px;
+    }
+
+    /* In-App PDF Preview Modal (Sleek Mobile & Desktop Experience) */
+    .pdf-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .pdf-modal-container {
+      background: #FFFFFF;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 1000px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .pdf-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-main);
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .pdf-modal-title-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .pdf-modal-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pdf-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .pdf-header-btn {
+      font-size: 12px;
+      padding: 4px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pdf-close-btn {
+      padding: 4px 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .pdf-close-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .pdf-modal-body {
+      flex: 1;
+      width: 100%;
+      position: relative;
+      background: #525659;
+      overflow: hidden;
+    }
+
+    .pdf-modal-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #FFFFFF;
+      z-index: 2;
+    }
+
+    .pdf-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #525659;
     }
 
     /* Clean Deadline Pill (No emojis, just sleek Notion tags, uniform 74px width) */
@@ -3656,19 +3789,31 @@
       }
 
       .header-right {
-        gap: 6px;
-        flex-wrap: wrap;
+        display: none !important;
       }
 
-      .status-dot-box {
-        padding: 3px 6px;
-        font-size: 11px;
+      .streak-wrapper {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+
+      .streak-heatmap-wrapper {
+        align-items: flex-start !important;
+        width: 100% !important;
+      }
+
+      .heatmap-header {
+        justify-content: flex-start !important;
+        gap: 10px !important;
       }
 
       .main-wrapper,
       .habits-page-wrapper,
       .planner-page-wrapper {
-        padding: 14px 12px 85px;
+        padding: 12px 10px 85px;
+        max-width: 100vw;
+        box-sizing: border-box;
       }
 
       .habits-main-title,
@@ -3801,19 +3946,20 @@
 
       .table-row {
         display: grid !important;
-        grid-template-columns: 28px 1fr auto !important;
+        grid-template-columns: 24px 1fr auto !important;
         grid-template-areas:
           "check title subject"
-          "dead  dead  actions" !important;
+          ".     dead  actions" !important;
         row-gap: 8px !important;
-        column-gap: 8px !important;
-        padding: 12px 14px !important;
+        column-gap: 6px !important;
+        padding: 10px 10px !important;
         border-radius: 8px !important;
         border: 1px solid var(--border-subtle) !important;
         margin-bottom: 8px !important;
         background: var(--bg-main) !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
         align-items: center !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
       }
 
       .cell-check {
@@ -3824,7 +3970,15 @@
 
       .file-col.cell-title {
         grid-area: title;
-        min-width: 0;
+        min-width: 0 !important;
+        overflow: hidden;
+      }
+
+      .file-title {
+        white-space: normal !important;
+        word-break: break-word !important;
+        line-height: 1.35 !important;
+        font-size: 13px !important;
       }
 
       .cell-subject {
@@ -3836,8 +3990,9 @@
         grid-area: dead;
         display: flex;
         align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
+        gap: 4px;
+        min-width: 0;
+        overflow: hidden;
       }
 
       .cell-personal-deadline {
@@ -3846,10 +4001,21 @@
 
       .actions-cell.cell-actions {
         grid-area: actions;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 6px;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 4px !important;
+        flex-shrink: 0;
+      }
+
+      .action-icon-btn {
+        width: 28px !important;
+        height: 28px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: var(--radius-sm) !important;
       }
 
       .filter-tabs {
@@ -4120,33 +4286,29 @@
         </div>
       </div>
 
-      <div class="header-right">
-        <div id="envPill" class="env-pill" style="display: none;" title="Môi trường chạy">
-          <span class="env-dot"></span>
-          <span id="envPillText"></span>
-        </div>
-        <div id="statusDotBox" class="status-dot-box">
-          <span id="statusDot" class="status-dot offline"></span>
-          <span id="statusLabel">Chưa kết nối ClassIn</span>
-          <button id="btnConnectClassIn" class="btn-ghost btn-outline"
-            style="font-size: 11px; padding: 2px 8px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; border-color: var(--border-subtle); color: var(--text-secondary);"
+      <div class="header-right" id="headerRightActions">
+        <div id="classInStatusWrapper" style="display: inline-flex; align-items: center;">
+          <button id="btnConnectClassIn" class="header-action-btn"
             onclick="connectClassInFromWeb()" title="Bấm để khởi động kết nối ClassIn port 9222">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
             <span>Kết nối ClassIn</span>
           </button>
-          <button id="btnHeaderDiscordRpc" class="btn-ghost btn-outline"
-            style="font-size: 11px; padding: 2px 8px; margin-left: 6px; display: inline-flex; align-items: center; gap: 5px; border-color: var(--border-subtle); color: var(--text-primary);"
-            onclick="openDiscordRpcModal()" title="Cài đặt kết nối Discord Rich Presence">
-            <span class="discord-status-dot offline" id="discordDotHeader"></span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="#5865F2" style="flex-shrink: 0;">
-              <path
-                d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-            </svg>
-            <span>Discord RPC</span>
-          </button>
+          <div id="classInConnectedBadge" class="header-badge-connected" style="display: none;" title="ClassIn port 9222 đã sẵn sàng">
+            <span class="subtle-dot-solid"></span>
+            <span>ClassIn 9222</span>
+          </div>
         </div>
+
+        <button id="btnHeaderDiscordRpc" class="header-action-btn"
+          onclick="openDiscordRpcModal()" title="Cài đặt kết nối Discord Rich Presence">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#5865F2" style="flex-shrink: 0;">
+            <path
+              d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+          </svg>
+          <span id="headerDiscordLabel">Discord RPC</span>
+        </button>
       </div>
     </div>
   </header>
@@ -4734,6 +4896,50 @@
     </div>
   </div>
 
+
+  <!-- In-App PDF Preview Modal (Mobile & Cloud Responsive) -->
+  <div id="pdfPreviewModal" class="pdf-modal-overlay" style="display: none;" onclick="if(event.target === this) closePdfPreviewModal()">
+    <div class="pdf-modal-container">
+      <div class="pdf-modal-header">
+        <div class="pdf-modal-title-box">
+          <svg width="16" height="16" fill="none" stroke="#2563EB" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink: 0;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span id="pdfModalTitle" class="pdf-modal-title">Đang mở tài liệu...</span>
+          <span id="pdfModalSubject" class="subject-pill verbal" style="font-size: 10.5px; padding: 2px 7px;">Verbal</span>
+        </div>
+        <div class="pdf-modal-actions">
+          <button id="pdfModalDownloadBtn" class="btn-ghost btn-outline pdf-header-btn" onclick="downloadCurrentPreviewPdf()" title="Tải file PDF về máy">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span>Tải về</span>
+          </button>
+          <button id="pdfModalExternalBtn" class="btn-ghost btn-outline pdf-header-btn" onclick="openCurrentPreviewExternal()" title="Mở link trong tab mới">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            <span>Mở tab</span>
+          </button>
+          <button class="btn-ghost pdf-close-btn" onclick="closePdfPreviewModal()" title="Đóng">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="pdf-modal-body">
+        <div id="pdfModalLoading" class="pdf-modal-loading">
+          <svg width="24" height="24" class="spin-icon" fill="none" stroke="#2563EB" stroke-width="2.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke-opacity="0.2"/>
+            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+          </svg>
+          <span style="font-size: 13px; color: #4B5563; font-weight: 500;">Đang nạp file đề thi...</span>
+        </div>
+        <iframe id="pdfModalIframe" class="pdf-iframe" onload="onPdfIframeLoaded()"></iframe>
+      </div>
+    </div>
+  </div>
 
   <!-- Edit Exam Countdown Modal -->
   <div id="examModal" class="modal-overlay" onclick="if(event.target === this) closeExamModal()">
@@ -6691,41 +6897,28 @@
         const res = await fetch('/api/list');
         const data = await res.json();
 
-        const dot = document.getElementById('statusDot');
-        const label = document.getElementById('statusLabel');
         const btnConnect = document.getElementById('btnConnectClassIn');
-        if (data.connected) {
-          dot.className = 'status-dot';
-          label.innerText = 'Port 9222 Connected';
-          if (btnConnect) btnConnect.style.display = 'none';
-        } else {
-          dot.className = 'status-dot offline';
-          label.innerText = 'Chưa kết nối ClassIn';
-          if (btnConnect) {
-            btnConnect.style.display = 'inline-flex';
-            btnConnect.disabled = false;
-            btnConnect.innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>Kết nối ClassIn</span>`;
-          }
-        }
+        const badgeConnected = document.getElementById('classInConnectedBadge');
+        const headerActions = document.getElementById('headerRightActions');
 
         if (data.isCloud !== undefined) {
           isCloudHost = isCloudHost || data.isCloud;
         }
 
-        // Environment indicator pill
-        const envPill = document.getElementById('envPill');
-        const envText = document.getElementById('envPillText');
-        if (envPill && envText) {
-          envPill.style.display = 'inline-flex';
-          if (isCloudHost) {
-            envPill.className = 'env-pill cloud';
-            envText.innerText = 'Cloud Online';
-            envPill.title = 'Đang xem trên Cloud • Mở đề trực tiếp qua CDN & Đồng bộ 2 chiều';
+        if (isCloudHost) {
+          if (headerActions) headerActions.style.display = 'none';
+        } else {
+          if (headerActions) headerActions.style.display = 'inline-flex';
+          if (data.connected) {
             if (btnConnect) btnConnect.style.display = 'none';
+            if (badgeConnected) badgeConnected.style.display = 'inline-flex';
           } else {
-            envPill.className = 'env-pill local';
-            envText.innerText = 'Laptop Local';
-            envPill.title = 'Đang chạy trực tiếp trên máy tính • Kết nối thư mục gốc 10SAT';
+            if (btnConnect) {
+              btnConnect.style.display = 'inline-flex';
+              btnConnect.disabled = false;
+              btnConnect.innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>Kết nối ClassIn</span>`;
+            }
+            if (badgeConnected) badgeConnected.style.display = 'none';
           }
         }
 
@@ -7195,18 +7388,14 @@
             </div>
 
             <!-- 2. File Title & Badges -->
-            <div class="file-col cell-title" ${isCloudHost ? (item.url ? `onclick="window.open('${item.url}', '_blank')" style="cursor: pointer;"` : '') : (item.hasFile ? `onclick="previewFile('${item.id}')" style="cursor: pointer;"` : '')}>
-              ${isCloudHost ? (item.url ? `
-                <svg class="file-icon" width="15" height="15" fill="none" stroke="#2563EB" stroke-width="1.5" viewBox="0 0 24 24" data-tooltip="Link online sẵn sàng"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              ` : `
-                <svg class="file-icon" width="15" height="15" fill="none" stroke="#9B9A97" stroke-width="1.5" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Chờ quét link trên PC"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-              `) : (item.hasFile ? `
-                <svg class="file-icon" width="15" height="15" fill="none" stroke="#2563EB" stroke-width="1.5" viewBox="0 0 24 24" data-tooltip="Đã có file PDF trên máy"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <div class="file-col cell-title" ${(item.url || item.hasFile) ? `onclick="openPdfPreviewModal('${item.id}')" style="cursor: pointer;" title="Bấm để xem trước đề thi trực tiếp"` : ''}>
+              ${(item.url || item.hasFile) ? `
+                <svg class="file-icon" width="15" height="15" fill="none" stroke="#2563EB" stroke-width="1.6" viewBox="0 0 24 24" data-tooltip="Đề thi sẵn sàng (Bấm để xem trước)"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               ` : (item.noPdf ? `
                 <svg class="file-icon" width="15" height="15" fill="none" stroke="#EF4444" stroke-width="1.6" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Không có file PDF"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 3h.01" stroke="#EF4444" stroke-width="2"/></svg>
               ` : `
-                <svg class="file-icon" width="15" height="15" fill="none" stroke="#9B9A97" stroke-width="1.5" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Chờ lấy file"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-              `))}
+                <svg class="file-icon" width="15" height="15" fill="none" stroke="#9B9A97" stroke-width="1.5" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Chờ quét link trên PC"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              `)}
               <span class="file-title ${item.isDone ? 'done' : ''}" data-tooltip="${displayName}">
                 ${displayName}
               </span>
@@ -7288,79 +7477,51 @@
 
             <!-- 6. Actions Column -->
             <div class="actions-cell cell-actions">
-              ${isCloudHost ? `
+              ${(item.url || item.hasFile) ? `
+                <button class="action-icon-btn btn-action-preview" onclick="openPdfPreviewModal('${item.id}')" data-tooltip="Xem trước đề thi trực tiếp" title="Xem trước PDF">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </button>
+                <button class="action-icon-btn btn-action-dl" onclick="triggerDirectPdfDownload('${item.id}')" data-tooltip="Tải đề thi về máy (PDF)" title="Tải PDF">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </button>
                 ${item.url ? `
-                  <button class="action-icon-btn btn-cloud-open" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link PDF trực tiếp (CDN)">
-                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  <button class="action-icon-btn btn-cloud-open" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link gốc CDN trong tab mới" title="Mở link gốc">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                   </button>
-                  <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${item.url}', 'Đã sao chép link đề thi trực tiếp (CDN)!')" data-tooltip="Sao chép link đề thi">
-                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${item.url}', 'Đã sao chép link đề thi trực tiếp (CDN)!')" data-tooltip="Sao chép link đề thi" title="Sao chép link">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                   </button>
-                ` : (item.isTimed ? `
-                  <span class="shield-lock-tag" data-tooltip="Bài thi ${item.timeLimit} phút (Đã khóa an toàn)">
-                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                    Khóa
-                  </span>
                 ` : `
-                  <span class="badge-waiting-pc" data-tooltip="Cần mở ClassIn trên laptop để quét link này">Chờ quét trên PC</span>
-                `)}
-              ` : `
-                ${item.hasFile ? `
-                  <button class="action-icon-btn ${isSelected ? 'active' : ''}" onclick="previewFile('${item.id}')" data-tooltip="Xem trước đề thi">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  <button class="action-icon-btn" onclick="copyLink('${item.localPath}', 'Đã sao chép đường dẫn file!')" data-tooltip="Sao chép đường dẫn file" title="Sao chép đường dẫn">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                   </button>
-
-                  <button class="action-icon-btn" onclick="downloadFile('${item.id}')" data-tooltip="Tải về file PDF">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                  </button>
-
-                  ${item.url ? `
-                    <button class="action-icon-btn btn-cloud-open" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link gốc CDN">
-                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    </button>
-                    <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${item.url}', 'Đã sao chép link gốc CDN!')" data-tooltip="Sao chép link gốc">
-                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    </button>
-                  ` : `
-                    <button class="action-icon-btn" onclick="copyLink('${item.localPath}', 'Đã sao chép đường dẫn file!')" data-tooltip="Sao chép đường dẫn file">
-                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    </button>
-                  `}
-
+                `}
+                ${(!isCloudHost && item.hasFile) ? `
                   <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Xóa file này">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                   </button>
-                ` : (item.isTimed ? `
-                  <span class="shield-lock-tag" data-tooltip="Bài thi ${item.timeLimit} phút (Chưa có file PDF - Đã khóa an toàn để tuyệt đối không bị tính giờ)">
-                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                    Khóa
-                  </span>
-                ` : (item.noPdf ? `
-                  <span class="badge-no-pdf" data-tooltip="Không có file PDF trong ClassIn (Đã bỏ qua an toàn)">Không có PDF</span>
+                ` : ''}
+              ` : (item.isTimed ? `
+                <span class="shield-lock-tag" data-tooltip="Bài thi ${item.timeLimit} phút (Đã khóa an toàn để tuyệt đối không bị tính giờ)">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                  Khóa
+                </span>
+              ` : (item.noPdf ? `
+                <span class="badge-no-pdf" data-tooltip="Không có file PDF trong ClassIn">Không có PDF</span>
+                ${!isCloudHost ? `
                   <button class="action-icon-btn" onclick="retryTaskPdf('${item.id}')" data-tooltip="Thử quét lại bài tập này">
                     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                   </button>
-                  <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Ẩn bài này">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                  </button>
-                ` : `
-                  ${item.url ? `
-                    <button class="action-icon-btn btn-cloud-open" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link gốc CDN">
-                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    </button>
-                    <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${item.url}', 'Đã sao chép link gốc CDN!')" data-tooltip="Sao chép link gốc">
-                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    </button>
-                  ` : ''}
-                  <button class="btn-ghost" id="fetchBtn_${item.id}" style="font-size: 11px; padding: 2px 7px; color: var(--notion-blue); border: 1px solid rgba(35,131,226,0.3); border-radius: 4px;" onclick="fetchTaskPdf('${item.id}')" data-tooltip="Lấy file PDF qua ClassIn và tự động đóng">
+                ` : ''}
+              ` : `
+                <span class="badge-waiting-pc" data-tooltip="Cần mở ClassIn trên laptop để quét link này">Chờ quét trên PC</span>
+                ${!isCloudHost ? `
+                  <button class="btn-ghost" id="fetchBtn_${item.id}" style="font-size: 11px; padding: 2px 7px; color: var(--notion-blue); border: 1px solid rgba(35,131,226,0.3); border-radius: 4px;" onclick="fetchTaskPdf('${item.id}')" data-tooltip="Lấy file PDF qua ClassIn">
                     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     <span>Lấy đề</span>
                   </button>
-                  <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Ẩn bài này">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                  </button>
-                `))}
-              `}
+                ` : ''}
+              `))}
             </div>
           </div>
         `;
@@ -8287,6 +8448,89 @@
       }
     }
 
+    // In-App PDF Preview Modal & Direct Mobile/Cloud Download
+    let currentPreviewItem = null;
+
+    function openPdfPreviewModal(id) {
+      const item = allItems.find(i => i.id === id);
+      if (!item) return;
+      currentPreviewItem = item;
+
+      const modal = document.getElementById('pdfPreviewModal');
+      const titleEl = document.getElementById('pdfModalTitle');
+      const subjEl = document.getElementById('pdfModalSubject');
+      const iframe = document.getElementById('pdfModalIframe');
+      const loading = document.getElementById('pdfModalLoading');
+
+      if (!modal) return;
+
+      const displayName = item.title || item.filename || 'Tài liệu SAT';
+      if (titleEl) titleEl.innerText = displayName;
+      if (subjEl) {
+        const isMath = (item.subject || '').toUpperCase() === 'MATH';
+        subjEl.className = `subject-pill ${isMath ? 'math' : 'verbal'}`;
+        subjEl.innerText = isMath ? 'Math' : 'Verbal';
+      }
+
+      if (loading) loading.style.display = 'flex';
+
+      const previewSrc = `/api/preview?id=${encodeURIComponent(id)}`;
+      if (iframe) {
+        iframe.src = previewSrc;
+      }
+
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function onPdfIframeLoaded() {
+      const loading = document.getElementById('pdfModalLoading');
+      if (loading) loading.style.display = 'none';
+    }
+
+    function closePdfPreviewModal() {
+      const modal = document.getElementById('pdfPreviewModal');
+      const iframe = document.getElementById('pdfModalIframe');
+      if (modal) modal.style.display = 'none';
+      if (iframe) iframe.src = 'about:blank';
+      document.body.style.overflow = '';
+      currentPreviewItem = null;
+    }
+
+    function downloadCurrentPreviewPdf() {
+      if (!currentPreviewItem) return;
+      triggerDirectPdfDownload(currentPreviewItem.id);
+    }
+
+    function openCurrentPreviewExternal() {
+      if (!currentPreviewItem) return;
+      const targetUrl = currentPreviewItem.url || `/api/preview?id=${encodeURIComponent(currentPreviewItem.id)}`;
+      window.open(targetUrl, '_blank');
+    }
+
+    function triggerDirectPdfDownload(id) {
+      const item = allItems.find(i => i.id === id);
+      const title = item ? (item.title || item.filename || 'tai_lieu_sat') : 'tai_lieu_sat';
+      toast(`Đang chuẩn bị tải "${title}"...`);
+
+      const downloadUrl = `/api/download-pdf?id=${encodeURIComponent(id)}`;
+      const safeFilename = title.replace(/[/\\?%*:|"<>]/g, '_') + '.pdf';
+
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = safeFilename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => a.remove(), 1000);
+    }
+
+    // Close preview modal on Escape key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePdfPreviewModal();
+      }
+    });
+
     // 11. Right Pane Switcher
     function switchPaneTab(tab) {
       document.querySelectorAll('.pane-tab-btn').forEach(b => b.classList.remove('active'));
@@ -9047,24 +9291,8 @@
       setInterval(updateTargets, 6000);
       setInterval(fetchDiscordRpcStatus, 6000);
     } else {
-      // Cloud/Render styling for status bar
-      const dot = document.getElementById('statusDot');
-      const label = document.getElementById('statusLabel');
-      const btn = document.getElementById('btnConnectClassIn');
-      const discordBtn = document.getElementById('btnHeaderDiscordRpc');
-      if (dot) {
-        dot.className = 'status-dot';
-        dot.style.background = '#3B82F6';
-        dot.style.boxShadow = '0 0 8px rgba(59, 130, 246, 0.6)';
-      }
-      if (label) {
-        label.innerText = 'Cloud PWA (Điện thoại)';
-        label.title = 'Đang chạy trên Cloud 24/7 để track Daily Plan từ điện thoại. Khi ở nhà, mở app trên PC để tải đề ClassIn & hiện Discord RPC.';
-      }
-      if (btn) btn.style.display = 'none';
-      if (discordBtn) {
-        discordBtn.title = 'Discord RPC hoạt động khi mở app trên máy tính ở nhà.';
-      }
+      const headerActions = document.getElementById('headerRightActions');
+      if (headerActions) headerActions.style.display = 'none';
     }
 
     setInterval(loadData, 2000); // 2s Real-time Multi-Device Sync (phone <-> laptop)

@@ -1208,52 +1208,113 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ count: todos.length, todos }));
   }
 
+  // Helper: Stream Remote PDF with redirect following & content-disposition
+  function streamRemotePdf(targetUrl, res, asAttachment = false, filename = 'document.pdf', maxRedirects = 3) {
+    if (maxRedirects <= 0) {
+      res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+      return res.end('Quá nhiều chuyển hướng khi tải file PDF.');
+    }
+
+    const client = targetUrl.startsWith('https') ? https : http;
+    const req = client.get(targetUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://b1s-cdn.eeo.cn/'
+      }
+    }, (proxyRes) => {
+      if (proxyRes.statusCode === 301 || proxyRes.statusCode === 302 || proxyRes.statusCode === 307 || proxyRes.statusCode === 308) {
+        const redirectLocation = proxyRes.headers.location;
+        if (redirectLocation) {
+          return streamRemotePdf(redirectLocation, res, asAttachment, filename, maxRedirects - 1);
+        }
+      }
+
+      if (proxyRes.statusCode !== 200) {
+        res.writeHead(proxyRes.statusCode || 500, { 'Content-Type': 'text/plain; charset=utf-8' });
+        return res.end(`Lỗi tải từ máy chủ nguồn (Mã: ${proxyRes.statusCode})`);
+      }
+
+      const safeAscii = filename.replace(/[^\x20-\x7E]/g, '_');
+      const dispositionType = asAttachment ? 'attachment' : 'inline';
+      const contentDisposition = `${dispositionType}; filename="${safeAscii}"; filename*=UTF-8''${encodeURIComponent(filename)}`;
+
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': contentDisposition,
+        ...(proxyRes.headers['content-length'] ? { 'Content-Length': proxyRes.headers['content-length'] } : {})
+      });
+
+      proxyRes.pipe(res);
+    });
+
+    req.on('error', (err) => {
+      if (!res.headersSent) {
+        res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end(`Lỗi kết nối tải PDF: ${err.message}`);
+      }
+    });
+  }
+
   // 4. API: Stream PDF for in-app Preview
   if (parsedUrl.pathname === '/api/preview') {
     const id = parsedUrl.searchParams.get('id');
-    const item = Array.from(pdfStore.values()).find(p => p.id === id);
+    const directUrl = parsedUrl.searchParams.get('url');
+    const allItems = getMergedItems();
+    const item = (id ? allItems.find(p => p.id === id) : null) || 
+                 (id ? Array.from(pdfStore.values()).find(p => p.id === id) : null) ||
+                 (directUrl ? Array.from(pdfStore.values()).find(p => p.url === directUrl) : null);
 
-    if (!item) {
-      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-      return res.end('Không tìm thấy file để xem trước.');
-    }
+    const targetUrl = item?.url || directUrl;
+    const rawName = (item?.title || item?.filename || 'tai_lieu_sat').replace(/\.pdf$/i, '').trim();
+    const cleanFilename = rawName.replace(/[\\/:*?"<>|]/g, '_') + '.pdf';
 
-    if (item.localPath && fs.existsSync(item.localPath)) {
+    if (item?.localPath && fs.existsSync(item.localPath)) {
       res.writeHead(200, {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `inline; filename="${encodeURIComponent(item.filename)}"`,
+        'Content-Disposition': `inline; filename="${encodeURIComponent(cleanFilename)}"`,
         'Content-Length': fs.statSync(item.localPath).size
       });
       return fs.createReadStream(item.localPath).pipe(res);
     }
 
-    if (item.url) {
-      const client = item.url.startsWith('https') ? https : http;
-      const proxyReq = client.get(item.url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Referer': 'https://b1s-cdn.eeo.cn/'
-        }
-      }, (proxyRes) => {
-        if (proxyRes.statusCode === 301 || proxyRes.statusCode === 302) {
-          res.writeHead(302, { 'Location': `/api/preview?url=${encodeURIComponent(proxyRes.headers.location)}` });
-          return res.end();
-        }
-        res.writeHead(200, {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `inline; filename="${encodeURIComponent(item.filename)}"`
-        });
-        proxyRes.pipe(res);
-      });
-      proxyReq.on('error', (err) => {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end(`Lỗi tải preview: ${err.message}`);
-      });
-      return;
+    if (targetUrl) {
+      return streamRemotePdf(targetUrl, res, false, cleanFilename);
     }
 
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    return res.end('URL không hợp lệ.');
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('Không tìm thấy file để xem trước.');
+  }
+
+  // 4b. API: Direct PDF Download (works seamlessly on Mobile & Cloud)
+  if (parsedUrl.pathname === '/api/download-pdf') {
+    const id = parsedUrl.searchParams.get('id');
+    const directUrl = parsedUrl.searchParams.get('url');
+    const queryFilename = parsedUrl.searchParams.get('filename');
+    const allItems = getMergedItems();
+    const item = (id ? allItems.find(p => p.id === id) : null) || 
+                 (id ? Array.from(pdfStore.values()).find(p => p.id === id) : null) ||
+                 (directUrl ? Array.from(pdfStore.values()).find(p => p.url === directUrl) : null);
+
+    const targetUrl = item?.url || directUrl;
+    const rawName = (queryFilename || item?.title || item?.filename || 'tai_lieu_sat').replace(/\.pdf$/i, '').trim();
+    const cleanFilename = rawName.replace(/[\\/:*?"<>|]/g, '_') + '.pdf';
+
+    if (item?.localPath && fs.existsSync(item.localPath)) {
+      const safeAscii = cleanFilename.replace(/[^\x20-\x7E]/g, '_');
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${safeAscii}"; filename*=UTF-8''${encodeURIComponent(cleanFilename)}`,
+        'Content-Length': fs.statSync(item.localPath).size
+      });
+      return fs.createReadStream(item.localPath).pipe(res);
+    }
+
+    if (targetUrl) {
+      return streamRemotePdf(targetUrl, res, true, cleanFilename);
+    }
+
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('Không tìm thấy file để tải về.');
   }
 
   // 5. API: Set subject (Math / Verbal) & immediately move/rename file on disk
