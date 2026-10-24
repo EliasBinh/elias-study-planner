@@ -2333,6 +2333,7 @@ async function runBatchFetchSafe() {
 
           syncDiscordPresenceFromActiveTimer(true);
           saveDatabase();
+          if (typeof triggerCloudSync === 'function') triggerCloudSync();
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({ success: true, dailyPlanner: appSettings.dailyPlanner }));
         } catch (e) {
@@ -2345,6 +2346,77 @@ async function runBatchFetchSafe() {
 
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     return res.end(JSON.stringify(appSettings.dailyPlanner));
+  }
+
+  // 10.2.1 API: Two-Way Cloud Sync (Bidirectional merge between PC and Render)
+  if (parsedUrl.pathname === '/api/sync-daily') {
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const incoming = JSON.parse(body || '{}');
+          if (!appSettings.dailyPlanner) {
+            appSettings.dailyPlanner = { tasks: [], daysHistory: {}, activeTimer: null };
+          }
+          if (!Array.isArray(appSettings.dailyPlanner.tasks)) appSettings.dailyPlanner.tasks = [];
+          if (!appSettings.dailyPlanner.daysHistory) appSettings.dailyPlanner.daysHistory = {};
+
+          // Merge Tasks
+          const incomingTasks = Array.isArray(incoming.tasks) ? incoming.tasks : [];
+          for (const inc of incomingTasks) {
+            if (!inc || !inc.id) continue;
+            const existing = appSettings.dailyPlanner.tasks.find(t => t.id === inc.id);
+            if (!existing) {
+              appSettings.dailyPlanner.tasks.push(inc);
+            } else {
+              // Merge existing task: pick highest spentSeconds and completed flag
+              existing.spentSeconds = Math.max(existing.spentSeconds || 0, inc.spentSeconds || 0);
+              if (inc.completed && !existing.completed) {
+                existing.completed = true;
+                existing.status = 'completed';
+                existing.completedAt = inc.completedAt || new Date().toISOString();
+              }
+              if (inc.title && !existing.title) existing.title = inc.title;
+            }
+          }
+
+          // Merge Days History
+          const incHistory = incoming.daysHistory || {};
+          for (const [dateKey, dayData] of Object.entries(incHistory)) {
+            if (!appSettings.dailyPlanner.daysHistory[dateKey]) {
+              appSettings.dailyPlanner.daysHistory[dateKey] = { ...dayData };
+            } else {
+              const cur = appSettings.dailyPlanner.daysHistory[dateKey];
+              cur.totalSeconds = Math.max(cur.totalSeconds || 0, dayData.totalSeconds || 0);
+              cur.maxFocusSeconds = Math.max(cur.maxFocusSeconds || 0, dayData.maxFocusSeconds || 0);
+            }
+          }
+
+          // Merge Habits
+          if (incoming.habits && appSettings.habits) {
+            const incHist = incoming.habits.history || {};
+            for (const [d, arr] of Object.entries(incHist)) {
+              const localArr = appSettings.habits.history[d] || [];
+              appSettings.habits.history[d] = Array.from(new Set([...localArr, ...arr]));
+            }
+          }
+
+          saveDatabase();
+
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({
+            success: true,
+            dailyPlanner: appSettings.dailyPlanner,
+            habits: appSettings.habits
+          }));
+        } catch (e) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: e.message }));
+        }
+      });
+      return;
+    }
   }
 
   // 10.3 API: Discord Rich Presence (Status, Config, Test)
@@ -2605,6 +2677,72 @@ async function runBatchFetchSafe() {
   res.end('Not Found');
 });
 
+// Cloud Synchronization (Bidirectional merge between local PC and Render)
+const CLOUD_SYNC_URL = process.env.CLOUD_SYNC_URL || 'https://elias-study-planner.onrender.com';
+const IS_CLOUD_INSTANCE = !!process.env.RENDER;
+
+async function triggerCloudSync() {
+  if (IS_CLOUD_INSTANCE) return;
+  try {
+    const payload = {
+      tasks: appSettings.dailyPlanner?.tasks || [],
+      daysHistory: appSettings.dailyPlanner?.daysHistory || {},
+      habits: appSettings.habits || {}
+    };
+    const res = await fetch(`${CLOUD_SYNC_URL}/api/sync-daily`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(8000)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.dailyPlanner) {
+        let changed = false;
+        for (const cloudTask of data.dailyPlanner.tasks || []) {
+          const localT = appSettings.dailyPlanner.tasks.find(t => t.id === cloudTask.id);
+          if (!localT) {
+            appSettings.dailyPlanner.tasks.push(cloudTask);
+            changed = true;
+          } else {
+            if ((cloudTask.spentSeconds || 0) > (localT.spentSeconds || 0)) {
+              localT.spentSeconds = cloudTask.spentSeconds;
+              changed = true;
+            }
+            if (cloudTask.completed && !localT.completed) {
+              localT.completed = true;
+              localT.status = 'completed';
+              changed = true;
+            }
+          }
+        }
+        for (const [dateKey, dayData] of Object.entries(data.dailyPlanner.daysHistory || {})) {
+          if (!appSettings.dailyPlanner.daysHistory[dateKey]) {
+            appSettings.dailyPlanner.daysHistory[dateKey] = { ...dayData };
+            changed = true;
+          } else {
+            const cur = appSettings.dailyPlanner.daysHistory[dateKey];
+            if ((dayData.totalSeconds || 0) > (cur.totalSeconds || 0)) {
+              cur.totalSeconds = dayData.totalSeconds;
+              changed = true;
+            }
+            if ((dayData.maxFocusSeconds || 0) > (cur.maxFocusSeconds || 0)) {
+              cur.maxFocusSeconds = dayData.maxFocusSeconds;
+              changed = true;
+            }
+          }
+        }
+        if (changed) {
+          saveDatabase();
+          console.log(`[CloudSync] Synced with Render successfully at ${new Date().toLocaleTimeString('vi-VN')}`);
+        }
+      }
+    }
+  } catch (err) {
+    // Cloud sync silent fail
+  }
+}
+
 // Start server
 server.listen(PORT, '0.0.0.0', async () => {
   loadDatabase();
@@ -2621,4 +2759,10 @@ server.listen(PORT, '0.0.0.0', async () => {
   console.log(` Status:   Ready (Port ${PORT}, CDP 9222)`);
   console.log('--------------------------------------------------\n');
   scanClassIn();
+
+  if (!IS_CLOUD_INSTANCE) {
+    setTimeout(triggerCloudSync, 3000);
+    setInterval(triggerCloudSync, 45000);
+  }
 });
+

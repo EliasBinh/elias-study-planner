@@ -8623,16 +8623,41 @@
     loadData();
     loadHabits();
     loadDailyPlanner();
-    fetchDiscordRpcStatus();
-    updateTargets();
+    const isCloudHost = window.location.hostname.includes('onrender.com') || window.location.hostname.includes('render.com');
+
+    if (!isCloudHost) {
+      fetchDiscordRpcStatus();
+      updateTargets();
+      setInterval(updateTargets, 6000);
+      setInterval(fetchDiscordRpcStatus, 6000);
+    } else {
+      // Cloud/Render styling for status bar
+      const dot = document.getElementById('statusDot');
+      const label = document.getElementById('statusLabel');
+      const btn = document.getElementById('btnConnectClassIn');
+      const discordBtn = document.getElementById('btnHeaderDiscordRpc');
+      if (dot) {
+        dot.className = 'status-dot';
+        dot.style.background = '#3B82F6';
+        dot.style.boxShadow = '0 0 8px rgba(59, 130, 246, 0.6)';
+      }
+      if (label) {
+        label.innerText = 'Cloud PWA (Điện thoại)';
+        label.title = 'Đang chạy trên Cloud 24/7 để track Daily Plan từ điện thoại. Khi ở nhà, mở app trên PC để tải đề ClassIn & hiện Discord RPC.';
+      }
+      if (btn) btn.style.display = 'none';
+      if (discordBtn) {
+        discordBtn.title = 'Discord RPC hoạt động khi mở app trên máy tính ở nhà.';
+      }
+    }
+
     setInterval(loadData, 2000); // 2s Real-time Multi-Device Sync (phone <-> laptop)
-    setInterval(updateTargets, 6000);
     setInterval(updateYptLiveTimers, 1000); // 1s live YPT stopwatch
     setInterval(() => loadDailyPlanner(false), 2500); // Real-time sync for Daily Planner
-    setInterval(fetchDiscordRpcStatus, 6000); // Keep Discord RPC connection state fresh
 
-    // Restore last active page or default to 'sat'
-    const savedPage = localStorage.getItem('elias_active_page') || 'sat';
+    // On Cloud / Mobile: default to Daily Plan so user lands directly on tasks
+    const defaultPage = isCloudHost ? 'planner' : 'sat';
+    const savedPage = localStorage.getItem('elias_active_page') || defaultPage;
     navigateToPage(savedPage);
   </script>
 
