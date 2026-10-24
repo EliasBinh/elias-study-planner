@@ -1,0 +1,10 @@
+{
+  "name": "elias-sat-workspace",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Daily Planner & Habit Tracker Workspace",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
