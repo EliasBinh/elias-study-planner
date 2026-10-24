@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-24T17:17:29.296Z",
+  "updatedAt": "2026-10-24T17:32:45.474Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -115,12 +115,12 @@
           "section": "evening",
           "date": "2026-10-24",
           "deadline": "",
-          "completed": false,
-          "status": "partial",
-          "spentSeconds": 7,
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 27,
           "createdAt": "2026-10-24T09:37:08.350Z",
-          "completedAt": null,
-          "updatedAt": 1792861851849
+          "completedAt": "2026-10-24T17:20:41.483Z",
+          "updatedAt": 1792862479642
         },
         {
           "id": "dp_1792834636314",
@@ -129,11 +129,11 @@
           "date": "2026-10-24",
           "deadline": "",
           "completed": false,
-          "status": "partial",
+          "status": "failed",
           "spentSeconds": 0,
           "createdAt": "2026-10-24T09:37:16.314Z",
           "completedAt": null,
-          "updatedAt": 1792861931100
+          "updatedAt": 1792862450934
         },
         {
           "id": "dp_1792834640107",
@@ -143,10 +143,10 @@
           "deadline": "",
           "completed": false,
           "status": "failed",
-          "spentSeconds": 165,
+          "spentSeconds": 213,
           "createdAt": "2026-10-24T09:37:20.107Z",
           "completedAt": null,
-          "updatedAt": 1792861929394
+          "updatedAt": 1792863142322
         },
         {
           "id": "dp_1792834648386",
@@ -156,9 +156,9 @@
           "deadline": "",
           "completed": true,
           "status": "completed",
-          "spentSeconds": 126,
+          "spentSeconds": 166,
           "createdAt": "2026-10-24T09:37:28.386Z",
-          "updatedAt": 1792862233393,
+          "updatedAt": 1792863040535,
           "completedAt": "2026-10-24T17:17:13.393Z"
         }
       ],
@@ -172,13 +172,13 @@
           "maxFocusSeconds": 2
         },
         "2026-10-24": {
-          "totalSeconds": 15318,
+          "totalSeconds": 15426,
           "maxFocusSeconds": 14985
         }
       },
       "deletedTasks": {},
       "activeTimer": null,
-      "activeTimerChangedAt": 1792860916920
+      "activeTimerChangedAt": 1792863142322
     },
     "discordRpc": {
       "enabled": true,

@@ -6396,19 +6396,23 @@
 
       isTimerSwitching = true;
       try {
+        const reqStart = Date.now();
         const res = await fetch('/api/daily-todos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'start-timer',
             id: taskId,
-            date: currentPlannerDate
+            date: currentPlannerDate,
+            clientStartedAt: plannerData.activeTimer.startedAt
           })
         });
         if (res.ok) {
           const data = await res.json();
+          const reqEnd = Date.now();
+          const rtt = Math.max(0, reqEnd - reqStart);
           if (data.serverTime) {
-            serverClockSkew = data.serverTime - Date.now();
+            serverClockSkew = data.serverTime - Math.floor(reqStart + rtt / 2);
           }
           if (data.dailyPlanner) plannerData = data.dailyPlanner;
           renderDailyPlannerPage();
@@ -6447,6 +6451,7 @@
 
       isTimerSwitching = true;
       try {
+        const reqStart = Date.now();
         const res = await fetch('/api/daily-todos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -6454,8 +6459,10 @@
         });
         if (res.ok) {
           const data = await res.json();
+          const reqEnd = Date.now();
+          const rtt = Math.max(0, reqEnd - reqStart);
           if (data.serverTime) {
-            serverClockSkew = data.serverTime - Date.now();
+            serverClockSkew = data.serverTime - Math.floor(reqStart + rtt / 2);
           }
           if (data.dailyPlanner) plannerData = data.dailyPlanner;
           renderDailyPlannerPage();
@@ -6925,8 +6932,14 @@
     // 1. Fetch List & Settings
     async function loadData() {
       try {
+        const reqStart = Date.now();
         const res = await fetch('/api/list');
         const data = await res.json();
+        const reqEnd = Date.now();
+        const rtt = Math.max(0, reqEnd - reqStart);
+        if (data.serverTime) {
+          serverClockSkew = data.serverTime - Math.floor(reqStart + rtt / 2);
+        }
 
         const btnConnect = document.getElementById('btnConnectClassIn');
         const badgeConnected = document.getElementById('classInConnectedBadge');
@@ -7017,7 +7030,7 @@
           }
 
           // Real-time Multi-Device Sync: Daily Planner
-          if (data.settings.dailyPlanner) {
+          if (data.settings.dailyPlanner && !isTimerSwitching && isTaskMutating === 0) {
             const serverPlannerStr = JSON.stringify(data.settings.dailyPlanner);
             if (serverPlannerStr !== JSON.stringify(plannerData)) {
               plannerData = data.settings.dailyPlanner;
@@ -7025,6 +7038,7 @@
               if (currentPage === 'planner' && !isTyping) {
                 renderDailyPlannerPage();
               }
+              updateYptLiveTimers();
             }
           }
         }

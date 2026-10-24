@@ -14,6 +14,33 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 8899;
 const CDP_PORT = 9222;
 const IS_CLOUD_INSTANCE = !!process.env.RENDER;
+const CLOUD_SYNC_URL = process.env.CLOUD_SYNC_URL || 'https://elias-study-planner.onrender.com';
+
+let cloudTimeOffset = 0; // Canonical CloudTime - Local LaptopTime
+
+function getCanonicalNow() {
+  if (IS_CLOUD_INSTANCE) return Date.now();
+  return Date.now() + cloudTimeOffset;
+}
+
+async function calibrateClockOffset() {
+  if (IS_CLOUD_INSTANCE) return;
+  try {
+    const t0 = Date.now();
+    const res = await fetch(`${CLOUD_SYNC_URL}/api/daily-todos`, { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const data = await res.json();
+      const t1 = Date.now();
+      const rtt = Math.max(0, t1 - t0);
+      if (data.serverTime) {
+        cloudTimeOffset = data.serverTime - Math.floor(t0 + rtt / 2);
+        console.log(`[Clock Sync] Initial offset calibrated: ${cloudTimeOffset}ms (${(cloudTimeOffset / 1000).toFixed(2)}s)`);
+      }
+    }
+  } catch (e) {
+    // Non-blocking
+  }
+}
 
 // Folders
 const BASE_10SAT = path.join(os.homedir(), 'Downloads', '10SAT');
@@ -1286,7 +1313,8 @@ const server = http.createServer(async (req, res) => {
       mathDir: MATH_DIR,
       stats,
       settings: appSettings,
-      items
+      items,
+      serverTime: getCanonicalNow()
     }));
   }
 
@@ -2413,7 +2441,7 @@ async function runBatchFetchSafe() {
 
           if (action === 'add' && title && title.trim()) {
             const newTask = {
-              id: 'dp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+              id: 'dp_' + getCanonicalNow() + '_' + Math.random().toString(36).slice(2, 6),
               title: title.trim(),
               section: section || 'morning',
               date: date || new Date().toISOString().slice(0, 10),
@@ -2422,20 +2450,21 @@ async function runBatchFetchSafe() {
               status: 'incomplete', // 'incomplete' | 'partial' | 'completed' | 'failed'
               spentSeconds: 0,
               createdAt: new Date().toISOString(),
-              updatedAt: Date.now()
+              updatedAt: getCanonicalNow()
             };
             appSettings.dailyPlanner.tasks.push(newTask);
           } else if (action === 'set-status' && id) {
             const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
             if (t) {
+              const now = getCanonicalNow();
               t.status = status || 'incomplete';
               t.completed = (t.status === 'completed');
-              t.updatedAt = Date.now();
+              t.updatedAt = now;
               if (t.completed) {
                 t.completedAt = new Date().toISOString();
                 if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
                   const prev = appSettings.dailyPlanner.activeTimer;
-                  const sessionSec = Math.max(0, Math.floor((Date.now() - prev.startedAt) / 1000));
+                  const sessionSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
                   t.spentSeconds = (t.spentSeconds || 0) + sessionSec;
                   if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
                     appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
@@ -2446,7 +2475,7 @@ async function runBatchFetchSafe() {
                     sessionSec
                   );
                   appSettings.dailyPlanner.activeTimer = null;
-                  appSettings.dailyPlanner.activeTimerChangedAt = Date.now();
+                  appSettings.dailyPlanner.activeTimerChangedAt = now;
                 }
               } else {
                 t.completedAt = null;
@@ -2456,16 +2485,17 @@ async function runBatchFetchSafe() {
             const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
             if (t) {
               const taskDate = date || t.date || new Date().toISOString().slice(0, 10);
-              // If an active timer is already running on another task, stop & record it
+              const now = getCanonicalNow();
+
               if (appSettings.dailyPlanner.activeTimer) {
                 const prev = appSettings.dailyPlanner.activeTimer;
                 const MAX_SESSION_SEC = 4 * 3600;
-                const rawSec = Math.max(0, Math.floor((Date.now() - prev.startedAt) / 1000));
+                const rawSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
                 const sessionSec = Math.min(MAX_SESSION_SEC, rawSec);
                 const prevTask = appSettings.dailyPlanner.tasks.find(item => item.id === prev.taskId);
                 if (prevTask) {
                   prevTask.spentSeconds = (prevTask.spentSeconds || 0) + sessionSec;
-                  prevTask.updatedAt = Date.now();
+                  prevTask.updatedAt = now;
                 }
                 if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
                   appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
@@ -2477,11 +2507,14 @@ async function runBatchFetchSafe() {
                 );
               }
 
-              const now = Date.now();
+              const clientStartedAtNum = Number(parsed.clientStartedAt);
+              const useClientTime = !isNaN(clientStartedAtNum) && Math.abs(clientStartedAtNum - now) < 5000;
+              const startedAtTime = useClientTime ? clientStartedAtNum : now;
+
               appSettings.dailyPlanner.activeTimer = {
                 taskId: t.id,
                 taskTitle: t.title,
-                startedAt: now,
+                startedAt: startedAtTime,
                 date: taskDate
               };
               appSettings.dailyPlanner.activeTimerChangedAt = now;
@@ -2489,13 +2522,14 @@ async function runBatchFetchSafe() {
           } else if (action === 'stop-timer') {
             if (appSettings.dailyPlanner.activeTimer) {
               const prev = appSettings.dailyPlanner.activeTimer;
+              const now = getCanonicalNow();
               const MAX_SESSION_SEC = 4 * 3600;
-              const rawSec = Math.max(0, Math.floor((Date.now() - prev.startedAt) / 1000));
+              const rawSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
               const sessionSec = Math.min(MAX_SESSION_SEC, rawSec);
               const targetTask = appSettings.dailyPlanner.tasks.find(item => item.id === prev.taskId);
               if (targetTask) {
                 targetTask.spentSeconds = (targetTask.spentSeconds || 0) + sessionSec;
-                targetTask.updatedAt = Date.now();
+                targetTask.updatedAt = now;
               }
               if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
                 appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
@@ -2506,19 +2540,20 @@ async function runBatchFetchSafe() {
                 sessionSec
               );
               appSettings.dailyPlanner.activeTimer = null;
-              appSettings.dailyPlanner.activeTimerChangedAt = Date.now();
+              appSettings.dailyPlanner.activeTimerChangedAt = now;
             }
           } else if (action === 'toggle' && id) {
             const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
             if (t) {
+              const now = getCanonicalNow();
               t.completed = !t.completed;
               t.status = t.completed ? 'completed' : 'incomplete';
-              t.updatedAt = Date.now();
+              t.updatedAt = now;
               if (t.completed) {
                 t.completedAt = new Date().toISOString();
                 if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
                   const prev = appSettings.dailyPlanner.activeTimer;
-                  const sessionSec = Math.max(0, Math.floor((Date.now() - prev.startedAt) / 1000));
+                  const sessionSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
                   t.spentSeconds = (t.spentSeconds || 0) + sessionSec;
                   if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
                     appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
@@ -2529,7 +2564,7 @@ async function runBatchFetchSafe() {
                     sessionSec
                   );
                   appSettings.dailyPlanner.activeTimer = null;
-                  appSettings.dailyPlanner.activeTimerChangedAt = Date.now();
+                  appSettings.dailyPlanner.activeTimerChangedAt = now;
                 }
               } else {
                 t.completedAt = null;
@@ -2546,17 +2581,18 @@ async function runBatchFetchSafe() {
                 t.status = status;
                 t.completed = (status === 'completed');
               }
-              t.updatedAt = Date.now();
+              t.updatedAt = getCanonicalNow();
             }
           } else if (action === 'delete' && id) {
+            const now = getCanonicalNow();
             if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
               appSettings.dailyPlanner.activeTimer = null;
-              appSettings.dailyPlanner.activeTimerChangedAt = Date.now();
+              appSettings.dailyPlanner.activeTimerChangedAt = now;
             }
             if (!appSettings.dailyPlanner.deletedTasks) {
               appSettings.dailyPlanner.deletedTasks = {};
             }
-            appSettings.dailyPlanner.deletedTasks[id] = Date.now();
+            appSettings.dailyPlanner.deletedTasks[id] = now;
             appSettings.dailyPlanner.tasks = appSettings.dailyPlanner.tasks.filter(item => item.id !== id);
           }
 
@@ -2578,7 +2614,7 @@ async function runBatchFetchSafe() {
               ...appSettings.dailyPlanner,
               tasks: filteredTasks
             },
-            serverTime: Date.now()
+            serverTime: getCanonicalNow()
           }));
         } catch (e) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -2599,7 +2635,7 @@ async function runBatchFetchSafe() {
     return res.end(JSON.stringify({
       ...appSettings.dailyPlanner,
       tasks: filteredTasks,
-      serverTime: Date.now()
+      serverTime: getCanonicalNow()
     }));
   }
 
@@ -2658,7 +2694,7 @@ async function runBatchFetchSafe() {
               tasks: filteredTasks
             },
             habits: appSettings.habits,
-            serverTime: Date.now()
+            serverTime: getCanonicalNow()
           }));
         } catch (e) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -2928,10 +2964,7 @@ async function runBatchFetchSafe() {
 });
 
 // Cloud Synchronization (Bidirectional merge between local PC and Render)
-const CLOUD_SYNC_URL = process.env.CLOUD_SYNC_URL || 'https://elias-study-planner.onrender.com';
-
 let isSyncing = false;
-let cloudClockOffset = 0; // Cloud Server Time - Local PC Time
 
 async function triggerCloudSync() {
   if (IS_CLOUD_INSTANCE || isSyncing) return;
@@ -2960,8 +2993,13 @@ async function triggerCloudSync() {
       const rtt = Math.max(0, endReq - startReq);
 
       if (data && data.serverTime) {
-        // Calibrate clock offset between Cloud and PC
-        cloudClockOffset = data.serverTime - Math.floor(startReq + rtt / 2);
+        // Calibrate clock offset with moving average
+        const sampleOffset = data.serverTime - Math.floor(startReq + rtt / 2);
+        if (cloudTimeOffset === 0) {
+          cloudTimeOffset = sampleOffset;
+        } else {
+          cloudTimeOffset = Math.round(cloudTimeOffset * 0.7 + sampleOffset * 0.3);
+        }
       }
 
       if (data && data.dailyPlanner) {
@@ -2970,17 +3008,10 @@ async function triggerCloudSync() {
         const cloudTimerChangedAt = cloudPlanner.activeTimerChangedAt || 0;
         const localTimerChangedAt = appSettings.dailyPlanner?.activeTimerChangedAt || 0;
 
-        // Synchronize activeTimer
+        // Synchronize activeTimer: Both nodes use Canonical Cloud Time!
         if (cloudTimerChangedAt > localTimerChangedAt) {
           if (cloudPlanner.activeTimer) {
-            // Calibrate startedAt from Cloud's clock to PC's clock
-            const cloudStartedAt = cloudPlanner.activeTimer.startedAt;
-            const pcAdjustedStartedAt = cloudStartedAt - cloudClockOffset;
-
-            appSettings.dailyPlanner.activeTimer = {
-              ...cloudPlanner.activeTimer,
-              startedAt: pcAdjustedStartedAt
-            };
+            appSettings.dailyPlanner.activeTimer = { ...cloudPlanner.activeTimer };
           } else {
             appSettings.dailyPlanner.activeTimer = null;
           }
@@ -3026,6 +3057,7 @@ server.listen(PORT, '0.0.0.0', async () => {
   scanClassIn();
 
   if (!IS_CLOUD_INSTANCE) {
+    calibrateClockOffset();
     setTimeout(triggerCloudSync, 1000);
     // Real-time Cloud Synchronization loop: every 1.5 seconds
     setInterval(triggerCloudSync, 1500);
