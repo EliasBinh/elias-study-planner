@@ -4121,9 +4121,9 @@
       </div>
 
       <div class="header-right">
-        <div id="envPill" class="env-pill local" title="Môi trường chạy">
+        <div id="envPill" class="env-pill" style="display: none;" title="Môi trường chạy">
           <span class="env-dot"></span>
-          <span id="envPillText">Laptop Local</span>
+          <span id="envPillText"></span>
         </div>
         <div id="statusDotBox" class="status-dot-box">
           <span id="statusDot" class="status-dot offline"></span>
@@ -5192,7 +5192,11 @@
 
     function closeGeneralConfirmModal() {
       const modal = document.getElementById('generalConfirmModal');
-      if (modal) modal.classList.remove('show');
+      if (modal) {
+        modal.classList.remove('show');
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+      }
       generalConfirmCallback = null;
     }
 
@@ -6712,6 +6716,7 @@
         const envPill = document.getElementById('envPill');
         const envText = document.getElementById('envPillText');
         if (envPill && envText) {
+          envPill.style.display = 'inline-flex';
           if (isCloudHost) {
             envPill.className = 'env-pill cloud';
             envText.innerText = 'Cloud Online';
@@ -7639,27 +7644,10 @@
         btn.style.background = confirmColor || '#DC2626';
       }
 
-      pendingConfirmCallback = onConfirm;
+      generalConfirmCallback = onConfirm;
 
       modal.style.display = 'flex';
       modal.classList.add('active');
-    }
-
-    function closeGeneralConfirmModal() {
-      const modal = document.getElementById('generalConfirmModal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.classList.remove('active');
-      }
-      pendingConfirmCallback = null;
-    }
-
-    function executeGeneralConfirm() {
-      const cb = pendingConfirmCallback;
-      closeGeneralConfirmModal();
-      if (typeof cb === 'function') {
-        cb();
-      }
     }
 
     function deleteCustomTopicFolder(folderId, folderName) {
@@ -9051,7 +9039,7 @@
     loadData();
     loadHabits();
     loadDailyPlanner();
-    const isCloudHost = window.location.hostname.includes('onrender.com') || window.location.hostname.includes('render.com');
+    isCloudHost = isCloudHost || window.location.hostname.includes('onrender.com') || window.location.hostname.includes('render.com');
 
     if (!isCloudHost) {
       fetchDiscordRpcStatus();

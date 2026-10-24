@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 8899;
 const CDP_PORT = 9222;
+const IS_CLOUD_INSTANCE = !!process.env.RENDER;
 
 // Folders
 const BASE_10SAT = path.join(os.homedir(), 'Downloads', '10SAT');
@@ -2729,7 +2730,6 @@ async function runBatchFetchSafe() {
 
 // Cloud Synchronization (Bidirectional merge between local PC and Render)
 const CLOUD_SYNC_URL = process.env.CLOUD_SYNC_URL || 'https://elias-study-planner.onrender.com';
-const IS_CLOUD_INSTANCE = !!process.env.RENDER;
 
 let isSyncing = false;
 let cloudClockOffset = 0; // Cloud Server Time - Local PC Time
