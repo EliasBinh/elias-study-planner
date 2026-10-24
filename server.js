@@ -2230,6 +2230,7 @@ async function runBatchFetchSafe() {
                     sessionSec
                   );
                   appSettings.dailyPlanner.activeTimer = null;
+                  appSettings.dailyPlanner.activeTimerChangedAt = Date.now();
                 }
               } else {
                 t.completedAt = null;
@@ -2260,12 +2261,14 @@ async function runBatchFetchSafe() {
                 );
               }
 
+              const now = Date.now();
               appSettings.dailyPlanner.activeTimer = {
                 taskId: t.id,
                 taskTitle: t.title,
-                startedAt: Date.now(),
+                startedAt: now,
                 date: taskDate
               };
+              appSettings.dailyPlanner.activeTimerChangedAt = now;
             }
           } else if (action === 'stop-timer') {
             if (appSettings.dailyPlanner.activeTimer) {
@@ -2286,6 +2289,7 @@ async function runBatchFetchSafe() {
                 sessionSec
               );
               appSettings.dailyPlanner.activeTimer = null;
+              appSettings.dailyPlanner.activeTimerChangedAt = Date.now();
             }
           } else if (action === 'toggle' && id) {
             const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
@@ -2307,6 +2311,7 @@ async function runBatchFetchSafe() {
                     sessionSec
                   );
                   appSettings.dailyPlanner.activeTimer = null;
+                  appSettings.dailyPlanner.activeTimerChangedAt = Date.now();
                 }
               } else {
                 t.completedAt = null;
@@ -2327,6 +2332,7 @@ async function runBatchFetchSafe() {
           } else if (action === 'delete' && id) {
             if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
               appSettings.dailyPlanner.activeTimer = null;
+              appSettings.dailyPlanner.activeTimerChangedAt = Date.now();
             }
             appSettings.dailyPlanner.tasks = appSettings.dailyPlanner.tasks.filter(item => item.id !== id);
           }
@@ -2335,7 +2341,11 @@ async function runBatchFetchSafe() {
           saveDatabase();
           if (typeof triggerCloudSync === 'function') triggerCloudSync();
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-          return res.end(JSON.stringify({ success: true, dailyPlanner: appSettings.dailyPlanner }));
+          return res.end(JSON.stringify({
+            success: true,
+            dailyPlanner: appSettings.dailyPlanner,
+            serverTime: Date.now()
+          }));
         } catch (e) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           return res.end(JSON.stringify({ error: 'Invalid JSON' }));
@@ -2345,7 +2355,10 @@ async function runBatchFetchSafe() {
     }
 
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    return res.end(JSON.stringify(appSettings.dailyPlanner));
+    return res.end(JSON.stringify({
+      ...appSettings.dailyPlanner,
+      serverTime: Date.now()
+    }));
   }
 
   // 10.2.1 API: Two-Way Cloud Sync (Bidirectional merge between PC and Render)
@@ -2357,10 +2370,25 @@ async function runBatchFetchSafe() {
         try {
           const incoming = JSON.parse(body || '{}');
           if (!appSettings.dailyPlanner) {
-            appSettings.dailyPlanner = { tasks: [], daysHistory: {}, activeTimer: null };
+            appSettings.dailyPlanner = { tasks: [], daysHistory: {}, activeTimer: null, activeTimerChangedAt: 0 };
           }
           if (!Array.isArray(appSettings.dailyPlanner.tasks)) appSettings.dailyPlanner.tasks = [];
           if (!appSettings.dailyPlanner.daysHistory) appSettings.dailyPlanner.daysHistory = {};
+
+          const incomingChangedAt = incoming.activeTimerChangedAt || 0;
+          const localChangedAt = appSettings.dailyPlanner.activeTimerChangedAt || 0;
+          let timerChanged = false;
+
+          // Merge activeTimer: newest change wins!
+          if (incomingChangedAt > localChangedAt) {
+            if (incoming.activeTimer) {
+              appSettings.dailyPlanner.activeTimer = { ...incoming.activeTimer };
+            } else {
+              appSettings.dailyPlanner.activeTimer = null;
+            }
+            appSettings.dailyPlanner.activeTimerChangedAt = incomingChangedAt;
+            timerChanged = true;
+          }
 
           // Merge Tasks
           const incomingTasks = Array.isArray(incoming.tasks) ? incoming.tasks : [];
@@ -2376,6 +2404,9 @@ async function runBatchFetchSafe() {
                 existing.completed = true;
                 existing.status = 'completed';
                 existing.completedAt = inc.completedAt || new Date().toISOString();
+              } else if (existing.completed && !inc.completed) {
+                existing.completed = true;
+                existing.status = 'completed';
               }
               if (inc.title && !existing.title) existing.title = inc.title;
             }
@@ -2402,13 +2433,17 @@ async function runBatchFetchSafe() {
             }
           }
 
+          if (timerChanged) {
+            syncDiscordPresenceFromActiveTimer(true);
+          }
           saveDatabase();
 
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({
             success: true,
             dailyPlanner: appSettings.dailyPlanner,
-            habits: appSettings.habits
+            habits: appSettings.habits,
+            serverTime: Date.now()
           }));
         } catch (e) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -2681,25 +2716,66 @@ async function runBatchFetchSafe() {
 const CLOUD_SYNC_URL = process.env.CLOUD_SYNC_URL || 'https://elias-study-planner.onrender.com';
 const IS_CLOUD_INSTANCE = !!process.env.RENDER;
 
+let isSyncing = false;
+let cloudClockOffset = 0; // Cloud Server Time - Local PC Time
+
 async function triggerCloudSync() {
-  if (IS_CLOUD_INSTANCE) return;
+  if (IS_CLOUD_INSTANCE || isSyncing) return;
+  isSyncing = true;
   try {
+    const startReq = Date.now();
     const payload = {
       tasks: appSettings.dailyPlanner?.tasks || [],
       daysHistory: appSettings.dailyPlanner?.daysHistory || {},
-      habits: appSettings.habits || {}
+      habits: appSettings.habits || {},
+      activeTimer: appSettings.dailyPlanner?.activeTimer || null,
+      activeTimerChangedAt: appSettings.dailyPlanner?.activeTimerChangedAt || 0
     };
+
     const res = await fetch(`${CLOUD_SYNC_URL}/api/sync-daily`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(8000)
+      signal: AbortSignal.timeout(4000)
     });
+
     if (res.ok) {
       const data = await res.json();
+      const endReq = Date.now();
+      const rtt = Math.max(0, endReq - startReq);
+
+      if (data && data.serverTime) {
+        // Calibrate clock offset between Cloud and PC
+        cloudClockOffset = data.serverTime - Math.floor(startReq + rtt / 2);
+      }
+
       if (data && data.dailyPlanner) {
         let changed = false;
-        for (const cloudTask of data.dailyPlanner.tasks || []) {
+        const cloudPlanner = data.dailyPlanner;
+        const cloudTimerChangedAt = cloudPlanner.activeTimerChangedAt || 0;
+        const localTimerChangedAt = appSettings.dailyPlanner?.activeTimerChangedAt || 0;
+
+        // Synchronize activeTimer
+        if (cloudTimerChangedAt > localTimerChangedAt) {
+          if (cloudPlanner.activeTimer) {
+            // Calibrate startedAt from Cloud's clock to PC's clock
+            const cloudStartedAt = cloudPlanner.activeTimer.startedAt;
+            const pcAdjustedStartedAt = cloudStartedAt - cloudClockOffset;
+
+            appSettings.dailyPlanner.activeTimer = {
+              ...cloudPlanner.activeTimer,
+              startedAt: pcAdjustedStartedAt
+            };
+          } else {
+            appSettings.dailyPlanner.activeTimer = null;
+          }
+          appSettings.dailyPlanner.activeTimerChangedAt = cloudTimerChangedAt;
+          syncDiscordPresenceFromActiveTimer(true);
+          changed = true;
+        }
+
+        // Merge tasks
+        for (const cloudTask of cloudPlanner.tasks || []) {
           const localT = appSettings.dailyPlanner.tasks.find(t => t.id === cloudTask.id);
           if (!localT) {
             appSettings.dailyPlanner.tasks.push(cloudTask);
@@ -2716,7 +2792,9 @@ async function triggerCloudSync() {
             }
           }
         }
-        for (const [dateKey, dayData] of Object.entries(data.dailyPlanner.daysHistory || {})) {
+
+        // Merge daysHistory
+        for (const [dateKey, dayData] of Object.entries(cloudPlanner.daysHistory || {})) {
           if (!appSettings.dailyPlanner.daysHistory[dateKey]) {
             appSettings.dailyPlanner.daysHistory[dateKey] = { ...dayData };
             changed = true;
@@ -2732,14 +2810,16 @@ async function triggerCloudSync() {
             }
           }
         }
+
         if (changed) {
           saveDatabase();
-          console.log(`[CloudSync] Synced with Render successfully at ${new Date().toLocaleTimeString('vi-VN')}`);
         }
       }
     }
   } catch (err) {
     // Cloud sync silent fail
+  } finally {
+    isSyncing = false;
   }
 }
 
@@ -2761,8 +2841,10 @@ server.listen(PORT, '0.0.0.0', async () => {
   scanClassIn();
 
   if (!IS_CLOUD_INSTANCE) {
-    setTimeout(triggerCloudSync, 3000);
-    setInterval(triggerCloudSync, 45000);
+    setTimeout(triggerCloudSync, 1000);
+    // Real-time Cloud Synchronization loop: every 1.5 seconds
+    setInterval(triggerCloudSync, 1500);
   }
 });
+
 

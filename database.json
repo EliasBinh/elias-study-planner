@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-24T14:42:03.597Z",
+  "updatedAt": "2026-10-24T14:56:30.746Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -101,7 +101,7 @@
           "deadline": "",
           "completed": true,
           "status": "completed",
-          "spentSeconds": 14985,
+          "spentSeconds": 15020,
           "createdAt": "2026-10-24T09:36:19.979Z",
           "completedAt": "2026-10-24T13:46:17.119Z"
         },
@@ -111,10 +111,11 @@
           "section": "evening",
           "date": "2026-10-24",
           "deadline": "",
-          "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 0,
-          "createdAt": "2026-10-24T09:37:08.350Z"
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 5,
+          "createdAt": "2026-10-24T09:37:08.350Z",
+          "completedAt": "2026-10-24T14:45:15.156Z"
         },
         {
           "id": "dp_1792834636314",
@@ -122,10 +123,11 @@
           "section": "evening",
           "date": "2026-10-24",
           "deadline": "",
-          "completed": false,
-          "status": "incomplete",
+          "completed": true,
+          "status": "completed",
           "spentSeconds": 0,
-          "createdAt": "2026-10-24T09:37:16.314Z"
+          "createdAt": "2026-10-24T09:37:16.314Z",
+          "completedAt": "2026-10-24T14:45:18.938Z"
         },
         {
           "id": "dp_1792834640107",
@@ -133,9 +135,9 @@
           "section": "evening",
           "date": "2026-10-24",
           "deadline": "",
-          "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 0,
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 21,
           "createdAt": "2026-10-24T09:37:20.107Z"
         },
         {
@@ -160,7 +162,7 @@
           "maxFocusSeconds": 2
         },
         "2026-10-24": {
-          "totalSeconds": 14985,
+          "totalSeconds": 15046,
           "maxFocusSeconds": 14985
         }
       },
