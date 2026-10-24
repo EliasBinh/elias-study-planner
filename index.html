@@ -3795,14 +3795,263 @@
         font-size: 11px;
       }
 
+      .table-header {
+        display: none !important;
+      }
+
       .table-row {
-        padding: 8px 10px;
+        display: grid !important;
+        grid-template-columns: 28px 1fr auto !important;
+        grid-template-areas:
+          "check title subject"
+          "dead  dead  actions" !important;
+        row-gap: 8px !important;
+        column-gap: 8px !important;
+        padding: 12px 14px !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--border-subtle) !important;
+        margin-bottom: 8px !important;
+        background: var(--bg-main) !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+        align-items: center !important;
+      }
+
+      .cell-check {
+        grid-area: check;
+        align-self: start;
+        padding-top: 2px;
+      }
+
+      .file-col.cell-title {
+        grid-area: title;
+        min-width: 0;
+      }
+
+      .cell-subject {
+        grid-area: subject;
+        align-self: start;
+      }
+
+      .cell-deadline {
+        grid-area: dead;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .cell-personal-deadline {
+        display: none !important;
+      }
+
+      .actions-cell.cell-actions {
+        grid-area: actions;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+      }
+
+      .filter-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .filter-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .meta-counts {
+        font-size: 11px;
+        flex-wrap: wrap;
+        gap: 5px;
       }
 
       .widgets-grid {
         grid-template-columns: 1fr;
         gap: 12px;
       }
+
+      /* Prevent mobile Safari from zooming on inputs */
+      input[type="text"],
+      input[type="date"],
+      input[type="time"],
+      input[type="search"],
+      textarea,
+      select {
+        font-size: 16px !important;
+      }
+    }
+
+    /* Modern Mobile Bottom Navigation Bar */
+    .mobile-bottom-nav {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding-bottom: calc(65px + env(safe-area-inset-bottom, 12px)) !important;
+      }
+
+      .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--border-subtle);
+        z-index: 9999;
+        justify-content: space-around;
+        align-items: center;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .mob-nav-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #8C8C88;
+        font-size: 11px;
+        font-weight: 550;
+        gap: 3px;
+        cursor: pointer;
+        transition: color 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .mob-nav-btn.active {
+        color: var(--text-primary);
+        font-weight: 650;
+      }
+
+      .mob-nav-btn.active .mob-nav-icon {
+        color: var(--notion-blue);
+        transform: scale(1.08);
+      }
+
+      .mob-nav-icon {
+        transition: transform 0.15s ease, color 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    /* Cloud & Direct CDN Online Badges & Buttons */
+    .badge-online-link {
+      display: inline-flex;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 650;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #EFF6FF;
+      color: #2563EB;
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      letter-spacing: 0.2px;
+      flex-shrink: 0;
+    }
+
+    .badge-waiting-pc {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #F3F4F6;
+      color: #6B7280;
+      border: 1px dashed #D1D5DB;
+      white-space: nowrap;
+    }
+
+    .badge-waiting-pc-tiny {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #F3F4F6;
+      color: #6B7280;
+      border: 1px dashed #D1D5DB;
+      white-space: nowrap;
+    }
+
+    .action-icon-btn.btn-cloud-open,
+    .action-icon-btn.btn-cloud-copy {
+      color: #374151;
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 5px;
+      transition: all 0.15s ease;
+      width: 28px;
+      height: 28px;
+    }
+
+    .action-icon-btn.btn-cloud-open:hover {
+      color: #2563EB;
+      border-color: #93C5FD;
+      background: #EFF6FF;
+      transform: translateY(-1px);
+    }
+
+    .action-icon-btn.btn-cloud-copy:hover {
+      color: #059669;
+      border-color: #A7F3D0;
+      background: #ECFDF5;
+      transform: translateY(-1px);
+    }
+
+    /* Environment Indicator (Laptop Local vs Cloud Online) */
+    .env-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      cursor: default;
+    }
+
+    .env-pill.local {
+      background: #F0FDF4;
+      color: #166534;
+      border: 1px solid #BBF7D0;
+    }
+
+    .env-pill.cloud {
+      background: #EFF6FF;
+      color: #1E40AF;
+      border: 1px solid #BFDBFE;
+    }
+
+    .env-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .env-pill.local .env-dot {
+      background: #22C55E;
+      box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+    }
+
+    .env-pill.cloud .env-dot {
+      background: #3B82F6;
+      box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
     }
   </style>
 </head>
@@ -3872,6 +4121,10 @@
       </div>
 
       <div class="header-right">
+        <div id="envPill" class="env-pill local" title="Môi trường chạy">
+          <span class="env-dot"></span>
+          <span id="envPillText">Laptop Local</span>
+        </div>
         <div id="statusDotBox" class="status-dot-box">
           <span id="statusDot" class="status-dot offline"></span>
           <span id="statusLabel">Chưa kết nối ClassIn</span>
@@ -3990,9 +4243,9 @@
           <div class="meta-counts">
             <span>Tổng: <strong id="statTotal" class="meta-num">0</strong></span>
             <span>•</span>
-            <span>Có file: <strong id="statHasFile" class="meta-num">0</strong></span>
+            <span><span id="statHasFileLabel">Có file: </span><strong id="statHasFile" class="meta-num">0</strong></span>
             <span>•</span>
-            <span>Chờ đề: <strong id="statPendingFile" class="meta-num">0</strong></span>
+            <span><span id="statPendingLabel">Chờ đề: </span><strong id="statPendingFile" class="meta-num">0</strong></span>
             <span>•</span>
             <span data-tooltip="Số file PDF thực tế trong folder Downloads\10SAT\MATH / Tổng số bài Math">Math: <strong
                 id="statMath" class="meta-num">0</strong><span id="statMathTotal"
@@ -4803,6 +5056,8 @@
   </div>
 
   <script>
+    const isLocalHost = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+    let isCloudHost = !isLocalHost;
     let allItems = [];
     let currentFilter = 'all';
     let selectedId = null;
@@ -4883,6 +5138,11 @@
           item.classList.remove('active');
         }
       });
+
+      // Highlight active button in mobile bottom nav
+      document.querySelectorAll('.mob-nav-btn').forEach(btn => btn.classList.remove('active'));
+      const activeMobBtn = document.getElementById(`mobNav_${pageId}`);
+      if (activeMobBtn) activeMobBtn.classList.add('active');
 
       // Close dropdown
       const dropdown = document.getElementById('pageMenuDropdown');
@@ -6444,9 +6704,48 @@
           }
         }
 
+        if (data.isCloud !== undefined) {
+          isCloudHost = isCloudHost || data.isCloud;
+        }
+
+        // Environment indicator pill
+        const envPill = document.getElementById('envPill');
+        const envText = document.getElementById('envPillText');
+        if (envPill && envText) {
+          if (isCloudHost) {
+            envPill.className = 'env-pill cloud';
+            envText.innerText = 'Cloud Online';
+            envPill.title = 'Đang xem trên Cloud • Mở đề trực tiếp qua CDN & Đồng bộ 2 chiều';
+            if (btnConnect) btnConnect.style.display = 'none';
+          } else {
+            envPill.className = 'env-pill local';
+            envText.innerText = 'Laptop Local';
+            envPill.title = 'Đang chạy trực tiếp trên máy tính • Kết nối thư mục gốc 10SAT';
+          }
+        }
+
         document.getElementById('statTotal').innerText = data.stats.total;
-        if (document.getElementById('statHasFile')) document.getElementById('statHasFile').innerText = data.stats.hasFile || 0;
-        if (document.getElementById('statPendingFile')) document.getElementById('statPendingFile').innerText = data.stats.pendingFile || 0;
+
+        if (isCloudHost) {
+          const lblFile = document.getElementById('statHasFileLabel');
+          if (lblFile) lblFile.innerText = 'Link online: ';
+          const lblPend = document.getElementById('statPendingLabel');
+          if (lblPend) lblPend.innerText = 'Chờ PC: ';
+
+          const onlineLinks = data.stats.hasCloudUrl !== undefined ? data.stats.hasCloudUrl : (data.items || []).filter(i => i.url).length;
+          const pendingLinks = data.stats.pendingFile !== undefined ? data.stats.pendingFile : (data.items || []).filter(i => !i.url).length;
+
+          if (document.getElementById('statHasFile')) document.getElementById('statHasFile').innerText = onlineLinks;
+          if (document.getElementById('statPendingFile')) document.getElementById('statPendingFile').innerText = pendingLinks;
+        } else {
+          const lblFile = document.getElementById('statHasFileLabel');
+          if (lblFile) lblFile.innerText = 'Có file: ';
+          const lblPend = document.getElementById('statPendingLabel');
+          if (lblPend) lblPend.innerText = 'Chờ đề: ';
+
+          if (document.getElementById('statHasFile')) document.getElementById('statHasFile').innerText = data.stats.hasFile || 0;
+          if (document.getElementById('statPendingFile')) document.getElementById('statPendingFile').innerText = data.stats.pendingFile || 0;
+        }
 
         const mathFiles = data.stats.mathFiles !== undefined ? data.stats.mathFiles : (data.stats.math || 0);
         const verbalFiles = data.stats.verbalFiles !== undefined ? data.stats.verbalFiles : (data.stats.verbal || 0);
@@ -6879,7 +7178,7 @@
         return `
           <div class="table-row ${isSelected ? 'selected' : ''} ${pDeadline.isOverdue ? 'is-overdue' : ''}" id="row_${item.id}">
             <!-- 1. Checkbox -->
-            <div>
+            <div class="cell-check">
               <button 
                 type="button"
                 class="checkbox-btn ${item.isDone ? 'checked' : ''}" 
@@ -6891,17 +7190,24 @@
             </div>
 
             <!-- 2. File Title & Badges -->
-            <div class="file-col" ${item.hasFile ? `onclick="previewFile('${item.id}')" style="cursor: pointer;"` : ''}>
-              ${item.hasFile ? `
-                <svg class="file-icon" width="15" height="15" fill="none" stroke="#2563EB" stroke-width="1.5" viewBox="0 0 24 24" data-tooltip="Đã có file PDF"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <div class="file-col cell-title" ${isCloudHost ? (item.url ? `onclick="window.open('${item.url}', '_blank')" style="cursor: pointer;"` : '') : (item.hasFile ? `onclick="previewFile('${item.id}')" style="cursor: pointer;"` : '')}>
+              ${isCloudHost ? (item.url ? `
+                <svg class="file-icon" width="15" height="15" fill="none" stroke="#2563EB" stroke-width="1.5" viewBox="0 0 24 24" data-tooltip="Link online sẵn sàng"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              ` : `
+                <svg class="file-icon" width="15" height="15" fill="none" stroke="#9B9A97" stroke-width="1.5" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Chờ quét link trên PC"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              `) : (item.hasFile ? `
+                <svg class="file-icon" width="15" height="15" fill="none" stroke="#2563EB" stroke-width="1.5" viewBox="0 0 24 24" data-tooltip="Đã có file PDF trên máy"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               ` : (item.noPdf ? `
-                <svg class="file-icon" width="15" height="15" fill="none" stroke="#EF4444" stroke-width="1.6" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Không có file PDF (Đã bỏ qua an toàn)"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 3h.01" stroke="#EF4444" stroke-width="2"/></svg>
+                <svg class="file-icon" width="15" height="15" fill="none" stroke="#EF4444" stroke-width="1.6" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Không có file PDF"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 3h.01" stroke="#EF4444" stroke-width="2"/></svg>
               ` : `
                 <svg class="file-icon" width="15" height="15" fill="none" stroke="#9B9A97" stroke-width="1.5" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Chờ lấy file"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-              `)}
+              `))}
               <span class="file-title ${item.isDone ? 'done' : ''}" data-tooltip="${displayName}">
                 ${displayName}
               </span>
+              ${item.url ? `
+                <span class="badge-online-link" data-tooltip="Link trực tiếp máy chủ CDN ClassIn">Online</span>
+              ` : ''}
               ${item.isTimed ? `
                 <span class="badge-timed-shield" data-tooltip="Bài thi tính giờ (${item.timeLimit}p) - Đã khóa an toàn để tuyệt đối không bị tính giờ!">
                   <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -6911,7 +7217,7 @@
             </div>
 
             <!-- 3. Subject Tag (Click to switch) -->
-            <div>
+            <div class="cell-subject">
               <span 
                 class="subject-pill ${isMath ? 'math' : 'verbal'}" 
                 onclick="toggleSubject('${item.id}', '${isMath ? 'Verbal' : 'Math'}')"
@@ -6922,12 +7228,12 @@
             </div>
 
             <!-- 4. 10SAT Deadline Column (Tinh gọn, no duplicate dates, no emojis) -->
-            <div class="deadline-cell">
+            <div class="deadline-cell cell-deadline">
               ${getCleanDeadlineBadgeHtml(item)}
             </div>
 
             <!-- 5. Personal Deadline Column -->
-            <div ondblclick="openDatePicker('${item.id}')" data-tooltip="Double click để chọn ngày bằng lịch">
+            <div class="cell-personal-deadline" ondblclick="openDatePicker('${item.id}')" data-tooltip="Double click để chọn ngày bằng lịch">
               <div style="position: relative; display: inline-flex; align-items: center; gap: 4px;">
                 ${item.customDeadline ? `
                   <button 
@@ -6976,54 +7282,80 @@
             </div>
 
             <!-- 6. Actions Column -->
-            <div class="actions-cell">
-              ${item.hasFile ? `
-                <button class="action-icon-btn ${isSelected ? 'active' : ''}" onclick="previewFile('${item.id}')" data-tooltip="Xem trước đề thi">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                </button>
-
-                <button class="action-icon-btn" onclick="downloadFile('${item.id}')" data-tooltip="Tải về file PDF">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                </button>
-
+            <div class="actions-cell cell-actions">
+              ${isCloudHost ? `
                 ${item.url ? `
-                  <button class="action-icon-btn" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link gốc CDN">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  <button class="action-icon-btn btn-cloud-open" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link PDF trực tiếp (CDN)">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                   </button>
-                  <button class="action-icon-btn" onclick="copyLink('${item.url}')" data-tooltip="Sao chép link gốc">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${item.url}', 'Đã sao chép link đề thi trực tiếp (CDN)!')" data-tooltip="Sao chép link đề thi">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  </button>
+                ` : (item.isTimed ? `
+                  <span class="shield-lock-tag" data-tooltip="Bài thi ${item.timeLimit} phút (Đã khóa an toàn)">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    Khóa
+                  </span>
+                ` : `
+                  <span class="badge-waiting-pc" data-tooltip="Cần mở ClassIn trên laptop để quét link này">Chờ quét trên PC</span>
+                `)}
+              ` : `
+                ${item.hasFile ? `
+                  <button class="action-icon-btn ${isSelected ? 'active' : ''}" onclick="previewFile('${item.id}')" data-tooltip="Xem trước đề thi">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  </button>
+
+                  <button class="action-icon-btn" onclick="downloadFile('${item.id}')" data-tooltip="Tải về file PDF">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                  </button>
+
+                  ${item.url ? `
+                    <button class="action-icon-btn btn-cloud-open" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link gốc CDN">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </button>
+                    <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${item.url}', 'Đã sao chép link gốc CDN!')" data-tooltip="Sao chép link gốc">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                  ` : `
+                    <button class="action-icon-btn" onclick="copyLink('${item.localPath}', 'Đã sao chép đường dẫn file!')" data-tooltip="Sao chép đường dẫn file">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                  `}
+
+                  <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Xóa file này">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                ` : (item.isTimed ? `
+                  <span class="shield-lock-tag" data-tooltip="Bài thi ${item.timeLimit} phút (Chưa có file PDF - Đã khóa an toàn để tuyệt đối không bị tính giờ)">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    Khóa
+                  </span>
+                ` : (item.noPdf ? `
+                  <span class="badge-no-pdf" data-tooltip="Không có file PDF trong ClassIn (Đã bỏ qua an toàn)">Không có PDF</span>
+                  <button class="action-icon-btn" onclick="retryTaskPdf('${item.id}')" data-tooltip="Thử quét lại bài tập này">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  </button>
+                  <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Ẩn bài này">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                   </button>
                 ` : `
-                  <button class="action-icon-btn" onclick="copyLink('${item.localPath}')" data-tooltip="Sao chép đường dẫn file">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  ${item.url ? `
+                    <button class="action-icon-btn btn-cloud-open" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link gốc CDN">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </button>
+                    <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${item.url}', 'Đã sao chép link gốc CDN!')" data-tooltip="Sao chép link gốc">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                  ` : ''}
+                  <button class="btn-ghost" id="fetchBtn_${item.id}" style="font-size: 11px; padding: 2px 7px; color: var(--notion-blue); border: 1px solid rgba(35,131,226,0.3); border-radius: 4px;" onclick="fetchTaskPdf('${item.id}')" data-tooltip="Lấy file PDF qua ClassIn và tự động đóng">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <span>Lấy đề</span>
                   </button>
-                `}
-
-                <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Xóa file này">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
-              ` : (item.isTimed ? `
-                <span class="shield-lock-tag" data-tooltip="Bài thi ${item.timeLimit} phút (Chưa có file PDF - Đã khóa an toàn để tuyệt đối không bị tính giờ)">
-                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                  Khóa
-                </span>
-              ` : (item.noPdf ? `
-                <span class="badge-no-pdf" data-tooltip="Không có file PDF trong ClassIn (Đã bỏ qua an toàn)">Không có PDF</span>
-                <button class="action-icon-btn" onclick="retryTaskPdf('${item.id}')" data-tooltip="Thử quét lại bài tập này">
-                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                </button>
-                <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Ẩn bài này">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
-              ` : `
-                <button class="btn-ghost" id="fetchBtn_${item.id}" style="font-size: 11px; padding: 2px 7px; color: var(--notion-blue); border: 1px solid rgba(35,131,226,0.3); border-radius: 4px;" onclick="fetchTaskPdf('${item.id}')" data-tooltip="Lấy file PDF qua ClassIn và tự động đóng">
-                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                  <span>Lấy đề</span>
-                </button>
-                <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Ẩn bài này">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
-              `))}
+                  <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Ẩn bài này">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                `))}
+              `}
             </div>
           </div>
         `;
@@ -7499,9 +7831,12 @@
                           <svg width="14" height="14" fill="none" stroke="#9B9A97" stroke-width="1.5" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Chờ lấy file"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                         `)}
 
-                        <span class="drawer-file-title ${file.isDone ? 'done' : ''}" data-tooltip="${fileTitle}" ${file.hasFile ? `onclick="previewFile('${file.id}')" style="cursor:pointer;"` : ''}>
+                        <span class="drawer-file-title ${file.isDone ? 'done' : ''}" data-tooltip="${fileTitle}" ${isCloudHost ? (file.url ? `onclick="window.open('${file.url}', '_blank')" style="cursor:pointer;"` : '') : (file.hasFile ? `onclick="previewFile('${file.id}')" style="cursor:pointer;"` : '')}>
                           ${fileTitle}
                         </span>
+                        ${file.url ? `
+                          <span class="badge-online-link" style="font-size: 9px; padding: 0 4px; margin-left: 4px;" data-tooltip="Link online sẵn sàng">Online</span>
+                        ` : ''}
                         ${file.isTimed ? `
                           <span class="badge-timed-shield" style="font-size: 10px; padding: 1px 5px; margin-left: 5px;" data-tooltip="Bài thi tính giờ (${file.timeLimit}p)">
                             Bài thi ${file.timeLimit}p
@@ -7512,21 +7847,36 @@
                       <div class="drawer-file-right">
                         ${getCleanDeadlineBadgeHtml(file)}
 
-                        ${file.hasFile ? `
-                          <button class="action-icon-btn" onclick="previewFile('${file.id}')" data-tooltip="Xem trước PDF">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                          </button>
-                        ` : (file.isTimed ? `
-                          <span class="badge-timed-shield" data-tooltip="Bài thi ${file.timeLimit}p (Chưa có file PDF - Đã khóa an toàn)">Khóa</span>
-                        ` : (file.noPdf ? `
-                          <button class="action-icon-btn" onclick="retryTaskPdf('${file.id}')" data-tooltip="Không có file PDF • Bấm để thử quét lại" style="color: #DC2626; border-color: rgba(239,68,68,0.3); background: #FEF2F2; width: 24px; height: 24px;">
-                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                          </button>
+                        ${isCloudHost ? `
+                          ${file.url ? `
+                            <button class="action-icon-btn btn-cloud-open" onclick="window.open('${file.url}', '_blank')" data-tooltip="Mở link PDF trực tiếp (CDN)">
+                              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </button>
+                            <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${file.url}', 'Đã sao chép link đề thi trực tiếp (CDN)!')" data-tooltip="Sao chép link đề thi">
+                              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            </button>
+                          ` : (file.isTimed ? `
+                            <span class="badge-timed-shield" data-tooltip="Bài thi tính giờ (Đã khóa)">Khóa</span>
+                          ` : `
+                            <span class="badge-waiting-pc-tiny" data-tooltip="Cần quét trên PC">Chờ PC</span>
+                          `)}
                         ` : `
-                          <button class="btn-ghost" style="font-size: 10.5px; padding: 1px 6px; color: var(--notion-blue); border: 1px solid rgba(35,131,226,0.3); border-radius: 4px; width: 48px; justify-content: center;" onclick="fetchTaskPdf('${file.id}')" data-tooltip="Lấy file PDF">
-                            Lấy đề
-                          </button>
-                        `))}
+                          ${file.hasFile ? `
+                            <button class="action-icon-btn" onclick="previewFile('${file.id}')" data-tooltip="Xem trước PDF">
+                              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            </button>
+                          ` : (file.isTimed ? `
+                            <span class="badge-timed-shield" data-tooltip="Bài thi ${file.timeLimit}p (Chưa có file PDF - Đã khóa an toàn)">Khóa</span>
+                          ` : (file.noPdf ? `
+                            <button class="action-icon-btn" onclick="retryTaskPdf('${file.id}')" data-tooltip="Không có file PDF • Bấm để thử quét lại" style="color: #DC2626; border-color: rgba(239,68,68,0.3); background: #FEF2F2; width: 24px; height: 24px;">
+                              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            </button>
+                          ` : `
+                            <button class="btn-ghost" style="font-size: 10.5px; padding: 1px 6px; color: var(--notion-blue); border: 1px solid rgba(35,131,226,0.3); border-radius: 4px; width: 48px; justify-content: center;" onclick="fetchTaskPdf('${file.id}')" data-tooltip="Lấy file PDF">
+                              Lấy đề
+                            </button>
+                          `))}
+                        `}
                       </div>
                     </div>
                   `;
@@ -7915,11 +8265,38 @@
       }
     }
 
-    // 10. Copy Link
-    function copyLink(url) {
-      navigator.clipboard.writeText(url).then(() => {
-        toast('Đã sao chép link vào bộ nhớ tạm');
-      });
+    // 10. Copy Link (With robust fallback for Mobile & Insecure contexts)
+    function copyLink(url, customMsg) {
+      if (!url) {
+        toast('Không có link để sao chép');
+        return;
+      }
+      const msg = customMsg || 'Đã sao chép link đề thi vào bộ nhớ tạm!';
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => {
+          toast(msg);
+        }).catch(() => fallbackCopy(url, msg));
+      } else {
+        fallbackCopy(url, msg);
+      }
+    }
+
+    function fallbackCopy(text, msg) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+        toast(msg);
+      } catch (err) {
+        toast('Đã sao chép link!');
+      }
     }
 
     // 11. Right Pane Switcher
@@ -8774,6 +9151,28 @@
 
   <!-- Global Notion Floating Tooltip Container -->
   <div id="notionTooltip" class="notion-tooltip"></div>
+
+  <!-- Modern Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <button class="mob-nav-btn" id="mobNav_planner" onclick="navigateToPage('planner')">
+      <div class="mob-nav-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      </div>
+      <span>Daily Plan</span>
+    </button>
+    <button class="mob-nav-btn active" id="mobNav_sat" onclick="navigateToPage('sat')">
+      <div class="mob-nav-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      </div>
+      <span>Tài liệu SAT</span>
+    </button>
+    <button class="mob-nav-btn" id="mobNav_habits" onclick="navigateToPage('habits')">
+      <div class="mob-nav-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      </div>
+      <span>Thói quen</span>
+    </button>
+  </nav>
 </body>
 
 </html>

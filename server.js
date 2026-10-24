@@ -371,10 +371,18 @@ function matchAllTodos() {
 // Sync files already on disk in VERBAL and MATH folders
 // Sync files already on disk in VERBAL and MATH folders
 function indexLocalFolders() {
-  // Clean up any items whose files were moved or deleted from disk
+  // If running in cloud container (Render), disk is ephemeral and local directories do not exist.
+  // Never delete items from pdfStore on cloud! Keep all captured metadata and CDN URLs.
+  if (IS_CLOUD_INSTANCE) return;
+
+  // Clean up any items whose files were moved or deleted from disk ONLY if they don't have a CDN URL
   for (const [key, item] of pdfStore.entries()) {
     if (item.localPath && !fs.existsSync(item.localPath)) {
-      pdfStore.delete(key);
+      if (!item.url) {
+        pdfStore.delete(key);
+      } else {
+        item.downloaded = false;
+      }
     }
   }
 
@@ -753,9 +761,10 @@ function getMergedItems() {
         activityId: bestTodo.activityId,
         courseId: bestTodo.courseId,
         timeLimit: bestTodo.timeLimit || (timed ? 80 : 0),
-        endTime: bestTodo.endTime,
-        hasFile: true,
+        hasFile: !!pdf.localPath && fs.existsSync(pdf.localPath),
         downloaded: !!pdf.localPath && fs.existsSync(pdf.localPath),
+        hasCloudUrl: !!(pdf.url && pdf.url.startsWith('http')),
+        url: pdf.url || '',
         isTest: timed,
         isTimed: timed,
         deadlineTag: bestTodo.deadlineTag || pdf.deadlineTag || 'Chưa rõ hạn',
@@ -769,10 +778,13 @@ function getMergedItems() {
   for (const pdf of pdfStore.values()) {
     if (!matchedPdfIds.has(pdf.id)) {
       const timed = isTimedExam(pdf);
+      const fileOnDisk = !!pdf.localPath && fs.existsSync(pdf.localPath);
       merged.push({
         ...pdf,
-        hasFile: true,
-        downloaded: !!pdf.localPath && fs.existsSync(pdf.localPath),
+        hasFile: fileOnDisk,
+        downloaded: fileOnDisk,
+        hasCloudUrl: !!(pdf.url && pdf.url.startsWith('http')),
+        url: pdf.url || '',
         isTest: timed,
         isTimed: timed,
         deadlineTag: pdf.deadlineTag || 'Chưa rõ hạn'
@@ -1114,7 +1126,8 @@ const server = http.createServer(async (req, res) => {
     const stats = {
       total: items.length,
       hasFile: items.filter(i => i.hasFile).length,
-      pendingFile: items.filter(i => !i.hasFile).length,
+      hasCloudUrl: items.filter(i => i.hasCloudUrl).length,
+      pendingFile: items.filter(i => !i.hasFile && !i.hasCloudUrl).length,
       done: items.filter(i => i.isDone).length,
       pending: items.filter(i => !i.isDone).length,
       math: mathFilesOnDisk,
@@ -1125,12 +1138,14 @@ const server = http.createServer(async (req, res) => {
       verbalTotal: items.filter(i => i.subject === 'VERBAL').length,
       timedExams: items.filter(i => i.isTimed).length,
       safeHomeworks: items.filter(i => !i.isTimed).length,
-      pendingSafeHomeworks: items.filter(i => !i.hasFile && !i.isTimed && !i.noPdf).length
+      pendingSafeHomeworks: items.filter(i => !i.hasFile && !i.isTimed && !i.noPdf).length,
+      isCloud: IS_CLOUD_INSTANCE
     };
 
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     return res.end(JSON.stringify({
       connected,
+      isCloud: IS_CLOUD_INSTANCE,
       baseDir: BASE_10SAT,
       verbalDir: VERBAL_DIR,
       mathDir: MATH_DIR,
