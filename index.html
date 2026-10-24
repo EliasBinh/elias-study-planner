@@ -6072,9 +6072,10 @@
     }
 
     let isTimerSwitching = false;
+    let isTaskMutating = 0;
 
     async function loadDailyPlanner(notify = false) {
-      if (isTimerSwitching) return;
+      if (isTimerSwitching || isTaskMutating > 0) return;
       try {
         const reqStart = Date.now();
         const res = await fetch('/api/daily-todos');
@@ -6090,6 +6091,21 @@
           const isRunningNow = !!freshData.activeTimer;
           const taskChanged = plannerData.activeTimer?.taskId !== freshData.activeTimer?.taskId;
 
+          // Check if tasks list or task properties changed
+          const prevTasks = plannerData.tasks || [];
+          const nextTasks = freshData.tasks || [];
+          let tasksChanged = prevTasks.length !== nextTasks.length;
+          if (!tasksChanged) {
+            for (let i = 0; i < prevTasks.length; i++) {
+              const pt = prevTasks[i];
+              const nt = nextTasks.find(t => t.id === pt.id);
+              if (!nt || pt.status !== nt.status || pt.completed !== nt.completed || pt.title !== nt.title || pt.deadline !== nt.deadline || pt.section !== nt.section || pt.date !== nt.date || pt.spentSeconds !== nt.spentSeconds) {
+                tasksChanged = true;
+                break;
+              }
+            }
+          }
+
           // Avoid re-rendering while user is actively typing in an input field
           const activeEl = document.activeElement;
           const isUserTyping = activeEl && (
@@ -6099,7 +6115,7 @@
           );
           plannerData = freshData;
           if (!isUserTyping) {
-            if (wasRunning !== isRunningNow || taskChanged) {
+            if (wasRunning !== isRunningNow || taskChanged || tasksChanged) {
               renderDailyPlannerPage();
             }
           }
@@ -6478,6 +6494,7 @@
 
       task.status = status;
       task.completed = (status === 'completed');
+      task.updatedAt = Date.now();
 
       if (status === 'completed' && plannerData.activeTimer?.taskId === taskId) {
         await stopCurrentYptTimer();
@@ -6485,6 +6502,7 @@
 
       renderDailyPlannerPage();
 
+      isTaskMutating++;
       try {
         const res = await fetch('/api/daily-todos', {
           method: 'POST',
@@ -6498,6 +6516,8 @@
         }
       } catch (err) {
         console.error('Lỗi set status:', err);
+      } finally {
+        isTaskMutating--;
       }
     }
 
@@ -6513,6 +6533,7 @@
       const title = input.value.trim();
       input.value = '';
 
+      isTaskMutating++;
       try {
         const res = await fetch('/api/daily-todos', {
           method: 'POST',
@@ -6533,6 +6554,8 @@
         }
       } catch (err) {
         console.error('Lỗi thêm task:', err);
+      } finally {
+        isTaskMutating--;
       }
     }
 
@@ -6541,6 +6564,7 @@
       if (task) {
         task.completed = !task.completed;
         task.status = task.completed ? 'completed' : 'incomplete';
+        task.updatedAt = Date.now();
         if (task.completed) {
           task.completedAt = new Date().toISOString();
           if (plannerData.activeTimer?.taskId === id) {
@@ -6552,6 +6576,7 @@
         renderDailyPlannerPage();
       }
 
+      isTaskMutating++;
       try {
         const res = await fetch('/api/daily-todos', {
           method: 'POST',
@@ -6567,6 +6592,8 @@
         }
       } catch (err) {
         console.error('Lỗi toggle task:', err);
+      } finally {
+        isTaskMutating--;
       }
     }
 
@@ -6577,6 +6604,7 @@
       }
       renderDailyPlannerPage();
 
+      isTaskMutating++;
       try {
         await fetch('/api/daily-todos', {
           method: 'POST',
@@ -6585,6 +6613,8 @@
         });
       } catch (err) {
         console.error('Lỗi xóa task:', err);
+      } finally {
+        isTaskMutating--;
       }
     }
 
@@ -6784,9 +6814,13 @@
         isCommitted = true;
 
         const val = input.value.trim();
-        if (task) task.deadline = val;
+        if (task) {
+          task.deadline = val;
+          task.updatedAt = Date.now();
+        }
         renderDailyPlannerPage();
 
+        isTaskMutating++;
         try {
           await fetch('/api/daily-todos', {
             method: 'POST',
@@ -6795,6 +6829,8 @@
           });
         } catch (err) {
           console.error('Lỗi lưu deadline:', err);
+        } finally {
+          isTaskMutating--;
         }
       };
 
@@ -6840,9 +6876,13 @@
           return;
         }
 
-        if (task) task.title = newTitle;
+        if (task) {
+          task.title = newTitle;
+          task.updatedAt = Date.now();
+        }
         renderDailyPlannerPage();
 
+        isTaskMutating++;
         try {
           await fetch('/api/daily-todos', {
             method: 'POST',
@@ -6851,6 +6891,8 @@
           });
         } catch (err) {
           console.error('Lỗi lưu công việc:', err);
+        } finally {
+          isTaskMutating--;
         }
       };
 

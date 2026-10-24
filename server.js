@@ -139,13 +139,26 @@ function loadDatabase() {
           dailyPlanner: {
             tasks: Array.isArray(data.settings?.dailyPlanner?.tasks) ? data.settings.dailyPlanner.tasks : (appSettings.dailyPlanner?.tasks || []),
             daysHistory: (typeof data.settings?.dailyPlanner?.daysHistory === 'object' && data.settings.dailyPlanner.daysHistory !== null) ? data.settings.dailyPlanner.daysHistory : (appSettings.dailyPlanner?.daysHistory || {}),
-            activeTimer: data.settings?.dailyPlanner?.activeTimer || null
+            deletedTasks: (typeof data.settings?.dailyPlanner?.deletedTasks === 'object' && data.settings.dailyPlanner.deletedTasks !== null) ? data.settings.dailyPlanner.deletedTasks : {},
+            activeTimer: data.settings?.dailyPlanner?.activeTimer || null,
+            activeTimerChangedAt: data.settings?.dailyPlanner?.activeTimerChangedAt || 0
           },
           discordRpc: {
             ...appSettings.discordRpc,
             ...(data.settings?.discordRpc || {})
           }
         };
+
+        if (appSettings.dailyPlanner && Array.isArray(appSettings.dailyPlanner.tasks)) {
+          for (const t of appSettings.dailyPlanner.tasks) {
+            if (!t.updatedAt) {
+              t.updatedAt = t.createdAt ? new Date(t.createdAt).getTime() : 1;
+            }
+            if (!t.status) {
+              t.status = t.completed ? 'completed' : 'incomplete';
+            }
+          }
+        }
       }
       // Populate history from existing completed items if empty
       if (!appSettings.streak.history || Object.keys(appSettings.streak.history).length === 0) {
@@ -2240,7 +2253,9 @@ async function runBatchFetchSafe() {
             }
           }
 
+          appSettings.habits.changedAt = Date.now();
           saveDatabase();
+          if (typeof triggerCloudSync === 'function') triggerCloudSync();
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({ success: true, habits: appSettings.habits }));
         } catch (e) {
@@ -2255,12 +2270,134 @@ async function runBatchFetchSafe() {
     return res.end(JSON.stringify(appSettings.habits));
   }
 
+  // Helper: Conflict-Free Last-Write-Wins (LWW) Task & History Merge
+  function mergePlannerTasks(localPlanner, incomingPlanner) {
+    if (!incomingPlanner) return false;
+    let changed = false;
+    if (!localPlanner.tasks) localPlanner.tasks = [];
+    if (!localPlanner.deletedTasks) localPlanner.deletedTasks = {};
+
+    // 1. Merge deletedTasks tombstones
+    const incDeleted = incomingPlanner.deletedTasks || {};
+    for (const [delId, delTime] of Object.entries(incDeleted)) {
+      if ((localPlanner.deletedTasks[delId] || 0) < delTime) {
+        localPlanner.deletedTasks[delId] = delTime;
+        changed = true;
+      }
+    }
+
+    // Prune tombstones older than 7 days
+    const SEVEN_DAYS = 7 * 24 * 3600 * 1000;
+    const now = Date.now();
+    for (const [delId, delTime] of Object.entries(localPlanner.deletedTasks)) {
+      if (now - delTime > SEVEN_DAYS) delete localPlanner.deletedTasks[delId];
+    }
+
+    // Remove local tasks that have been deleted
+    const prevCount = localPlanner.tasks.length;
+    localPlanner.tasks = localPlanner.tasks.filter(t => {
+      const delTime = localPlanner.deletedTasks[t.id];
+      if (!delTime) return true;
+      const taskUpdated = t.updatedAt || (t.createdAt ? new Date(t.createdAt).getTime() : 0);
+      return taskUpdated > delTime;
+    });
+    if (localPlanner.tasks.length !== prevCount) changed = true;
+
+    // 2. Merge incoming tasks (Last-Write-Wins based on updatedAt)
+    const incomingTasks = Array.isArray(incomingPlanner.tasks) ? incomingPlanner.tasks : [];
+    for (const inc of incomingTasks) {
+      if (!inc || !inc.id) continue;
+      const delTime = localPlanner.deletedTasks[inc.id];
+      const incUpdated = inc.updatedAt || (inc.createdAt ? new Date(inc.createdAt).getTime() : 0);
+      if (delTime && delTime >= incUpdated) {
+        continue; // Skip deleted task
+      }
+
+      const existing = localPlanner.tasks.find(t => t.id === inc.id);
+      if (!existing) {
+        localPlanner.tasks.push({
+          ...inc,
+          updatedAt: incUpdated || Date.now()
+        });
+        changed = true;
+      } else {
+        const existingUpdated = existing.updatedAt || (existing.createdAt ? new Date(existing.createdAt).getTime() : 0);
+        if (incUpdated > existingUpdated) {
+          if (inc.title !== undefined) existing.title = inc.title;
+          if (inc.section !== undefined) existing.section = inc.section;
+          if (inc.date !== undefined) existing.date = inc.date;
+          if (inc.deadline !== undefined) existing.deadline = inc.deadline;
+          existing.status = inc.status || (inc.completed ? 'completed' : 'incomplete');
+          existing.completed = (existing.status === 'completed');
+          existing.completedAt = inc.completedAt || null;
+          existing.updatedAt = incUpdated;
+          changed = true;
+        }
+        // Always take highest cumulative spentSeconds
+        if ((inc.spentSeconds || 0) > (existing.spentSeconds || 0)) {
+          existing.spentSeconds = inc.spentSeconds;
+          changed = true;
+        }
+      }
+    }
+
+    // 3. Merge daysHistory
+    const incHistory = incomingPlanner.daysHistory || {};
+    if (!localPlanner.daysHistory) localPlanner.daysHistory = {};
+    for (const [dateKey, dayData] of Object.entries(incHistory)) {
+      if (!localPlanner.daysHistory[dateKey]) {
+        localPlanner.daysHistory[dateKey] = { ...dayData };
+        changed = true;
+      } else {
+        const cur = localPlanner.daysHistory[dateKey];
+        if ((dayData.totalSeconds || 0) > (cur.totalSeconds || 0)) {
+          cur.totalSeconds = dayData.totalSeconds;
+          changed = true;
+        }
+        if ((dayData.maxFocusSeconds || 0) > (cur.maxFocusSeconds || 0)) {
+          cur.maxFocusSeconds = dayData.maxFocusSeconds;
+          changed = true;
+        }
+      }
+    }
+
+    return changed;
+  }
+
+  // Helper: Conflict-Free Habits Merge
+  function mergeHabits(localHabits, incomingHabits) {
+    if (!incomingHabits) return false;
+    let changed = false;
+    const incChangedAt = incomingHabits.changedAt || 0;
+    const localChangedAt = localHabits.changedAt || 0;
+
+    if (incChangedAt > localChangedAt) {
+      if (incomingHabits.list) localHabits.list = incomingHabits.list;
+      if (incomingHabits.history) localHabits.history = incomingHabits.history;
+      localHabits.changedAt = incChangedAt;
+      changed = true;
+    } else if (localChangedAt === 0 && incChangedAt === 0) {
+      const incHist = incomingHabits.history || {};
+      if (!localHabits.history) localHabits.history = {};
+      for (const [d, arr] of Object.entries(incHist)) {
+        const localArr = localHabits.history[d] || [];
+        const merged = Array.from(new Set([...localArr, ...arr]));
+        if (merged.length !== localArr.length) {
+          localHabits.history[d] = merged;
+          changed = true;
+        }
+      }
+    }
+    return changed;
+  }
+
   // 10.2 API: Daily Planner & YPT Focus Timer
   if (parsedUrl.pathname === '/api/daily-todos') {
     if (!appSettings.dailyPlanner) {
-      appSettings.dailyPlanner = { tasks: [], daysHistory: {}, activeTimer: null };
+      appSettings.dailyPlanner = { tasks: [], daysHistory: {}, activeTimer: null, deletedTasks: {} };
     }
     if (!appSettings.dailyPlanner.daysHistory) appSettings.dailyPlanner.daysHistory = {};
+    if (!appSettings.dailyPlanner.deletedTasks) appSettings.dailyPlanner.deletedTasks = {};
 
     if (req.method === 'POST') {
       let body = '';
@@ -2276,15 +2413,16 @@ async function runBatchFetchSafe() {
 
           if (action === 'add' && title && title.trim()) {
             const newTask = {
-              id: 'dp_' + Date.now(),
+              id: 'dp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
               title: title.trim(),
               section: section || 'morning',
               date: date || new Date().toISOString().slice(0, 10),
               deadline: deadline || '',
               completed: false,
-              status: 'incomplete', // 'incomplete' | 'partial' | 'completed'
+              status: 'incomplete', // 'incomplete' | 'partial' | 'completed' | 'failed'
               spentSeconds: 0,
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
+              updatedAt: Date.now()
             };
             appSettings.dailyPlanner.tasks.push(newTask);
           } else if (action === 'set-status' && id) {
@@ -2292,6 +2430,7 @@ async function runBatchFetchSafe() {
             if (t) {
               t.status = status || 'incomplete';
               t.completed = (t.status === 'completed');
+              t.updatedAt = Date.now();
               if (t.completed) {
                 t.completedAt = new Date().toISOString();
                 if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
@@ -2320,13 +2459,13 @@ async function runBatchFetchSafe() {
               // If an active timer is already running on another task, stop & record it
               if (appSettings.dailyPlanner.activeTimer) {
                 const prev = appSettings.dailyPlanner.activeTimer;
-                // Safety cap: max 4 hours for single session to prevent accidental runaway timers
                 const MAX_SESSION_SEC = 4 * 3600;
                 const rawSec = Math.max(0, Math.floor((Date.now() - prev.startedAt) / 1000));
                 const sessionSec = Math.min(MAX_SESSION_SEC, rawSec);
                 const prevTask = appSettings.dailyPlanner.tasks.find(item => item.id === prev.taskId);
                 if (prevTask) {
                   prevTask.spentSeconds = (prevTask.spentSeconds || 0) + sessionSec;
+                  prevTask.updatedAt = Date.now();
                 }
                 if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
                   appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
@@ -2356,6 +2495,7 @@ async function runBatchFetchSafe() {
               const targetTask = appSettings.dailyPlanner.tasks.find(item => item.id === prev.taskId);
               if (targetTask) {
                 targetTask.spentSeconds = (targetTask.spentSeconds || 0) + sessionSec;
+                targetTask.updatedAt = Date.now();
               }
               if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
                 appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
@@ -2373,6 +2513,7 @@ async function runBatchFetchSafe() {
             if (t) {
               t.completed = !t.completed;
               t.status = t.completed ? 'completed' : 'incomplete';
+              t.updatedAt = Date.now();
               if (t.completed) {
                 t.completedAt = new Date().toISOString();
                 if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
@@ -2405,22 +2546,38 @@ async function runBatchFetchSafe() {
                 t.status = status;
                 t.completed = (status === 'completed');
               }
+              t.updatedAt = Date.now();
             }
           } else if (action === 'delete' && id) {
             if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
               appSettings.dailyPlanner.activeTimer = null;
               appSettings.dailyPlanner.activeTimerChangedAt = Date.now();
             }
+            if (!appSettings.dailyPlanner.deletedTasks) {
+              appSettings.dailyPlanner.deletedTasks = {};
+            }
+            appSettings.dailyPlanner.deletedTasks[id] = Date.now();
             appSettings.dailyPlanner.tasks = appSettings.dailyPlanner.tasks.filter(item => item.id !== id);
           }
 
           syncDiscordPresenceFromActiveTimer(true);
           saveDatabase();
           if (typeof triggerCloudSync === 'function') triggerCloudSync();
+
+          const filteredTasks = (appSettings.dailyPlanner.tasks || []).filter(item => {
+            const delTime = appSettings.dailyPlanner.deletedTasks?.[item.id];
+            if (!delTime) return true;
+            const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+            return taskUpdated > delTime;
+          });
+
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({
             success: true,
-            dailyPlanner: appSettings.dailyPlanner,
+            dailyPlanner: {
+              ...appSettings.dailyPlanner,
+              tasks: filteredTasks
+            },
             serverTime: Date.now()
           }));
         } catch (e) {
@@ -2431,9 +2588,17 @@ async function runBatchFetchSafe() {
       return;
     }
 
+    const filteredTasks = (appSettings.dailyPlanner.tasks || []).filter(item => {
+      const delTime = appSettings.dailyPlanner.deletedTasks?.[item.id];
+      if (!delTime) return true;
+      const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+      return taskUpdated > delTime;
+    });
+
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     return res.end(JSON.stringify({
       ...appSettings.dailyPlanner,
+      tasks: filteredTasks,
       serverTime: Date.now()
     }));
   }
@@ -2447,10 +2612,11 @@ async function runBatchFetchSafe() {
         try {
           const incoming = JSON.parse(body || '{}');
           if (!appSettings.dailyPlanner) {
-            appSettings.dailyPlanner = { tasks: [], daysHistory: {}, activeTimer: null, activeTimerChangedAt: 0 };
+            appSettings.dailyPlanner = { tasks: [], daysHistory: {}, activeTimer: null, activeTimerChangedAt: 0, deletedTasks: {} };
           }
           if (!Array.isArray(appSettings.dailyPlanner.tasks)) appSettings.dailyPlanner.tasks = [];
           if (!appSettings.dailyPlanner.daysHistory) appSettings.dailyPlanner.daysHistory = {};
+          if (!appSettings.dailyPlanner.deletedTasks) appSettings.dailyPlanner.deletedTasks = {};
 
           const incomingChangedAt = incoming.activeTimerChangedAt || 0;
           const localChangedAt = appSettings.dailyPlanner.activeTimerChangedAt || 0;
@@ -2467,58 +2633,30 @@ async function runBatchFetchSafe() {
             timerChanged = true;
           }
 
-          // Merge Tasks
-          const incomingTasks = Array.isArray(incoming.tasks) ? incoming.tasks : [];
-          for (const inc of incomingTasks) {
-            if (!inc || !inc.id) continue;
-            const existing = appSettings.dailyPlanner.tasks.find(t => t.id === inc.id);
-            if (!existing) {
-              appSettings.dailyPlanner.tasks.push(inc);
-            } else {
-              // Merge existing task: pick highest spentSeconds and completed flag
-              existing.spentSeconds = Math.max(existing.spentSeconds || 0, inc.spentSeconds || 0);
-              if (inc.completed && !existing.completed) {
-                existing.completed = true;
-                existing.status = 'completed';
-                existing.completedAt = inc.completedAt || new Date().toISOString();
-              } else if (existing.completed && !inc.completed) {
-                existing.completed = true;
-                existing.status = 'completed';
-              }
-              if (inc.title && !existing.title) existing.title = inc.title;
-            }
-          }
-
-          // Merge Days History
-          const incHistory = incoming.daysHistory || {};
-          for (const [dateKey, dayData] of Object.entries(incHistory)) {
-            if (!appSettings.dailyPlanner.daysHistory[dateKey]) {
-              appSettings.dailyPlanner.daysHistory[dateKey] = { ...dayData };
-            } else {
-              const cur = appSettings.dailyPlanner.daysHistory[dateKey];
-              cur.totalSeconds = Math.max(cur.totalSeconds || 0, dayData.totalSeconds || 0);
-              cur.maxFocusSeconds = Math.max(cur.maxFocusSeconds || 0, dayData.maxFocusSeconds || 0);
-            }
-          }
-
-          // Merge Habits
-          if (incoming.habits && appSettings.habits) {
-            const incHist = incoming.habits.history || {};
-            for (const [d, arr] of Object.entries(incHist)) {
-              const localArr = appSettings.habits.history[d] || [];
-              appSettings.habits.history[d] = Array.from(new Set([...localArr, ...arr]));
-            }
-          }
+          const plannerChanged = mergePlannerTasks(appSettings.dailyPlanner, incoming);
+          const habitsChanged = mergeHabits(appSettings.habits, incoming.habits);
 
           if (timerChanged) {
             syncDiscordPresenceFromActiveTimer(true);
           }
-          saveDatabase();
+          if (timerChanged || plannerChanged || habitsChanged) {
+            saveDatabase();
+          }
+
+          const filteredTasks = (appSettings.dailyPlanner.tasks || []).filter(item => {
+            const delTime = appSettings.dailyPlanner.deletedTasks?.[item.id];
+            if (!delTime) return true;
+            const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+            return taskUpdated > delTime;
+          });
 
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({
             success: true,
-            dailyPlanner: appSettings.dailyPlanner,
+            dailyPlanner: {
+              ...appSettings.dailyPlanner,
+              tasks: filteredTasks
+            },
             habits: appSettings.habits,
             serverTime: Date.now()
           }));
@@ -2802,6 +2940,7 @@ async function triggerCloudSync() {
     const startReq = Date.now();
     const payload = {
       tasks: appSettings.dailyPlanner?.tasks || [],
+      deletedTasks: appSettings.dailyPlanner?.deletedTasks || {},
       daysHistory: appSettings.dailyPlanner?.daysHistory || {},
       habits: appSettings.habits || {},
       activeTimer: appSettings.dailyPlanner?.activeTimer || null,
@@ -2850,41 +2989,11 @@ async function triggerCloudSync() {
           changed = true;
         }
 
-        // Merge tasks
-        for (const cloudTask of cloudPlanner.tasks || []) {
-          const localT = appSettings.dailyPlanner.tasks.find(t => t.id === cloudTask.id);
-          if (!localT) {
-            appSettings.dailyPlanner.tasks.push(cloudTask);
-            changed = true;
-          } else {
-            if ((cloudTask.spentSeconds || 0) > (localT.spentSeconds || 0)) {
-              localT.spentSeconds = cloudTask.spentSeconds;
-              changed = true;
-            }
-            if (cloudTask.completed && !localT.completed) {
-              localT.completed = true;
-              localT.status = 'completed';
-              changed = true;
-            }
-          }
+        if (mergePlannerTasks(appSettings.dailyPlanner, cloudPlanner)) {
+          changed = true;
         }
-
-        // Merge daysHistory
-        for (const [dateKey, dayData] of Object.entries(cloudPlanner.daysHistory || {})) {
-          if (!appSettings.dailyPlanner.daysHistory[dateKey]) {
-            appSettings.dailyPlanner.daysHistory[dateKey] = { ...dayData };
-            changed = true;
-          } else {
-            const cur = appSettings.dailyPlanner.daysHistory[dateKey];
-            if ((dayData.totalSeconds || 0) > (cur.totalSeconds || 0)) {
-              cur.totalSeconds = dayData.totalSeconds;
-              changed = true;
-            }
-            if ((dayData.maxFocusSeconds || 0) > (cur.maxFocusSeconds || 0)) {
-              cur.maxFocusSeconds = dayData.maxFocusSeconds;
-              changed = true;
-            }
-          }
+        if (data.habits && mergeHabits(appSettings.habits, data.habits)) {
+          changed = true;
         }
 
         if (changed) {

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-24T16:40:34.694Z",
+  "updatedAt": "2026-10-24T17:09:41.323Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -91,7 +91,10 @@
           "completed": true,
           "date": "2026-10-22",
           "deadline": "",
-          "spentSeconds": 4
+          "spentSeconds": 4,
+          "updatedAt": 1792861784536,
+          "status": "completed",
+          "completedAt": null
         },
         {
           "id": "dp_1792834579979",
@@ -103,7 +106,8 @@
           "status": "completed",
           "spentSeconds": 15020,
           "createdAt": "2026-10-24T09:36:19.979Z",
-          "completedAt": "2026-10-24T13:46:17.119Z"
+          "completedAt": "2026-10-24T13:46:17.119Z",
+          "updatedAt": 1792834579979
         },
         {
           "id": "dp_1792834628350",
@@ -113,9 +117,10 @@
           "deadline": "",
           "completed": true,
           "status": "completed",
-          "spentSeconds": 5,
+          "spentSeconds": 7,
           "createdAt": "2026-10-24T09:37:08.350Z",
-          "completedAt": "2026-10-24T14:45:15.156Z"
+          "completedAt": "2026-10-24T14:45:15.156Z",
+          "updatedAt": 1792834628350
         },
         {
           "id": "dp_1792834636314",
@@ -127,7 +132,8 @@
           "status": "completed",
           "spentSeconds": 0,
           "createdAt": "2026-10-24T09:37:16.314Z",
-          "completedAt": "2026-10-24T14:45:18.938Z"
+          "completedAt": null,
+          "updatedAt": 1792834636314
         },
         {
           "id": "dp_1792834640107",
@@ -137,8 +143,10 @@
           "deadline": "",
           "completed": true,
           "status": "completed",
-          "spentSeconds": 23,
-          "createdAt": "2026-10-24T09:37:20.107Z"
+          "spentSeconds": 165,
+          "createdAt": "2026-10-24T09:37:20.107Z",
+          "completedAt": null,
+          "updatedAt": 1792834640107
         },
         {
           "id": "dp_1792834648386",
@@ -148,8 +156,9 @@
           "deadline": "",
           "completed": false,
           "status": "incomplete",
-          "spentSeconds": 0,
-          "createdAt": "2026-10-24T09:37:28.386Z"
+          "spentSeconds": 126,
+          "createdAt": "2026-10-24T09:37:28.386Z",
+          "updatedAt": 1792834648386
         }
       ],
       "daysHistory": {
@@ -162,12 +171,13 @@
           "maxFocusSeconds": 2
         },
         "2026-10-24": {
-          "totalSeconds": 15048,
+          "totalSeconds": 15318,
           "maxFocusSeconds": 14985
         }
       },
+      "deletedTasks": {},
       "activeTimer": null,
-      "activeTimerChangedAt": 1792853853697
+      "activeTimerChangedAt": 1792860916920
     },
     "discordRpc": {
       "enabled": true,
