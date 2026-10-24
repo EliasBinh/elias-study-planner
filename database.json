@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-24T17:34:06.696Z",
+  "updatedAt": "2026-10-24T17:43:06.892Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -117,10 +117,10 @@
           "deadline": "",
           "completed": true,
           "status": "completed",
-          "spentSeconds": 27,
+          "spentSeconds": 45,
           "createdAt": "2026-10-24T09:37:08.350Z",
           "completedAt": "2026-10-24T17:20:41.483Z",
-          "updatedAt": 1792862479642
+          "updatedAt": 1792863781852
         },
         {
           "id": "dp_1792834636314",
@@ -128,12 +128,12 @@
           "section": "evening",
           "date": "2026-10-24",
           "deadline": "",
-          "completed": false,
-          "status": "failed",
+          "completed": true,
+          "status": "completed",
           "spentSeconds": 0,
           "createdAt": "2026-10-24T09:37:16.314Z",
-          "completedAt": null,
-          "updatedAt": 1792862450934
+          "completedAt": "2026-10-24T17:35:24.561Z",
+          "updatedAt": 1792863324561
         },
         {
           "id": "dp_1792834640107",
@@ -143,10 +143,10 @@
           "deadline": "",
           "completed": false,
           "status": "failed",
-          "spentSeconds": 220,
+          "spentSeconds": 279,
           "createdAt": "2026-10-24T09:37:20.107Z",
           "completedAt": null,
-          "updatedAt": 1792863226627
+          "updatedAt": 1792863764702
         },
         {
           "id": "dp_1792834648386",
@@ -172,13 +172,13 @@
           "maxFocusSeconds": 2
         },
         "2026-10-24": {
-          "totalSeconds": 15433,
+          "totalSeconds": 15510,
           "maxFocusSeconds": 14985
         }
       },
       "deletedTasks": {},
       "activeTimer": null,
-      "activeTimerChangedAt": 1792863226627
+      "activeTimerChangedAt": 1792863781852
     },
     "discordRpc": {
       "enabled": true,

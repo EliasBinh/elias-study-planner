@@ -1129,23 +1129,39 @@ function disconnectDiscordIpc() {
 }
 
 let lastDiscordActivitySent = 0;
-let pendingDiscordActivity = null;
 let pendingDiscordTimer = null;
-const DISCORD_ACTION_MIN_GAP = 1200; // 1.2s safety gap between rapid clicks to prevent Discord IPC pipe drops
+let queuedDiscordActivity = null;
+const DISCORD_MIN_INTERVAL = 3000; // 3-second safety gap to prevent hitting Discord's 5 reqs/20s rate limit
+let discordStudyAnchor = null; // { taskId, startSec, mode }
 
 function updateDiscordActivity(activity, immediate = false) {
   if (!discordIpcClient || !discordIpcConnected) return;
 
-  if (immediate) {
+  const now = Date.now();
+  const timeSinceLast = now - lastDiscordActivitySent;
+
+  if (timeSinceLast >= DISCORD_MIN_INTERVAL || (immediate && timeSinceLast >= 1500)) {
     if (pendingDiscordTimer) {
       clearTimeout(pendingDiscordTimer);
       pendingDiscordTimer = null;
     }
-    pendingDiscordActivity = null;
+    queuedDiscordActivity = null;
+    sendDiscordActivityNow(activity);
+  } else {
+    // Queue latest activity to send as soon as cooldown finishes
+    queuedDiscordActivity = activity;
+    if (!pendingDiscordTimer) {
+      const waitTime = Math.max(200, DISCORD_MIN_INTERVAL - timeSinceLast);
+      pendingDiscordTimer = setTimeout(() => {
+        pendingDiscordTimer = null;
+        if (queuedDiscordActivity) {
+          const act = queuedDiscordActivity;
+          queuedDiscordActivity = null;
+          sendDiscordActivityNow(act);
+        }
+      }, waitTime);
+    }
   }
-
-  // 1-second live tick to Discord
-  sendDiscordActivityNow(activity);
 }
 
 function sendDiscordActivityNow(activity) {
@@ -1168,6 +1184,8 @@ function sendDiscordActivityNow(activity) {
 
 function syncDiscordPresenceFromActiveTimer(immediate = false) {
   if (!appSettings.discordRpc?.enabled) {
+    discordStudyAnchor = null;
+    discordRestStartedAt = null;
     updateDiscordActivity(null, immediate);
     return;
   }
@@ -1193,30 +1211,41 @@ function syncDiscordPresenceFromActiveTimer(immediate = false) {
       ? appSettings.discordRpc.studyTitle.trim()
       : (active.taskTitle || 'FOCUS');
     const taskObj = (appSettings.dailyPlanner?.tasks || []).find(t => t.id === active.taskId);
-    const taskElapsedSec = (taskObj?.spentSeconds || 0) + Math.max(0, Math.floor((Date.now() - active.startedAt) / 1000));
+    
+    // Live elapsed time using canonical now:
+    const canonicalNow = getCanonicalNow();
+    const liveSessionSec = Math.max(0, Math.floor((canonicalNow - active.startedAt) / 1000));
+    const taskCumulativeSec = (taskObj?.spentSeconds || 0) + liveSessionSec;
 
     // State line:
     let stateText = undefined;
     const stateFmt = appSettings.discordRpc?.stateFormat || 'today_stats';
     if (stateFmt === 'today_stats') {
       if (appSettings.discordRpc?.mode === 'task') {
-        stateText = `Total today: ${formatTotalStudy(todayTotalSec)}`;
+        stateText = `Total today: ${formatTotalStudy(todayTotalSec + liveSessionSec)}`;
       } else {
-        stateText = `Task: ${formatTotalStudy(taskElapsedSec)}`;
+        stateText = `Task: ${formatTotalStudy(taskCumulativeSec)}`;
       }
     } else if (stateFmt === 'custom') {
       stateText = appSettings.discordRpc?.customState || undefined;
     }
 
-    // Timestamp calculation with stable anchor:
+    // Stable anchor in local Windows time:
+    // Discord runs locally on Windows and compares timestamps.start against local Date.now()!
+    const mode = appSettings.discordRpc?.mode || 'cumulative';
     let startSec;
-    if (appSettings.discordRpc?.mode === 'task') {
-      const taskBaseStartedAt = active.startedAt - (taskObj?.spentSeconds || 0) * 1000;
-      startSec = Math.floor(taskBaseStartedAt / 1000);
+    if (discordStudyAnchor && discordStudyAnchor.taskId === active.taskId && discordStudyAnchor.mode === mode) {
+      // Reuse stable anchor: DO NOT change startSec during an active session!
+      // This allows Discord's client engine to tick 1s-by-1s smoothly with zero jitter or freezes!
+      startSec = discordStudyAnchor.startSec;
     } else {
-      const dayStats = appSettings.dailyPlanner?.daysHistory?.[today];
-      const cumBaseStartedAt = active.startedAt - (dayStats?.totalSeconds || 0) * 1000;
-      startSec = Math.floor(cumBaseStartedAt / 1000);
+      const localNowSec = Math.floor(Date.now() / 1000);
+      if (mode === 'task') {
+        startSec = localNowSec - taskCumulativeSec;
+      } else {
+        startSec = localNowSec - (todayTotalSec + liveSessionSec);
+      }
+      discordStudyAnchor = { taskId: active.taskId, startSec, mode };
     }
 
     updateDiscordActivity({
@@ -1234,6 +1263,7 @@ function syncDiscordPresenceFromActiveTimer(immediate = false) {
     }, immediate);
   } else {
     // 2. REST / BREAK MODE (User paused/stopped task: RPC remains active with REST status & timer!)
+    discordStudyAnchor = null;
     if (!discordRestStartedAt) {
       discordRestStartedAt = Date.now();
     }
@@ -1262,12 +1292,12 @@ function syncDiscordPresenceFromActiveTimer(immediate = false) {
   }
 }
 
-// Background periodic sync: Refresh Discord presence every 15s to keep minutes fresh without tripping Discord's 5 reqs/20s rate limit
+// Background periodic sync: Refresh Discord presence every 30s to keep stats fresh without tripping rate limits
 setInterval(() => {
   if (discordIpcConnected && appSettings.discordRpc?.enabled && appSettings.dailyPlanner?.activeTimer) {
     syncDiscordPresenceFromActiveTimer(false);
   }
-}, 15000);
+}, 30000);
 
 // HTTP Server
 const server = http.createServer(async (req, res) => {
@@ -2508,7 +2538,7 @@ async function runBatchFetchSafe() {
               }
 
               const clientStartedAtNum = Number(parsed.clientStartedAt);
-              const useClientTime = !isNaN(clientStartedAtNum) && Math.abs(clientStartedAtNum - now) < 5000;
+              const useClientTime = !isNaN(clientStartedAtNum) && Math.abs(clientStartedAtNum - now) < 60000;
               const startedAtTime = useClientTime ? clientStartedAtNum : now;
 
               appSettings.dailyPlanner.activeTimer = {
@@ -2954,7 +2984,12 @@ async function runBatchFetchSafe() {
   if (parsedUrl.pathname === '/' || parsedUrl.pathname === '/index.html') {
     const htmlPath = path.join(__dirname, 'index.html');
     if (fs.existsSync(htmlPath)) {
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
       return res.end(fs.readFileSync(htmlPath));
     }
   }

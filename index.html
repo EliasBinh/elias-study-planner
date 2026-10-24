@@ -5937,6 +5937,22 @@
     let currentPopoverTaskId = null;
     let serverClockSkew = 0; // Milliseconds offset: serverTime - clientLocalTime
 
+    function updateServerClockSkew(serverTime, reqStart, reqEnd) {
+      if (!serverTime || isNaN(serverTime)) return;
+      const rtt = Math.max(0, reqEnd - reqStart);
+      // Discard network spike outliers (> 2000ms) if we already have an established skew
+      if (serverClockSkew !== 0 && rtt > 2000) return;
+
+      const sampleSkew = serverTime - Math.floor(reqStart + rtt / 2);
+      if (serverClockSkew === 0) {
+        serverClockSkew = sampleSkew;
+      } else {
+        // Exponential Moving Average filter: 85% established skew, 15% new sample
+        // Eliminates HTTP ping jitter and guarantees smooth 1-second ticking
+        serverClockSkew = Math.round(serverClockSkew * 0.85 + sampleSkew * 0.15);
+      }
+    }
+
     function getSyncedServerNow() {
       return Date.now() + serverClockSkew;
     }
@@ -6082,9 +6098,8 @@
         if (res.ok) {
           const freshData = await res.json();
           const reqEnd = Date.now();
-          const rtt = Math.max(0, reqEnd - reqStart);
           if (freshData.serverTime) {
-            serverClockSkew = freshData.serverTime - Math.floor(reqStart + rtt / 2);
+            updateServerClockSkew(freshData.serverTime, reqStart, reqEnd);
           }
 
           const wasRunning = !!plannerData.activeTimer;
@@ -6410,9 +6425,8 @@
         if (res.ok) {
           const data = await res.json();
           const reqEnd = Date.now();
-          const rtt = Math.max(0, reqEnd - reqStart);
           if (data.serverTime) {
-            serverClockSkew = data.serverTime - Math.floor(reqStart + rtt / 2);
+            updateServerClockSkew(data.serverTime, reqStart, reqEnd);
           }
           if (data.dailyPlanner) plannerData = data.dailyPlanner;
           renderDailyPlannerPage();
@@ -6460,9 +6474,8 @@
         if (res.ok) {
           const data = await res.json();
           const reqEnd = Date.now();
-          const rtt = Math.max(0, reqEnd - reqStart);
           if (data.serverTime) {
-            serverClockSkew = data.serverTime - Math.floor(reqStart + rtt / 2);
+            updateServerClockSkew(data.serverTime, reqStart, reqEnd);
           }
           if (data.dailyPlanner) plannerData = data.dailyPlanner;
           renderDailyPlannerPage();
@@ -6936,9 +6949,8 @@
         const res = await fetch('/api/list');
         const data = await res.json();
         const reqEnd = Date.now();
-        const rtt = Math.max(0, reqEnd - reqStart);
         if (data.serverTime) {
-          serverClockSkew = data.serverTime - Math.floor(reqStart + rtt / 2);
+          updateServerClockSkew(data.serverTime, reqStart, reqEnd);
         }
 
         const btnConnect = document.getElementById('btnConnectClassIn');
