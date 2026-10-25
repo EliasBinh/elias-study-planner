@@ -988,8 +988,8 @@ function getMergedItems() {
         activityId: bestTodo.activityId,
         courseId: bestTodo.courseId,
         timeLimit: bestTodo.timeLimit || (timed ? 80 : 0),
-        hasFile: !!pdf.localPath && fs.existsSync(pdf.localPath),
-        downloaded: !!pdf.localPath && fs.existsSync(pdf.localPath),
+        hasFile: IS_CLOUD_INSTANCE ? (pdf.downloaded || !!pdf.localPath || !!pdf.url) : (!!pdf.localPath && fs.existsSync(pdf.localPath)),
+        downloaded: IS_CLOUD_INSTANCE ? (pdf.downloaded || !!pdf.localPath) : (!!pdf.localPath && fs.existsSync(pdf.localPath)),
         hasCloudUrl: !!(pdf.url && pdf.url.startsWith('http')),
         url: pdf.url || '',
         isTest: timed,
@@ -1005,11 +1005,13 @@ function getMergedItems() {
   for (const pdf of pdfStore.values()) {
     if (!matchedPdfIds.has(pdf.id)) {
       const timed = isTimedExam(pdf);
-      const fileOnDisk = !!pdf.localPath && fs.existsSync(pdf.localPath);
+      const fileOnDisk = IS_CLOUD_INSTANCE 
+        ? (pdf.downloaded || !!pdf.localPath || !!pdf.url) 
+        : (!!pdf.localPath && fs.existsSync(pdf.localPath));
       merged.push({
         ...pdf,
         hasFile: fileOnDisk,
-        downloaded: fileOnDisk,
+        downloaded: IS_CLOUD_INSTANCE ? (pdf.downloaded || !!pdf.localPath) : fileOnDisk,
         hasCloudUrl: !!(pdf.url && pdf.url.startsWith('http')),
         url: pdf.url || '',
         isTest: timed,
