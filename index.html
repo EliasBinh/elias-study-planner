@@ -2851,118 +2851,122 @@
       background: #FEE2E2;
     }
 
-    .planner-inline-add {
+    .btn-section-add {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      padding: 0;
+      margin-left: 2px;
+    }
+
+    .btn-section-add:hover {
+      background: var(--bg-hover);
+      color: #2563EB;
+      transform: scale(1.1);
+    }
+
+    .btn-section-add:active {
+      transform: scale(0.92);
+    }
+
+    .planner-draft-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #FFFFFF;
+      border: 1.5px dashed rgba(37, 99, 235, 0.45);
+      animation: fadeInDraft 0.15s ease-out;
+      min-height: 38px;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.06);
+    }
+
+    @keyframes fadeInDraft {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .planner-draft-form {
+      flex: 1;
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 10px;
-      margin-top: 6px;
-      border-radius: 6px;
-      transition: background 0.15s ease, box-shadow 0.15s ease;
+      margin: 0;
+      padding: 0;
     }
 
-    .planner-inline-add:focus-within {
-      background: rgba(0, 0, 0, 0.02);
-    }
-
-    .planner-add-input {
+    .planner-draft-input {
+      flex: 1;
       border: none;
       background: transparent;
-      font-size: 14.5px;
-      color: var(--text-primary);
+      font-size: 15px;
       font-family: inherit;
+      color: var(--text-primary);
       outline: none;
-      flex: 1;
-      padding: 5px 0;
+      padding: 4px 0;
       min-width: 0;
     }
 
-    .planner-add-input::placeholder {
-      color: #A8A7A3;
+    .planner-draft-input::placeholder {
+      color: #9CA3AF;
+      font-size: 14.5px;
     }
 
-    .planner-add-btn {
+    .planner-draft-submit-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 13.5px;
-      font-weight: 500;
-      font-family: inherit;
-      cursor: pointer;
-      padding: 5px 8px;
-      border-radius: 4px;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-      flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-
-    .planner-add-btn:hover {
-      background: var(--bg-hover);
-      color: var(--text-primary);
-    }
-
-    .planner-add-btn:active {
-      transform: scale(0.97);
-    }
-
-    .planner-submit-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
       border: none;
       background: #2563EB;
       color: #FFFFFF;
       cursor: pointer;
       flex-shrink: 0;
-      opacity: 0.35;
-      transition: all 0.15s ease;
+      transition: all 0.12s ease;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25);
     }
 
-    .planner-submit-btn.active {
-      opacity: 1;
-      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
-      transform: scale(1.02);
-    }
-
-    .planner-submit-btn:hover {
-      opacity: 1;
+    .planner-draft-submit-btn:hover {
       background: #1D4ED8;
+      transform: scale(1.05);
     }
 
-    .planner-submit-btn:active {
+    .planner-draft-submit-btn:active {
       transform: scale(0.95);
     }
 
     @media (max-width: 768px) {
-      .planner-inline-add {
-        padding: 8px 10px;
-        background: #FAFAFA;
-        border: 1px solid var(--border-subtle);
-        margin-top: 8px;
-        border-radius: 8px;
-      }
-      .planner-add-input {
-        font-size: 16px !important; /* Ngăn iOS Safari tự phóng to màn hình khi gõ */
-        padding: 4px 0;
-      }
-      .planner-add-btn {
-        padding: 6px 10px;
-        font-size: 13px;
+      .btn-section-add {
+        width: 28px;
+        height: 28px;
         background: rgba(0, 0, 0, 0.04);
+        color: var(--text-primary);
+        margin-left: 6px;
         border-radius: 6px;
       }
-      .planner-submit-btn {
+      .planner-draft-item {
+        padding: 8px 10px;
+        min-height: 42px;
+      }
+      .planner-draft-input {
+        font-size: 16px !important; /* Ngăn iOS Safari tự phóng to màn hình khi gõ */
+      }
+      .planner-draft-submit-btn {
         width: 32px;
         height: 32px;
       }
@@ -4916,79 +4920,58 @@
         <!-- Morning Section -->
         <div class="planner-section" data-section="morning">
           <div class="planner-section-header">
-            <div class="planner-section-title">Morning</div>
+            <div class="planner-section-title">
+              <span>Morning</span>
+              <button type="button" class="btn-section-add" onclick="showInlineTaskInput('morning')" title="Thêm công việc buổi sáng" aria-label="Thêm việc">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
             <span id="plannerCount_morning" style="font-size: 12px; color: var(--text-muted);">0 việc</span>
           </div>
           <div id="plannerTaskList_morning" class="planner-task-list">
             <!-- Morning tasks -->
           </div>
-          <form class="planner-inline-add" onsubmit="event.preventDefault(); submitAddPlannerTask('morning'); return false;">
-            <button type="button" class="planner-add-btn" onclick="handlePlannerAddBtnClick('morning')">+ Thêm việc</button>
-            <input id="plannerInput_morning" class="planner-add-input" type="text"
-              placeholder="Thêm công việc buổi sáng..."
-              autocomplete="off"
-              enterkeyhint="done"
-              onkeydown="handlePlannerInputKeyDown(event, 'morning')"
-              onkeyup="handlePlannerInputKeyUp(event, 'morning')"
-              oninput="updatePlannerSubmitBtnState('morning')">
-            <button type="submit" class="planner-submit-btn" id="plannerSubmitBtn_morning" title="Lưu công việc" aria-label="Lưu công việc">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </button>
-          </form>
         </div>
 
         <!-- Afternoon Section -->
         <div class="planner-section" data-section="afternoon">
           <div class="planner-section-header">
-            <div class="planner-section-title">Afternoon</div>
+            <div class="planner-section-title">
+              <span>Afternoon</span>
+              <button type="button" class="btn-section-add" onclick="showInlineTaskInput('afternoon')" title="Thêm công việc buổi chiều" aria-label="Thêm việc">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
             <span id="plannerCount_afternoon" style="font-size: 12px; color: var(--text-muted);">0 việc</span>
           </div>
           <div id="plannerTaskList_afternoon" class="planner-task-list">
             <!-- Afternoon tasks -->
           </div>
-          <form class="planner-inline-add" onsubmit="event.preventDefault(); submitAddPlannerTask('afternoon'); return false;">
-            <button type="button" class="planner-add-btn" onclick="handlePlannerAddBtnClick('afternoon')">+ Thêm việc</button>
-            <input id="plannerInput_afternoon" class="planner-add-input" type="text"
-              placeholder="Thêm công việc buổi chiều..."
-              autocomplete="off"
-              enterkeyhint="done"
-              onkeydown="handlePlannerInputKeyDown(event, 'afternoon')"
-              onkeyup="handlePlannerInputKeyUp(event, 'afternoon')"
-              oninput="updatePlannerSubmitBtnState('afternoon')">
-            <button type="submit" class="planner-submit-btn" id="plannerSubmitBtn_afternoon" title="Lưu công việc" aria-label="Lưu công việc">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </button>
-          </form>
         </div>
 
         <!-- Evening Section (Matches screenshot 2) -->
         <div class="planner-section" data-section="evening">
           <div class="planner-section-header">
-            <div class="planner-section-title">Evening</div>
+            <div class="planner-section-title">
+              <span>Evening</span>
+              <button type="button" class="btn-section-add" onclick="showInlineTaskInput('evening')" title="Thêm công việc buổi tối" aria-label="Thêm việc">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
             <span id="plannerCount_evening" style="font-size: 12px; color: var(--text-muted);">0 việc</span>
           </div>
           <div id="plannerTaskList_evening" class="planner-task-list">
             <!-- Evening tasks: e.g. [v] 1 câu trắc nghiệm toán cảnh -->
           </div>
-          <form class="planner-inline-add" onsubmit="event.preventDefault(); submitAddPlannerTask('evening'); return false;">
-            <button type="button" class="planner-add-btn" onclick="handlePlannerAddBtnClick('evening')">+ Thêm việc</button>
-            <input id="plannerInput_evening" class="planner-add-input" type="text"
-              placeholder="Thêm công việc buổi tối..."
-              autocomplete="off"
-              enterkeyhint="done"
-              onkeydown="handlePlannerInputKeyDown(event, 'evening')"
-              onkeyup="handlePlannerInputKeyUp(event, 'evening')"
-              oninput="updatePlannerSubmitBtnState('evening')">
-            <button type="submit" class="planner-submit-btn" id="plannerSubmitBtn_evening" title="Lưu công việc" aria-label="Lưu công việc">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </button>
-          </form>
         </div>
 
       </div>
@@ -6035,6 +6018,7 @@
     let plannerData = { tasks: [], daysHistory: {}, activeTimer: null };
     let currentPlannerDate = new Date().toISOString().slice(0, 10);
     let currentPopoverTaskId = null;
+    let activeDraftSection = null;
     let serverClockSkew = 0; // Milliseconds offset: serverTime - clientLocalTime
 
     function updateServerClockSkew(serverTime, reqStart, reqEnd) {
@@ -6215,8 +6199,8 @@
           const isUserTyping = activeEl && (
             activeEl.classList?.contains('inline-task-title-input') ||
             activeEl.classList?.contains('inline-deadline-input') ||
-            activeEl.classList?.contains('planner-add-input') ||
-            activeEl.closest?.('.planner-inline-add')
+            activeEl.classList?.contains('planner-draft-input') ||
+            activeEl.closest?.('.planner-draft-item')
           );
           plannerData = freshData;
           if (!isUserTyping) {
@@ -6315,10 +6299,9 @@
         }
 
         if (listEl) {
-          if (secTasks.length === 0) {
-            listEl.innerHTML = ``;
-          } else {
-            listEl.innerHTML = secTasks.map(t => {
+          let tasksHtml = '';
+          if (secTasks.length > 0) {
+            tasksHtml = secTasks.map(t => {
               const isOverdue = checkIsOverdue(t, currentPlannerDate);
               const deadlineClass = isOverdue ? 'deadline-overdue' : 'deadline-upcoming';
               const taskStatus = t.status || (t.completed ? 'completed' : 'incomplete');
@@ -6379,8 +6362,43 @@
               `;
             }).join('');
           }
+
+          let draftHtml = '';
+          if (activeDraftSection === sec) {
+            draftHtml = `
+              <div class="planner-task-item planner-draft-item" id="plannerDraftRow_${sec}">
+                <div class="ypt-task-status-btn status-incomplete" style="opacity: 0.45; cursor: default;">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:block;"><rect x="1.5" y="1.5" width="13" height="13" rx="3.5" stroke="#D3D1CB" stroke-width="1.6" fill="#FFFFFF"/></svg>
+                </div>
+                <form class="planner-draft-form" onsubmit="event.preventDefault(); commitDraftTask('${sec}'); return false;">
+                  <input type="text"
+                         id="plannerDraftInput_${sec}"
+                         class="planner-draft-input"
+                         placeholder="Nhập việc cần làm..."
+                         autocomplete="off"
+                         enterkeyhint="done"
+                         onkeydown="handleDraftKeydown(event, '${sec}')"
+                         onblur="handleDraftBlur('${sec}')">
+                  <button type="submit" class="planner-draft-submit-btn" title="Lưu việc (Enter)" aria-label="Lưu công việc">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            `;
+          }
+
+          listEl.innerHTML = tasksHtml + draftHtml;
         }
       });
+
+      if (activeDraftSection) {
+        setTimeout(() => {
+          const inp = document.getElementById(`plannerDraftInput_${activeDraftSection}`);
+          if (inp && document.activeElement !== inp) inp.focus();
+        }, 20);
+      }
 
       // Update Calendar if open
       const calPanel = document.getElementById('yptCalendarPanel');
@@ -6631,56 +6649,62 @@
       }
     }
 
-    function focusPlannerInput(section) {
-      const input = document.getElementById(`plannerInput_${section}`);
-      if (input) {
-        input.focus();
-        updatePlannerSubmitBtnState(section);
+    function showInlineTaskInput(section) {
+      if (activeDraftSection === section) {
+        const inp = document.getElementById(`plannerDraftInput_${section}`);
+        if (inp && inp.value.trim().length > 0) {
+          commitDraftTask(section);
+          return;
+        }
+        activeDraftSection = null;
+        renderDailyPlannerPage();
+        return;
       }
+      activeDraftSection = section;
+      renderDailyPlannerPage();
+      setTimeout(() => {
+        const inp = document.getElementById(`plannerDraftInput_${section}`);
+        if (inp) inp.focus();
+      }, 20);
     }
 
-    function handlePlannerAddBtnClick(section) {
-      const input = document.getElementById(`plannerInput_${section}`);
-      if (input && input.value.trim().length > 0) {
-        submitAddPlannerTask(section);
-      } else {
-        focusPlannerInput(section);
+    function handleDraftKeydown(event, section) {
+      if (event.key === 'Escape') {
+        activeDraftSection = null;
+        renderDailyPlannerPage();
+        return;
       }
-    }
-
-    function updatePlannerSubmitBtnState(section) {
-      const input = document.getElementById(`plannerInput_${section}`);
-      const btn = document.getElementById(`plannerSubmitBtn_${section}`);
-      if (!input || !btn) return;
-      if (input.value.trim().length > 0) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    }
-
-    function handlePlannerInputKeyDown(event, section) {
       if (event.key === 'Enter' || event.keyCode === 13 || event.which === 13) {
         event.preventDefault();
-        submitAddPlannerTask(section);
+        commitDraftTask(section);
       }
     }
 
-    function handlePlannerInputKeyUp(event, section) {
-      updatePlannerSubmitBtnState(section);
-      if ((event.key === 'Enter' || event.keyCode === 13 || event.which === 13) && !event.isComposing) {
-        event.preventDefault();
-        submitAddPlannerTask(section);
-      }
+    function handleDraftBlur(section) {
+      setTimeout(() => {
+        const draftRow = document.getElementById(`plannerDraftRow_${section}`);
+        if (!draftRow) return;
+        if (draftRow.contains(document.activeElement)) return;
+        const inp = document.getElementById(`plannerDraftInput_${section}`);
+        if (!inp || !inp.value.trim()) {
+          if (activeDraftSection === section) {
+            activeDraftSection = null;
+            renderDailyPlannerPage();
+          }
+        }
+      }, 180);
     }
 
-    async function submitAddPlannerTask(section) {
-      const input = document.getElementById(`plannerInput_${section}`);
-      if (!input || !input.value.trim()) return;
+    async function commitDraftTask(section) {
+      const input = document.getElementById(`plannerDraftInput_${section}`);
+      if (!input || !input.value.trim()) {
+        activeDraftSection = null;
+        renderDailyPlannerPage();
+        return;
+      }
 
       const title = input.value.trim();
       input.value = '';
-      updatePlannerSubmitBtnState(section);
 
       isTaskMutating++;
       try {
@@ -6698,12 +6722,17 @@
         if (res.ok) {
           const data = await res.json();
           if (data.dailyPlanner) plannerData = data.dailyPlanner;
-          renderDailyPlannerPage();
           toast(`Đã thêm: ${title}`);
           if (window.innerWidth > 768) {
-            setTimeout(() => focusPlannerInput(section), 25);
+            activeDraftSection = section;
+            renderDailyPlannerPage();
+            setTimeout(() => {
+              const nextInp = document.getElementById(`plannerDraftInput_${section}`);
+              if (nextInp) nextInp.focus();
+            }, 25);
           } else {
-            if (input) input.blur();
+            activeDraftSection = null;
+            renderDailyPlannerPage();
           }
         } else {
           toast('Lỗi khi thêm công việc (máy chủ báo lỗi)');
@@ -9534,8 +9563,8 @@
               const isUserTyping = activeEl && (
                 activeEl.classList?.contains('inline-task-title-input') ||
                 activeEl.classList?.contains('inline-deadline-input') ||
-                activeEl.classList?.contains('planner-add-input') ||
-                activeEl.closest?.('.planner-inline-add')
+                activeEl.classList?.contains('planner-draft-input') ||
+                activeEl.closest?.('.planner-draft-item')
               );
               if (!isUserTyping && (wasRunning !== isRunningNow || taskChanged || tasksChanged || historyChanged)) {
                 renderDailyPlannerPage();

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-25T03:15:45.574Z",
+  "updatedAt": "2026-10-25T03:19:37.277Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -154,9 +154,9 @@
           "deadline": "",
           "completed": false,
           "status": "partial",
-          "spentSeconds": 40,
+          "spentSeconds": 185,
           "createdAt": "2026-10-25T02:52:08.334Z",
-          "updatedAt": 1792896837169,
+          "updatedAt": 1792898217826,
           "completedAt": null
         },
         {
@@ -167,9 +167,9 @@
           "deadline": "",
           "completed": false,
           "status": "incomplete",
-          "spentSeconds": 60,
+          "spentSeconds": 212,
           "createdAt": "2026-10-25T03:07:59.616Z",
-          "updatedAt": 1792898067549
+          "updatedAt": 1792898370787
         },
         {
           "id": "dp_1792897756297_i7zt",
@@ -210,20 +210,15 @@
           "maxFocusSeconds": 14985
         },
         "2026-10-25": {
-          "totalSeconds": 100,
-          "maxFocusSeconds": 52
+          "totalSeconds": 397,
+          "maxFocusSeconds": 152
         }
       },
       "deletedTasks": {
         "dp_1792897236545_2p98": 1792897241873
       },
-      "activeTimer": {
-        "taskId": "dp_1792896728334_hfxf",
-        "taskTitle": "hi",
-        "startedAt": 1792898072695,
-        "date": "2026-10-25"
-      },
-      "activeTimerChangedAt": 1792898072694
+      "activeTimer": null,
+      "activeTimerChangedAt": 1792898370787
     },
     "discordRpc": {
       "enabled": true,
@@ -233,13 +228,13 @@
       "stateFormat": "today_stats",
       "customState": "",
       "restTitle": "REST",
-      "largeImageStudy": "https://images.unsplash.chttps://i.pinimg.com/736x/41/92/64/41926416a06a75bb5dc9222cb05bb61e.jpgom/photo-1516321318423-f06f85e504b3?w=512&auto=format&fit=crop&q=80",
+      "largeImageStudy": "https://i.pinimg.com/736x/d1/2f/d7/d12fd7bd514608a985cb5499e9d452ca.jpg",
       "largeImageRest": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=512&auto=format&fit=crop&q=80",
-      "smallIconStudy": "https://i.pinimg.com/736x/d1/2f/d7/d12fd7bd514608a985cb5499e9d452ca.jpg",
+      "smallIconStudy": "https://i.pinimg.com/736x/a7/e3/33/a7e33371061d6520ca8a18df73961ed9.jpg",
       "smallIconRest": "https://cdn-icons-png.flaticon.com/512/924/924514.png",
-      "smallTextStudy": "Focusing",
+      "smallTextStudy": "Study is my only option",
       "smallTextRest": "Resting",
-      "largeText": "SAT 1600 Focus",
+      "largeText": "",
       "showTimer": true,
       "studyTitle": ""
     }
