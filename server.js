@@ -140,12 +140,13 @@ function cleanBaseName(filename = '') {
 }
 
 // Helper: Format standardized filename: [Done]? [DD.MM] [Subject] Clean_Name.pdf
-function formatFilename(baseName, deadlineTag, subject, isDone = false) {
-  const clean = cleanBaseName(baseName);
-  const subj = subject.toLowerCase() === 'math' ? 'Math' : 'Verbal';
+function formatFilename(baseName, deadlineTag, subject = 'Verbal', isDone = false) {
+  const clean = cleanBaseName(baseName || '');
+  const subj = (subject || 'Verbal').toLowerCase() === 'math' ? 'Math' : 'Verbal';
   const tag = (deadlineTag || '[17.10]').replace(/Hạn\s*/i, '').replace('-', '.');
   let result = `${tag} [${subj}] ${clean}`;
   if (isDone) result = `[Done] ${result}`;
+  return result.replace(/[<>:"/\\|?*]/g, '_').trim();
 }
  
 // Universal PDF path resolver (Local Windows disk + Repo data folder)
@@ -973,20 +974,28 @@ function fetchFile(url, destPath) {
 // Helper: Automatically download any items that have a URL but no file on disk
 async function autoDownloadMissingFiles() {
   for (const item of pdfStore.values()) {
-    if (item.url && (!item.localPath || !fs.existsSync(item.localPath))) {
-      const subj = item.subject || detectSubject(item.filename || item.title);
-      const destDir = subj === 'MATH' ? MATH_DIR : VERBAL_DIR;
-      const formattedName = formatFilename(item.filename || item.title, item.deadlineTag, subj);
-      const destPath = path.join(destDir, formattedName);
-      try {
+    try {
+      const existing = resolveLocalPdfPath(item);
+      if (existing && fs.existsSync(existing)) {
+        item.localPath = existing;
+        item.downloaded = true;
+        continue;
+      }
+      if (item.url && item.url.startsWith('http')) {
+        const subj = (item.subject || detectSubject(item.filename || item.title) || 'VERBAL').toUpperCase();
+        const destDir = subj === 'MATH' ? MATH_DIR : VERBAL_DIR;
+        const formattedName = formatFilename(item.filename || item.title, item.deadlineTag, subj);
+        if (!destDir || !formattedName) continue;
+        const destPath = path.join(destDir, formattedName);
         await fetchFile(item.url, destPath);
         item.localPath = destPath;
         item.downloaded = true;
         item.filename = formattedName;
         saveDatabase();
         console.log(`[+]  ${cleanBaseName(formattedName)} [${subj}] ${item.deadlineTag || ''}`);
-      } catch (err) {
       }
+    } catch (err) {
+      // Non-blocking safe catch
     }
   }
 }
