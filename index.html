@@ -2855,9 +2855,14 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 10px;
-      margin-top: 4px;
-      border-radius: 4px;
+      padding: 6px 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      transition: background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .planner-inline-add:focus-within {
+      background: rgba(0, 0, 0, 0.02);
     }
 
     .planner-add-input {
@@ -2868,7 +2873,8 @@
       font-family: inherit;
       outline: none;
       flex: 1;
-      padding: 4px 0;
+      padding: 5px 0;
+      min-width: 0;
     }
 
     .planner-add-input::placeholder {
@@ -2878,21 +2884,88 @@
     .planner-add-btn {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 5px;
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 14px;
+      font-size: 13.5px;
+      font-weight: 500;
       font-family: inherit;
       cursor: pointer;
       padding: 5px 8px;
-      border-radius: 3px;
-      transition: all 0.12s ease;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     .planner-add-btn:hover {
       background: var(--bg-hover);
       color: var(--text-primary);
+    }
+
+    .planner-add-btn:active {
+      transform: scale(0.97);
+    }
+
+    .planner-submit-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: none;
+      background: #2563EB;
+      color: #FFFFFF;
+      cursor: pointer;
+      flex-shrink: 0;
+      opacity: 0.35;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .planner-submit-btn.active {
+      opacity: 1;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+      transform: scale(1.02);
+    }
+
+    .planner-submit-btn:hover {
+      opacity: 1;
+      background: #1D4ED8;
+    }
+
+    .planner-submit-btn:active {
+      transform: scale(0.95);
+    }
+
+    @media (max-width: 768px) {
+      .planner-inline-add {
+        padding: 8px 10px;
+        background: #FAFAFA;
+        border: 1px solid var(--border-subtle);
+        margin-top: 8px;
+        border-radius: 8px;
+      }
+      .planner-add-input {
+        font-size: 16px !important; /* Ngăn iOS Safari tự phóng to màn hình khi gõ */
+        padding: 4px 0;
+      }
+      .planner-add-btn {
+        padding: 6px 10px;
+        font-size: 13px;
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 6px;
+      }
+      .planner-submit-btn {
+        width: 32px;
+        height: 32px;
+      }
     }
 
     /* ========================================================
@@ -4849,12 +4922,21 @@
           <div id="plannerTaskList_morning" class="planner-task-list">
             <!-- Morning tasks -->
           </div>
-          <div class="planner-inline-add">
-            <span class="planner-add-btn" onclick="focusPlannerInput('morning')">+ Thêm việc</span>
+          <form class="planner-inline-add" onsubmit="event.preventDefault(); submitAddPlannerTask('morning'); return false;">
+            <button type="button" class="planner-add-btn" onclick="handlePlannerAddBtnClick('morning')">+ Thêm việc</button>
             <input id="plannerInput_morning" class="planner-add-input" type="text"
               placeholder="Thêm công việc buổi sáng..."
-              onkeydown="if(event.key==='Enter') submitAddPlannerTask('morning')">
-          </div>
+              autocomplete="off"
+              enterkeyhint="done"
+              onkeydown="handlePlannerInputKeyDown(event, 'morning')"
+              onkeyup="handlePlannerInputKeyUp(event, 'morning')"
+              oninput="updatePlannerSubmitBtnState('morning')">
+            <button type="submit" class="planner-submit-btn" id="plannerSubmitBtn_morning" title="Lưu công việc" aria-label="Lưu công việc">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+          </form>
         </div>
 
         <!-- Afternoon Section -->
@@ -4866,12 +4948,21 @@
           <div id="plannerTaskList_afternoon" class="planner-task-list">
             <!-- Afternoon tasks -->
           </div>
-          <div class="planner-inline-add">
-            <span class="planner-add-btn" onclick="focusPlannerInput('afternoon')">+ Thêm việc</span>
+          <form class="planner-inline-add" onsubmit="event.preventDefault(); submitAddPlannerTask('afternoon'); return false;">
+            <button type="button" class="planner-add-btn" onclick="handlePlannerAddBtnClick('afternoon')">+ Thêm việc</button>
             <input id="plannerInput_afternoon" class="planner-add-input" type="text"
               placeholder="Thêm công việc buổi chiều..."
-              onkeydown="if(event.key==='Enter') submitAddPlannerTask('afternoon')">
-          </div>
+              autocomplete="off"
+              enterkeyhint="done"
+              onkeydown="handlePlannerInputKeyDown(event, 'afternoon')"
+              onkeyup="handlePlannerInputKeyUp(event, 'afternoon')"
+              oninput="updatePlannerSubmitBtnState('afternoon')">
+            <button type="submit" class="planner-submit-btn" id="plannerSubmitBtn_afternoon" title="Lưu công việc" aria-label="Lưu công việc">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+          </form>
         </div>
 
         <!-- Evening Section (Matches screenshot 2) -->
@@ -4883,12 +4974,21 @@
           <div id="plannerTaskList_evening" class="planner-task-list">
             <!-- Evening tasks: e.g. [v] 1 câu trắc nghiệm toán cảnh -->
           </div>
-          <div class="planner-inline-add">
-            <span class="planner-add-btn" onclick="focusPlannerInput('evening')">+ Thêm việc</span>
+          <form class="planner-inline-add" onsubmit="event.preventDefault(); submitAddPlannerTask('evening'); return false;">
+            <button type="button" class="planner-add-btn" onclick="handlePlannerAddBtnClick('evening')">+ Thêm việc</button>
             <input id="plannerInput_evening" class="planner-add-input" type="text"
               placeholder="Thêm công việc buổi tối..."
-              onkeydown="if(event.key==='Enter') submitAddPlannerTask('evening')">
-          </div>
+              autocomplete="off"
+              enterkeyhint="done"
+              onkeydown="handlePlannerInputKeyDown(event, 'evening')"
+              onkeyup="handlePlannerInputKeyUp(event, 'evening')"
+              oninput="updatePlannerSubmitBtnState('evening')">
+            <button type="submit" class="planner-submit-btn" id="plannerSubmitBtn_evening" title="Lưu công việc" aria-label="Lưu công việc">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+          </form>
         </div>
 
       </div>
@@ -6115,7 +6215,8 @@
           const isUserTyping = activeEl && (
             activeEl.classList?.contains('inline-task-title-input') ||
             activeEl.classList?.contains('inline-deadline-input') ||
-            activeEl.classList?.contains('planner-add-input')
+            activeEl.classList?.contains('planner-add-input') ||
+            activeEl.closest?.('.planner-inline-add')
           );
           plannerData = freshData;
           if (!isUserTyping) {
@@ -6532,7 +6633,45 @@
 
     function focusPlannerInput(section) {
       const input = document.getElementById(`plannerInput_${section}`);
-      if (input) input.focus();
+      if (input) {
+        input.focus();
+        updatePlannerSubmitBtnState(section);
+      }
+    }
+
+    function handlePlannerAddBtnClick(section) {
+      const input = document.getElementById(`plannerInput_${section}`);
+      if (input && input.value.trim().length > 0) {
+        submitAddPlannerTask(section);
+      } else {
+        focusPlannerInput(section);
+      }
+    }
+
+    function updatePlannerSubmitBtnState(section) {
+      const input = document.getElementById(`plannerInput_${section}`);
+      const btn = document.getElementById(`plannerSubmitBtn_${section}`);
+      if (!input || !btn) return;
+      if (input.value.trim().length > 0) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+
+    function handlePlannerInputKeyDown(event, section) {
+      if (event.key === 'Enter' || event.keyCode === 13 || event.which === 13) {
+        event.preventDefault();
+        submitAddPlannerTask(section);
+      }
+    }
+
+    function handlePlannerInputKeyUp(event, section) {
+      updatePlannerSubmitBtnState(section);
+      if ((event.key === 'Enter' || event.keyCode === 13 || event.which === 13) && !event.isComposing) {
+        event.preventDefault();
+        submitAddPlannerTask(section);
+      }
     }
 
     async function submitAddPlannerTask(section) {
@@ -6541,6 +6680,7 @@
 
       const title = input.value.trim();
       input.value = '';
+      updatePlannerSubmitBtnState(section);
 
       isTaskMutating++;
       try {
@@ -6559,10 +6699,18 @@
           const data = await res.json();
           if (data.dailyPlanner) plannerData = data.dailyPlanner;
           renderDailyPlannerPage();
-          setTimeout(() => focusPlannerInput(section), 25);
+          toast(`Đã thêm: ${title}`);
+          if (window.innerWidth > 768) {
+            setTimeout(() => focusPlannerInput(section), 25);
+          } else {
+            if (input) input.blur();
+          }
+        } else {
+          toast('Lỗi khi thêm công việc (máy chủ báo lỗi)');
         }
       } catch (err) {
         console.error('Lỗi thêm task:', err);
+        toast('Lỗi kết nối khi thêm công việc');
       } finally {
         isTaskMutating--;
       }
@@ -6906,7 +7054,7 @@
       };
 
       input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' || e.keyCode === 13 || e.which === 13) {
           e.preventDefault();
           commit();
         } else if (e.key === 'Escape') {
@@ -9386,7 +9534,8 @@
               const isUserTyping = activeEl && (
                 activeEl.classList?.contains('inline-task-title-input') ||
                 activeEl.classList?.contains('inline-deadline-input') ||
-                activeEl.classList?.contains('planner-add-input')
+                activeEl.classList?.contains('planner-add-input') ||
+                activeEl.closest?.('.planner-inline-add')
               );
               if (!isUserTyping && (wasRunning !== isRunningNow || taskChanged || tasksChanged || historyChanged)) {
                 renderDailyPlannerPage();
