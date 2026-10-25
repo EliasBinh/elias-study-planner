@@ -217,18 +217,83 @@ function loadDatabase() {
   }
 }
 
-// Helper: Save database
-function saveDatabase() {
+// Helper: Save database (Atomic Write + Debounced Dirty Flush)
+// Atomic Write: Writes to a temp file first, then renames it to the real path.
+// This guarantees the original file is never corrupted even if the process crashes mid-write.
+// Debounced Flush: Coalesces rapid successive saves into a single disk write after 500ms of quiet.
+let _dbDirty = false;
+let _dbFlushTimer = null;
+
+function _buildDatabasePayload() {
+  return {
+    updatedAt: new Date().toISOString(),
+    settings: appSettings,
+    items: Array.from(pdfStore.values()),
+    todos: Array.from(todoStore.values())
+  };
+}
+
+function _atomicWriteSync(filePath, content) {
+  const tmpPath = filePath + '.tmp';
+  fs.writeFileSync(tmpPath, content, 'utf-8');
+  fs.renameSync(tmpPath, filePath);
+}
+
+function _flushDatabase() {
   try {
-    const data = {
-      updatedAt: new Date().toISOString(),
-      settings: appSettings,
-      items: Array.from(pdfStore.values()),
-      todos: Array.from(todoStore.values())
-    };
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    const content = JSON.stringify(_buildDatabasePayload(), null, 2);
+    _atomicWriteSync(DB_FILE, content);
+    _dbDirty = false;
   } catch (err) {
     console.error('[DB] Lỗi lưu database:', err.message);
+  }
+}
+
+function saveDatabase() {
+  _dbDirty = true;
+  if (!_dbFlushTimer) {
+    _dbFlushTimer = setTimeout(() => {
+      _dbFlushTimer = null;
+      if (_dbDirty) _flushDatabase();
+    }, 500);
+  }
+}
+
+// Ensure data is flushed on clean shutdown
+function flushDatabaseSync() {
+  if (_dbFlushTimer) {
+    clearTimeout(_dbFlushTimer);
+    _dbFlushTimer = null;
+  }
+  if (_dbDirty) _flushDatabase();
+}
+process.on('SIGINT', () => { flushDatabaseSync(); process.exit(0); });
+process.on('SIGTERM', () => { flushDatabaseSync(); process.exit(0); });
+process.on('exit', () => { flushDatabaseSync(); });
+
+// ========== SSE (Server-Sent Events) Real-Time Push ==========
+const sseClients = new Set();
+
+function broadcastPlannerUpdate() {
+  if (sseClients.size === 0) return;
+  const filteredTasks = (appSettings.dailyPlanner?.tasks || []).filter(item => {
+    const delTime = appSettings.dailyPlanner?.deletedTasks?.[item.id];
+    if (!delTime) return true;
+    const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+    return taskUpdated > delTime;
+  });
+  const payload = {
+    type: 'PLANNER_UPDATE',
+    dailyPlanner: {
+      ...appSettings.dailyPlanner,
+      tasks: filteredTasks
+    },
+    habits: appSettings.habits,
+    serverTime: getCanonicalNow()
+  };
+  const msg = `data: ${JSON.stringify(payload)}\n\n`;
+  for (const client of sseClients) {
+    try { client.write(msg); } catch (e) { sseClients.delete(client); }
   }
 }
 
@@ -1302,6 +1367,35 @@ setInterval(() => {
 // HTTP Server
 const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
+
+  // 0. SSE: Real-Time Push Endpoint
+  if (parsedUrl.pathname === '/api/events') {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*'
+    });
+    // Send initial state immediately so client is in sync from the start
+    const filteredTasks = (appSettings.dailyPlanner?.tasks || []).filter(item => {
+      const delTime = appSettings.dailyPlanner?.deletedTasks?.[item.id];
+      if (!delTime) return true;
+      const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+      return taskUpdated > delTime;
+    });
+    const initPayload = {
+      type: 'PLANNER_UPDATE',
+      dailyPlanner: { ...appSettings.dailyPlanner, tasks: filteredTasks },
+      habits: appSettings.habits,
+      serverTime: getCanonicalNow()
+    };
+    res.write(`data: ${JSON.stringify(initPayload)}\n\n`);
+    sseClients.add(res);
+    // Send heartbeat every 30s to keep connection alive through proxies
+    const heartbeat = setInterval(() => { try { res.write(': heartbeat\n\n'); } catch(e) {} }, 30000);
+    req.on('close', () => { sseClients.delete(res); clearInterval(heartbeat); });
+    return;
+  }
 
   // 1. API: List detected PDFs & stats & settings
   if (parsedUrl.pathname === '/api/list') {
@@ -2434,6 +2528,7 @@ async function runBatchFetchSafe() {
 
           appSettings.habits.changedAt = Date.now();
           saveDatabase();
+          broadcastPlannerUpdate();
           if (typeof triggerCloudSync === 'function') triggerCloudSync();
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({ success: true, habits: appSettings.habits }));
@@ -2628,6 +2723,7 @@ async function runBatchFetchSafe() {
 
           syncDiscordPresenceFromActiveTimer(true);
           saveDatabase();
+          broadcastPlannerUpdate();
           if (typeof triggerCloudSync === 'function') triggerCloudSync();
 
           const filteredTasks = (appSettings.dailyPlanner.tasks || []).filter(item => {
@@ -3064,6 +3160,7 @@ async function triggerCloudSync() {
 
         if (changed) {
           saveDatabase();
+          broadcastPlannerUpdate();
         }
       }
     }

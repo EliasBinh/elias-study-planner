@@ -9354,7 +9354,74 @@
 
     setInterval(loadData, 2000); // 2s Real-time Multi-Device Sync (phone <-> laptop)
     setInterval(updateYptLiveTimers, 1000); // 1s live YPT stopwatch
-    setInterval(() => loadDailyPlanner(false), 1200); // 1.2s Real-time sync for Daily Planner
+
+    // ========== SSE (Server-Sent Events): Real-Time Push from Server ==========
+    // Instead of polling every 1.2s, we open a persistent connection.
+    // Server pushes updates instantly (<50ms) whenever data actually changes.
+    // A 10s fallback poll remains as safety net if SSE disconnects.
+    let _sseConnected = false;
+    function connectSSE() {
+      try {
+        const evtSource = new EventSource('/api/events');
+        evtSource.onopen = () => {
+          _sseConnected = true;
+          console.log('[SSE] Connected — real-time push active');
+        };
+        evtSource.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'PLANNER_UPDATE' && !isTimerSwitching && isTaskMutating === 0) {
+              if (data.serverTime) {
+                // SSE has no RTT, use current time directly
+                updateServerClockSkew(data.serverTime, Date.now(), Date.now());
+              }
+              const wasRunning = !!plannerData.activeTimer;
+              const isRunningNow = !!data.dailyPlanner?.activeTimer;
+              const taskChanged = plannerData.activeTimer?.taskId !== data.dailyPlanner?.activeTimer?.taskId;
+              const tasksChanged = JSON.stringify(plannerData.tasks || []) !== JSON.stringify(data.dailyPlanner?.tasks || []);
+              const historyChanged = JSON.stringify(plannerData.daysHistory || {}) !== JSON.stringify(data.dailyPlanner?.daysHistory || {});
+
+              plannerData = data.dailyPlanner;
+              const activeEl = document.activeElement;
+              const isUserTyping = activeEl && (
+                activeEl.classList?.contains('inline-task-title-input') ||
+                activeEl.classList?.contains('inline-deadline-input') ||
+                activeEl.classList?.contains('planner-add-input')
+              );
+              if (!isUserTyping && (wasRunning !== isRunningNow || taskChanged || tasksChanged || historyChanged)) {
+                renderDailyPlannerPage();
+              }
+              updateYptLiveTimers();
+
+              // Also update habits if present
+              if (data.habits) {
+                const habitsStr = JSON.stringify(data.habits);
+                if (habitsStr !== JSON.stringify(habitsData)) {
+                  habitsData = data.habits;
+                  if (currentPage === 'habits' && !isUserTyping) {
+                    renderHabitsPage();
+                  }
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('[SSE] Parse error:', e);
+          }
+        };
+        evtSource.onerror = () => {
+          _sseConnected = false;
+          evtSource.close();
+          console.warn('[SSE] Disconnected — fallback to polling. Reconnecting in 3s...');
+          setTimeout(connectSSE, 3000);
+        };
+      } catch (e) {
+        console.warn('[SSE] Not supported, using polling fallback');
+      }
+    }
+    connectSSE();
+
+    // Fallback poll: only runs every 10s as safety net when SSE is active
+    setInterval(() => { if (!_sseConnected) loadDailyPlanner(false); }, 10000);
 
     // On Cloud / Mobile: default to Daily Plan so user lands directly on tasks
     const defaultPage = isCloudHost ? 'planner' : 'sat';
