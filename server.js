@@ -81,7 +81,9 @@ let appSettings = {
       { id: 'h_5', title: 'Học môn trên trường', category: 'School' },
       { id: 'h_6', title: 'Kỷ luật bản thân (Không fap/lọ)', category: 'Discipline' }
     ],
-    history: {}
+    history: {},
+    deletedHabits: {},
+    changedAt: 0
   },
   dailyPlanner: {
     tasks: [
@@ -218,7 +220,12 @@ function loadDatabase() {
           skippedNoPdf: Array.isArray(data.settings.skippedNoPdf) ? data.settings.skippedNoPdf : [],
           manualFileGroups: (typeof data.settings.manualFileGroups === 'object' && data.settings.manualFileGroups !== null) ? data.settings.manualFileGroups : {},
           customTopicFolders: Array.isArray(data.settings.customTopicFolders) ? data.settings.customTopicFolders : [],
-          habits: data.settings.habits || appSettings.habits,
+          habits: {
+            list: Array.isArray(data.settings?.habits?.list) ? data.settings.habits.list : (appSettings.habits?.list || []),
+            history: (typeof data.settings?.habits?.history === 'object' && data.settings?.habits?.history !== null) ? data.settings.habits.history : {},
+            deletedHabits: (typeof data.settings?.habits?.deletedHabits === 'object' && data.settings?.habits?.deletedHabits !== null) ? data.settings.habits.deletedHabits : {},
+            changedAt: data.settings?.habits?.changedAt || 0
+          },
           dailyPlanner: {
             tasks: Array.isArray(data.settings?.dailyPlanner?.tasks) ? data.settings.dailyPlanner.tasks : (appSettings.dailyPlanner?.tasks || []),
             daysHistory: (typeof data.settings?.dailyPlanner?.daysHistory === 'object' && data.settings.dailyPlanner.daysHistory !== null) ? data.settings.dailyPlanner.daysHistory : (appSettings.dailyPlanner?.daysHistory || {}),
@@ -292,7 +299,23 @@ function _buildDatabasePayload() {
 function _atomicWriteSync(filePath, content) {
   const tmpPath = filePath + '.tmp';
   fs.writeFileSync(tmpPath, content, 'utf-8');
-  fs.renameSync(tmpPath, filePath);
+  try {
+    fs.renameSync(tmpPath, filePath);
+  } catch (err) {
+    // Windows file locking fallback (EPERM, EBUSY, EEXIST)
+    if (['EPERM', 'EBUSY', 'EEXIST'].includes(err.code)) {
+      try {
+        fs.copyFileSync(tmpPath, filePath);
+        try { fs.unlinkSync(tmpPath); } catch (_) {}
+        return;
+      } catch (copyErr) {
+        fs.writeFileSync(filePath, content, 'utf-8');
+        try { fs.unlinkSync(tmpPath); } catch (_) {}
+        return;
+      }
+    }
+    throw err;
+  }
 }
 
 function _flushDatabase() {
@@ -302,6 +325,14 @@ function _flushDatabase() {
     _dbDirty = false;
   } catch (err) {
     console.error('[DB] Lỗi lưu database:', err.message);
+    // Keep dirty flag and re-schedule retry so changes are never silently lost
+    _dbDirty = true;
+    if (!_dbFlushTimer) {
+      _dbFlushTimer = setTimeout(() => {
+        _dbFlushTimer = null;
+        if (_dbDirty) _flushDatabase();
+      }, 2000);
+    }
   }
 }
 
@@ -326,6 +357,16 @@ function flushDatabaseSync() {
 process.on('SIGINT', () => { flushDatabaseSync(); process.exit(0); });
 process.on('SIGTERM', () => { flushDatabaseSync(); process.exit(0); });
 process.on('exit', () => { flushDatabaseSync(); });
+
+// Global Fault-Tolerant Process Error Shield (Keeps backend 100% resilient & 24/7 online)
+process.on('uncaughtException', (err) => {
+  console.error(`[Server Fault Shield] Uncaught Exception at ${new Date().toISOString()}:`, err);
+  try { flushDatabaseSync(); } catch (_) {}
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error(`[Server Fault Shield] Unhandled Rejection at ${new Date().toISOString()}:`, reason);
+});
 
 // ========== SSE (Server-Sent Events) Real-Time Push ==========
 const sseClients = new Set();
@@ -447,30 +488,83 @@ function mergePlannerTasks(localPlanner, incomingPlanner) {
   return changed;
 }
 
-// Top-Level Helper: Conflict-Free Habits Merge
+// Top-Level Helper: Conflict-Free Habits Merge (LWW + Tombstones + Date-Union History)
 function mergeHabits(localHabits, incomingHabits) {
-  if (!incomingHabits) return false;
+  if (!incomingHabits || typeof incomingHabits !== 'object') return false;
+  if (!localHabits || typeof localHabits !== 'object') return false;
+
   let changed = false;
+  if (!localHabits.list) localHabits.list = [];
+  if (!localHabits.history) localHabits.history = {};
+  if (!localHabits.deletedHabits) localHabits.deletedHabits = {};
+
+  // 1. Merge deletedHabits tombstones (newest timestamp wins)
+  const incDeleted = incomingHabits.deletedHabits || {};
+  for (const [delId, delTime] of Object.entries(incDeleted)) {
+    if ((localHabits.deletedHabits[delId] || 0) < delTime) {
+      localHabits.deletedHabits[delId] = delTime;
+      changed = true;
+    }
+  }
+
+  // Prune tombstones older than 14 days
+  const FOURTEEN_DAYS = 14 * 24 * 3600 * 1000;
+  const now = Date.now();
+  for (const [delId, delTime] of Object.entries(localHabits.deletedHabits)) {
+    if (now - delTime > FOURTEEN_DAYS) {
+      delete localHabits.deletedHabits[delId];
+    }
+  }
+
+  // 2. Remove locally active habits that were deleted remotely
+  const prevCount = localHabits.list.length;
+  localHabits.list = localHabits.list.filter(h => !localHabits.deletedHabits[h.id]);
+  if (localHabits.list.length !== prevCount) changed = true;
+
+  // Purge deleted habits from local history
+  for (const d of Object.keys(localHabits.history)) {
+    const beforeLen = (localHabits.history[d] || []).length;
+    localHabits.history[d] = (localHabits.history[d] || []).filter(id => !localHabits.deletedHabits[id]);
+    if (localHabits.history[d].length !== beforeLen) changed = true;
+  }
+
+  // 3. Merge incoming habit list
   const incChangedAt = incomingHabits.changedAt || 0;
   const localChangedAt = localHabits.changedAt || 0;
+  const incomingList = Array.isArray(incomingHabits.list) ? incomingHabits.list : [];
 
   if (incChangedAt > localChangedAt) {
-    if (incomingHabits.list) localHabits.list = incomingHabits.list;
-    if (incomingHabits.history) localHabits.history = incomingHabits.history;
+    // Incoming is newer: adopt incoming list (filtering out any deleted ones)
+    const validIncoming = incomingList.filter(h => h && h.id && !localHabits.deletedHabits[h.id]);
+    if (JSON.stringify(validIncoming) !== JSON.stringify(localHabits.list)) {
+      localHabits.list = validIncoming;
+      changed = true;
+    }
     localHabits.changedAt = incChangedAt;
-    changed = true;
-  } else if (localChangedAt === 0 && incChangedAt === 0) {
-    const incHist = incomingHabits.history || {};
-    if (!localHabits.history) localHabits.history = {};
-    for (const [d, arr] of Object.entries(incHist)) {
-      const localArr = localHabits.history[d] || [];
-      const merged = Array.from(new Set([...localArr, ...arr]));
-      if (merged.length !== localArr.length) {
-        localHabits.history[d] = merged;
+  } else {
+    // Local is newer or equal: add any brand-new habits from incoming that aren't deleted
+    for (const incH of incomingList) {
+      if (!incH || !incH.id || localHabits.deletedHabits[incH.id]) continue;
+      if (!localHabits.list.some(h => h.id === incH.id)) {
+        localHabits.list.push({ ...incH });
         changed = true;
       }
     }
   }
+
+  // 4. Merge history intelligently per-date (Date-Union Merge, never overwrite and lose checked days)
+  const incHistory = incomingHabits.history || {};
+  for (const [d, arr] of Object.entries(incHistory)) {
+    if (!Array.isArray(arr)) continue;
+    const localArr = localHabits.history[d] || [];
+    const filteredIncoming = arr.filter(id => !localHabits.deletedHabits[id]);
+    const merged = Array.from(new Set([...localArr, ...filteredIncoming]));
+    if (merged.length !== localArr.length) {
+      localHabits.history[d] = merged;
+      changed = true;
+    }
+  }
+
   return changed;
 }
 
@@ -2550,9 +2644,12 @@ async function runBatchFetchSafe() {
           { id: 'h_5', title: 'Học môn trên trường', category: 'School' },
           { id: 'h_6', title: 'Kỷ luật bản thân (Không fap/lọ)', category: 'Discipline' }
         ],
-        history: {}
+        history: {},
+        deletedHabits: {},
+        changedAt: 0
       };
     }
+    if (!appSettings.habits.deletedHabits) appSettings.habits.deletedHabits = {};
 
     if (req.method === 'POST') {
       let body = '';
@@ -2567,30 +2664,54 @@ async function runBatchFetchSafe() {
             if (!appSettings.habits.history) appSettings.habits.history = {};
             if (!Array.isArray(appSettings.habits.history[d])) appSettings.habits.history[d] = [];
 
-            const idx = appSettings.habits.history[d].indexOf(id);
+            const habitId = String(id);
+            const idx = appSettings.habits.history[d].indexOf(habitId);
             if (idx >= 0) {
               appSettings.habits.history[d].splice(idx, 1);
             } else {
-              appSettings.habits.history[d].push(id);
+              appSettings.habits.history[d].push(habitId);
             }
           } else if (action === 'add' && title && title.trim()) {
+            const newId = 'h_' + Date.now();
+            if (appSettings.habits.deletedHabits && appSettings.habits.deletedHabits[newId]) {
+              delete appSettings.habits.deletedHabits[newId];
+            }
             const newHabit = {
-              id: 'h_' + Date.now(),
+              id: newId,
               title: title.trim(),
               category: (category || 'Chung').trim()
             };
+            if (!Array.isArray(appSettings.habits.list)) appSettings.habits.list = [];
             appSettings.habits.list.push(newHabit);
           } else if (action === 'edit' && id) {
-            const h = appSettings.habits.list.find(item => item.id === id);
+            const habitId = String(id);
+            const h = (appSettings.habits.list || []).find(item => String(item.id) === habitId);
             if (h) {
               if (title) h.title = title.trim();
               if (category) h.category = category.trim();
             }
           } else if (action === 'delete' && id) {
-            appSettings.habits.list = appSettings.habits.list.filter(item => item.id !== id);
+            const habitId = String(id);
+            if (!appSettings.habits.deletedHabits) appSettings.habits.deletedHabits = {};
+            appSettings.habits.deletedHabits[habitId] = Date.now();
+            appSettings.habits.list = (appSettings.habits.list || []).filter(item => String(item.id) !== habitId);
             for (const d of Object.keys(appSettings.habits.history || {})) {
-              appSettings.habits.history[d] = (appSettings.habits.history[d] || []).filter(item => item !== id);
+              appSettings.habits.history[d] = (appSettings.habits.history[d] || []).filter(item => String(item) !== habitId);
             }
+          } else if (action === 'reorder' && Array.isArray(parsed.orderedIds)) {
+            const idMap = new Map((appSettings.habits.list || []).map(h => [String(h.id), h]));
+            const newList = [];
+            for (const oId of parsed.orderedIds) {
+              const item = idMap.get(String(oId));
+              if (item) {
+                newList.push(item);
+                idMap.delete(String(oId));
+              }
+            }
+            for (const remaining of idMap.values()) {
+              newList.push(remaining);
+            }
+            appSettings.habits.list = newList;
           }
 
           appSettings.habits.changedAt = Date.now();
@@ -2786,6 +2907,27 @@ async function runBatchFetchSafe() {
             }
             appSettings.dailyPlanner.deletedTasks[id] = now;
             appSettings.dailyPlanner.tasks = appSettings.dailyPlanner.tasks.filter(item => item.id !== id);
+          } else if (action === 'reorder' && Array.isArray(parsed.orderedIds)) {
+            const idMap = new Map((appSettings.dailyPlanner.tasks || []).map(t => [String(t.id), t]));
+            if (parsed.movedTaskId && parsed.newSection) {
+              const moved = idMap.get(String(parsed.movedTaskId));
+              if (moved) {
+                moved.section = parsed.newSection;
+                moved.updatedAt = getCanonicalNow();
+              }
+            }
+            const newTasks = [];
+            for (const oId of parsed.orderedIds) {
+              const item = idMap.get(String(oId));
+              if (item) {
+                newTasks.push(item);
+                idMap.delete(String(oId));
+              }
+            }
+            for (const remaining of idMap.values()) {
+              newTasks.push(remaining);
+            }
+            appSettings.dailyPlanner.tasks = newTasks;
           }
 
           syncDiscordPresenceFromActiveTimer(true);

@@ -1277,8 +1277,9 @@
       justify-content: center;
     }
 
-    .modal-overlay.active {
-      display: flex;
+    .modal-overlay.active,
+    .modal-overlay.show {
+      display: flex !important;
     }
 
     .modal-card {
@@ -2529,6 +2530,73 @@
       transform: translateY(-1px);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
       filter: brightness(0.97);
+    }
+
+    /* Notion-style 6-dot Drag Handles */
+    .task-drag-handle,
+    .habit-drag-handle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 22px;
+      color: #9B9A97;
+      opacity: 0.25;
+      cursor: grab;
+      border-radius: 3px;
+      transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+      flex-shrink: 0;
+      user-select: none;
+      margin-right: -4px;
+    }
+
+    .planner-task-item:hover .task-drag-handle,
+    .habit-table tr:hover .habit-drag-handle {
+      opacity: 0.85;
+    }
+
+    .task-drag-handle:hover,
+    .habit-drag-handle:hover {
+      opacity: 1 !important;
+      color: #37352F;
+      background: rgba(55, 53, 47, 0.08);
+    }
+
+    .task-drag-handle:active,
+    .habit-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    /* Dragging ghost styling */
+    .planner-task-item.is-dragging,
+    .habit-table tr.is-dragging {
+      opacity: 0.35;
+      background: rgba(35, 131, 226, 0.08) !important;
+    }
+
+    /* Drop indicator lines */
+    .planner-task-item.drag-over-top {
+      border-top: 2px solid var(--notion-blue, #2383E2) !important;
+    }
+
+    .planner-task-item.drag-over-bottom {
+      border-bottom: 2px solid var(--notion-blue, #2383E2) !important;
+    }
+
+    .habit-table tr.drag-over-top td {
+      border-top: 2px solid var(--notion-blue, #2383E2) !important;
+    }
+
+    .habit-table tr.drag-over-bottom td {
+      border-bottom: 2px solid var(--notion-blue, #2383E2) !important;
+    }
+
+    .planner-task-list.drag-over-empty {
+      background: rgba(35, 131, 226, 0.04);
+      outline: 1.5px dashed var(--notion-blue, #2383E2);
+      outline-offset: -2px;
+      border-radius: 6px;
+      min-height: 44px;
     }
 
     /* Notion Floating Category Popover Menu */
@@ -4931,7 +4999,10 @@
             </div>
             <span id="plannerCount_morning" style="font-size: 12px; color: var(--text-muted);">0 việc</span>
           </div>
-          <div id="plannerTaskList_morning" class="planner-task-list">
+          <div id="plannerTaskList_morning" class="planner-task-list"
+               ondragover="handleSectionListDragOver(event, 'morning')"
+               ondragleave="handleSectionListDragLeave(event, 'morning')"
+               ondrop="handleSectionListDrop(event, 'morning')">
             <!-- Morning tasks -->
           </div>
         </div>
@@ -4950,7 +5021,10 @@
             </div>
             <span id="plannerCount_afternoon" style="font-size: 12px; color: var(--text-muted);">0 việc</span>
           </div>
-          <div id="plannerTaskList_afternoon" class="planner-task-list">
+          <div id="plannerTaskList_afternoon" class="planner-task-list"
+               ondragover="handleSectionListDragOver(event, 'afternoon')"
+               ondragleave="handleSectionListDragLeave(event, 'afternoon')"
+               ondrop="handleSectionListDrop(event, 'afternoon')">
             <!-- Afternoon tasks -->
           </div>
         </div>
@@ -4969,7 +5043,10 @@
             </div>
             <span id="plannerCount_evening" style="font-size: 12px; color: var(--text-muted);">0 việc</span>
           </div>
-          <div id="plannerTaskList_evening" class="planner-task-list">
+          <div id="plannerTaskList_evening" class="planner-task-list"
+               ondragover="handleSectionListDragOver(event, 'evening')"
+               ondragleave="handleSectionListDragLeave(event, 'evening')"
+               ondrop="handleSectionListDrop(event, 'evening')">
             <!-- Evening tasks: e.g. [v] 1 câu trắc nghiệm toán cảnh -->
           </div>
         </div>
@@ -5450,21 +5527,26 @@
        ======================================================== */
     let generalConfirmCallback = null;
 
-    function showGeneralConfirmModal({ title, message, note, confirmText, confirmColor, onConfirm }) {
+    function showGeneralConfirmModal({ title, message, note, confirmText, confirmColor, iconSvg, onConfirm }) {
       const modal = document.getElementById('generalConfirmModal');
       if (!modal) return;
 
       const titleEl = document.getElementById('generalConfirmTitle');
       const textEl = document.getElementById('generalConfirmText');
+      const iconEl = document.getElementById('generalConfirmIcon');
       const noteBox = document.getElementById('generalConfirmNoteBox');
       const noteText = document.getElementById('generalConfirmNoteText');
       const btn = document.getElementById('generalConfirmBtn');
 
       if (titleEl) titleEl.innerText = title || 'Xác nhận';
-      if (textEl) textEl.innerText = message || '';
+      if (textEl) textEl.innerHTML = message || '';
+
+      if (iconEl && iconSvg) {
+        iconEl.innerHTML = iconSvg;
+      }
 
       if (note && noteBox && noteText) {
-        noteText.innerText = note;
+        noteText.innerHTML = note;
         noteBox.style.display = 'block';
       } else if (noteBox) {
         noteBox.style.display = 'none';
@@ -5476,6 +5558,8 @@
       }
 
       generalConfirmCallback = onConfirm;
+      modal.style.display = 'flex';
+      modal.classList.add('active');
       modal.classList.add('show');
     }
 
@@ -5781,9 +5865,25 @@
           const weekRate = Math.round((weekDoneCount / 7) * 100);
 
           return `
-            <tr>
+            <tr id="habitRow_${h.id}" 
+                data-habit-id="${h.id}"
+                ondragstart="handleHabitDragStart(event, '${h.id}')"
+                ondragover="handleHabitDragOver(event, '${h.id}')"
+                ondragleave="handleHabitDragLeave(event, '${h.id}')"
+                ondragend="handleHabitDragEnd(event)"
+                ondrop="handleHabitDrop(event, '${h.id}')">
               <td>
                 <div class="habit-row-info">
+                  <div class="habit-drag-handle" 
+                       title="Kéo để di chuyển" 
+                       data-tooltip="Kéo để di chuyển"
+                       onmousedown="enableHabitDrag(event, '${h.id}')">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                      <circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/>
+                      <circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/>
+                      <circle cx="5" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/>
+                    </svg>
+                  </div>
                   <span class="habit-cat-pill cat-${h.category || 'Chung'} clickable-cat-pill" 
                         onclick="openHabitCategoryPicker(event, '${h.id}')"
                         data-tooltip="Bấm để đổi danh mục">${h.category || 'Chung'}</span>
@@ -5984,15 +6084,26 @@
     }
 
     function deleteHabit(id) {
-      const h = (habitsData.list || []).find(item => item.id === id);
+      const h = (habitsData.list || []).find(item => String(item.id) === String(id));
       const title = h ? h.title : 'thói quen này';
 
       showGeneralConfirmModal({
         title: 'Xóa thói quen',
-        message: `Bạn có chắc muốn xóa thói quen "${title}" khỏi danh sách kỷ luật không?`,
+        iconSvg: `<svg width="18" height="18" fill="none" stroke="#DC2626" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`,
+        message: `Bạn có chắc muốn xóa thói quen "<strong>${escapeHtml(title)}</strong>" khỏi danh sách kỷ luật không?`,
+        note: `<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; color:#DC2626; font-weight:600;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg><span>Thao tác này không thể hoàn tác</span></div><div>Toàn bộ lịch sử tích của thói quen này sẽ được dọn dẹp sạch sẽ.</div>`,
         confirmText: 'Xóa thói quen',
         confirmColor: '#DC2626',
         onConfirm: async () => {
+          // Optimistic local update
+          const prevHabits = JSON.parse(JSON.stringify(habitsData));
+          habitsData.list = (habitsData.list || []).filter(item => String(item.id) !== String(id));
+          for (const d of Object.keys(habitsData.history || {})) {
+            habitsData.history[d] = (habitsData.history[d] || []).filter(item => String(item) !== String(id));
+          }
+          renderHabitsPage();
+          toast(`Đang xóa thói quen: ${title}...`);
+
           try {
             const res = await fetch('/api/habits', {
               method: 'POST',
@@ -6004,12 +6115,119 @@
               if (data.habits) habitsData = data.habits;
               renderHabitsPage();
               toast('Đã xóa thói quen');
+            } else {
+              habitsData = prevHabits;
+              renderHabitsPage();
+              toast('Lỗi khi xóa thói quen từ máy chủ');
             }
           } catch (err) {
             console.error('Lỗi xóa habit:', err);
+            habitsData = prevHabits;
+            renderHabitsPage();
+            toast('Lỗi kết nối khi xóa thói quen');
           }
         }
       });
+    }
+
+    /* ========================================================
+       HABIT TRACKER DRAG & DROP REORDER CONTROLLER
+       ======================================================== */
+    let draggedHabitId = null;
+
+    function enableHabitDrag(e, habitId) {
+      const rowEl = document.getElementById(`habitRow_${habitId}`);
+      if (!rowEl) return;
+      rowEl.setAttribute('draggable', 'true');
+      const onMouseUp = () => {
+        if (!draggedHabitId) rowEl.removeAttribute('draggable');
+        window.removeEventListener('mouseup', onMouseUp);
+      };
+      window.addEventListener('mouseup', onMouseUp);
+    }
+
+    function handleHabitDragStart(e, id) {
+      draggedHabitId = id;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', id);
+      setTimeout(() => {
+        const el = document.getElementById(`habitRow_${id}`);
+        if (el) el.classList.add('is-dragging');
+      }, 0);
+    }
+
+    function handleHabitDragOver(e, id) {
+      if (!draggedHabitId || String(draggedHabitId) === String(id)) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const target = e.currentTarget;
+      const rect = target.getBoundingClientRect();
+      const isTop = (e.clientY - rect.top) < (rect.height / 2);
+      if (isTop) {
+        target.classList.add('drag-over-top');
+        target.classList.remove('drag-over-bottom');
+      } else {
+        target.classList.add('drag-over-bottom');
+        target.classList.remove('drag-over-top');
+      }
+    }
+
+    function handleHabitDragLeave(e, id) {
+      e.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
+    }
+
+    function handleHabitDragEnd(e) {
+      document.querySelectorAll('#habitTableBody tr').forEach(el => {
+        el.classList.remove('is-dragging', 'drag-over-top', 'drag-over-bottom');
+        el.removeAttribute('draggable');
+      });
+      draggedHabitId = null;
+    }
+
+    async function handleHabitDrop(e, targetId) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!draggedHabitId || String(draggedHabitId) === String(targetId)) return;
+      const target = e.currentTarget;
+      const isTop = target.classList.contains('drag-over-top');
+      target.classList.remove('drag-over-top', 'drag-over-bottom');
+
+      const sourceId = draggedHabitId;
+      draggedHabitId = null;
+
+      const list = [...(habitsData.list || [])];
+      const sourceIdx = list.findIndex(h => String(h.id) === String(sourceId));
+      if (sourceIdx < 0) return;
+
+      const [sourceItem] = list.splice(sourceIdx, 1);
+      const targetIdx = list.findIndex(h => String(h.id) === String(targetId));
+      if (targetIdx < 0) {
+        list.push(sourceItem);
+      } else {
+        const insertIdx = isTop ? targetIdx : targetIdx + 1;
+        list.splice(insertIdx, 0, sourceItem);
+      }
+
+      habitsData.list = list;
+      renderHabitsPage();
+      toast('Đã đổi thứ tự thói quen');
+
+      try {
+        const res = await fetch('/api/habits', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'reorder',
+            orderedIds: list.map(h => h.id)
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.habits) habitsData = data.habits;
+        }
+      } catch (err) {
+        console.error('Lỗi lưu thứ tự habit:', err);
+      }
     }
 
     /* ========================================================
@@ -6321,7 +6539,26 @@
               }
 
               return `
-                <div class="planner-task-item" id="task_${t.id}">
+                <div class="planner-task-item" 
+                     id="task_${t.id}" 
+                     data-task-id="${t.id}" 
+                     data-section="${sec}"
+                     ondragstart="handleTaskDragStart(event, '${t.id}', '${sec}')"
+                     ondragover="handleTaskDragOver(event, '${t.id}')"
+                     ondragleave="handleTaskDragLeave(event, '${t.id}')"
+                     ondragend="handleTaskDragEnd(event)"
+                     ondrop="handleTaskDrop(event, '${t.id}', '${sec}')">
+                  <div class="task-drag-handle" 
+                       title="Kéo để di chuyển" 
+                       data-tooltip="Kéo để di chuyển"
+                       onmousedown="enableTaskDrag(event, '${t.id}')">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                      <circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/>
+                      <circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/>
+                      <circle cx="5" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/>
+                    </svg>
+                  </div>
+
                   <!-- Task Status Checkbox (Bấm để tick hoàn thành, Chuột phải chọn trạng thái) -->
                   <div class="ypt-task-status-btn status-${taskStatus}" 
                        onclick="toggleDailyTask('${t.id}')"
@@ -6404,6 +6641,196 @@
       const calPanel = document.getElementById('yptCalendarPanel');
       if (calPanel && calPanel.style.display !== 'none') {
         renderYptCalendar();
+      }
+    }
+
+    /* ========================================================
+       DAILY PLANNER DRAG & DROP REORDER CONTROLLER
+       ======================================================== */
+    let draggedTaskId = null;
+    let draggedTaskSection = null;
+
+    function enableTaskDrag(e, taskId) {
+      const taskEl = document.getElementById(`task_${taskId}`);
+      if (!taskEl) return;
+      taskEl.setAttribute('draggable', 'true');
+      const onMouseUp = () => {
+        if (!draggedTaskId) taskEl.removeAttribute('draggable');
+        window.removeEventListener('mouseup', onMouseUp);
+      };
+      window.addEventListener('mouseup', onMouseUp);
+    }
+
+    function handleTaskDragStart(e, id, sec) {
+      draggedTaskId = id;
+      draggedTaskSection = sec;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', id);
+      setTimeout(() => {
+        const el = document.getElementById(`task_${id}`);
+        if (el) el.classList.add('is-dragging');
+      }, 0);
+    }
+
+    function handleTaskDragOver(e, id) {
+      if (!draggedTaskId || String(draggedTaskId) === String(id)) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const target = e.currentTarget;
+      const rect = target.getBoundingClientRect();
+      const isTop = (e.clientY - rect.top) < (rect.height / 2);
+      if (isTop) {
+        target.classList.add('drag-over-top');
+        target.classList.remove('drag-over-bottom');
+      } else {
+        target.classList.add('drag-over-bottom');
+        target.classList.remove('drag-over-top');
+      }
+    }
+
+    function handleTaskDragLeave(e, id) {
+      e.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
+    }
+
+    function handleTaskDragEnd(e) {
+      document.querySelectorAll('.planner-task-item').forEach(el => {
+        el.classList.remove('is-dragging', 'drag-over-top', 'drag-over-bottom');
+        el.removeAttribute('draggable');
+      });
+      document.querySelectorAll('.planner-task-list').forEach(el => {
+        el.classList.remove('drag-over-empty');
+      });
+      draggedTaskId = null;
+      draggedTaskSection = null;
+    }
+
+    async function handleTaskDrop(e, targetId, targetSec) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!draggedTaskId || String(draggedTaskId) === String(targetId)) return;
+      const target = e.currentTarget;
+      const isTop = target.classList.contains('drag-over-top');
+      target.classList.remove('drag-over-top', 'drag-over-bottom');
+
+      const sourceId = draggedTaskId;
+      draggedTaskId = null;
+      draggedTaskSection = null;
+
+      await applyTaskReorder(sourceId, targetId, isTop ? 'before' : 'after', targetSec);
+    }
+
+    function handleSectionListDragOver(e, sec) {
+      if (!draggedTaskId) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      // If hovering over the list container but not directly over a task item
+      if (e.target.classList.contains('planner-task-list')) {
+        e.target.classList.add('drag-over-empty');
+      }
+    }
+
+    function handleSectionListDragLeave(e, sec) {
+      if (e.target.classList.contains('planner-task-list')) {
+        e.target.classList.remove('drag-over-empty');
+      }
+    }
+
+    async function handleSectionListDrop(e, sec) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over-empty');
+      if (!draggedTaskId) return;
+
+      const sourceId = draggedTaskId;
+      draggedTaskId = null;
+      draggedTaskSection = null;
+
+      await moveTaskToSectionEnd(sourceId, sec);
+    }
+
+    async function applyTaskReorder(sourceId, targetId, position, targetSec) {
+      if (!sourceId || !targetId || sourceId === targetId) return;
+      const tasks = [...(plannerData.tasks || [])];
+      const sourceIdx = tasks.findIndex(t => String(t.id) === String(sourceId));
+      if (sourceIdx < 0) return;
+
+      const [sourceTask] = tasks.splice(sourceIdx, 1);
+      if (targetSec) sourceTask.section = targetSec;
+      sourceTask.updatedAt = getSyncedServerNow();
+
+      const targetIdx = tasks.findIndex(t => String(t.id) === String(targetId));
+      if (targetIdx < 0) {
+        tasks.push(sourceTask);
+      } else {
+        const insertIdx = (position === 'after') ? targetIdx + 1 : targetIdx;
+        tasks.splice(insertIdx, 0, sourceTask);
+      }
+
+      plannerData.tasks = tasks;
+      renderDailyPlannerPage();
+      toast('Đã di chuyển công việc');
+
+      isTaskMutating++;
+      try {
+        const res = await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'reorder',
+            orderedIds: tasks.map(t => t.id),
+            movedTaskId: sourceId,
+            newSection: targetSec
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.dailyPlanner?.tasks) {
+            plannerData.tasks = data.dailyPlanner.tasks;
+          }
+        }
+      } catch (err) {
+        console.error('Lỗi lưu thứ tự công việc:', err);
+      } finally {
+        isTaskMutating--;
+      }
+    }
+
+    async function moveTaskToSectionEnd(sourceId, targetSec) {
+      if (!sourceId || !targetSec) return;
+      const tasks = [...(plannerData.tasks || [])];
+      const sourceIdx = tasks.findIndex(t => String(t.id) === String(sourceId));
+      if (sourceIdx < 0) return;
+
+      const [sourceTask] = tasks.splice(sourceIdx, 1);
+      sourceTask.section = targetSec;
+      sourceTask.updatedAt = getSyncedServerNow();
+      tasks.push(sourceTask);
+
+      plannerData.tasks = tasks;
+      renderDailyPlannerPage();
+      toast(`Đã chuyển sang ${targetSec.charAt(0).toUpperCase() + targetSec.slice(1)}`);
+
+      isTaskMutating++;
+      try {
+        const res = await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'reorder',
+            orderedIds: tasks.map(t => t.id),
+            movedTaskId: sourceId,
+            newSection: targetSec
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.dailyPlanner?.tasks) {
+            plannerData.tasks = data.dailyPlanner.tasks;
+          }
+        }
+      } catch (err) {
+        console.error('Lỗi chuyển section công việc:', err);
+      } finally {
+        isTaskMutating--;
       }
     }
 
