@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-25T03:19:37.277Z",
+  "updatedAt": "2026-10-25T03:36:39.479Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -151,25 +151,13 @@
           "title": "hi",
           "section": "morning",
           "date": "2026-10-25",
-          "deadline": "",
+          "deadline": "6:00",
           "completed": false,
           "status": "partial",
-          "spentSeconds": 185,
+          "spentSeconds": 210,
           "createdAt": "2026-10-25T02:52:08.334Z",
-          "updatedAt": 1792898217826,
+          "updatedAt": 1792898758246,
           "completedAt": null
-        },
-        {
-          "id": "dp_1792897679616_hpwo",
-          "title": "hi",
-          "section": "morning",
-          "date": "2026-10-25",
-          "deadline": "",
-          "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 212,
-          "createdAt": "2026-10-25T03:07:59.616Z",
-          "updatedAt": 1792898370787
         },
         {
           "id": "dp_1792897756297_i7zt",
@@ -184,16 +172,17 @@
           "updatedAt": 1792897756297
         },
         {
-          "id": "dp_1792898057337_lkgs",
-          "title": "hu",
+          "id": "dp_1792898680325_s2xe",
+          "title": "ok",
           "section": "morning",
           "date": "2026-10-25",
-          "deadline": "",
+          "deadline": "8:00",
           "completed": false,
           "status": "incomplete",
-          "spentSeconds": 0,
-          "createdAt": "2026-10-25T03:14:23.316Z",
-          "updatedAt": 1792898057337
+          "spentSeconds": 4,
+          "createdAt": "2026-10-25T03:24:40.325Z",
+          "updatedAt": 1792898737227,
+          "completedAt": null
         }
       ],
       "daysHistory": {
@@ -210,15 +199,19 @@
           "maxFocusSeconds": 14985
         },
         "2026-10-25": {
-          "totalSeconds": 397,
+          "totalSeconds": 426,
           "maxFocusSeconds": 152
         }
       },
       "deletedTasks": {
-        "dp_1792897236545_2p98": 1792897241873
+        "dp_1792897236545_2p98": 1792897241873,
+        "dp_1792898668916_28zj": 1792898685384,
+        "dp_1792898661959_o6np": 1792898688229,
+        "dp_1792898057337_lkgs": 1792898690085,
+        "dp_1792897679616_hpwo": 1792898691601
       },
       "activeTimer": null,
-      "activeTimerChangedAt": 1792898370787
+      "activeTimerChangedAt": 1792898758246
     },
     "discordRpc": {
       "enabled": true,
@@ -251,7 +244,7 @@
       "deadlineDate": "19:00:00, 17/10/2026",
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] final_Central Ideas and Details - Test Paper.pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] final_Central Ideas and Details - Test Paper.pdf",
       "detectedAt": "19:34:25"
     },
     {
@@ -265,7 +258,7 @@
       "deadlineDate": "20:00:00, 17/10/2026",
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] final_Set 4 - The Remains of the Day - aanhlle_'s Collections.pd.pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] final_Set 4 - The Remains of the Day - aanhlle_'s Collections.pd.pdf",
       "detectedAt": "19:34:25"
     },
     {
@@ -279,21 +272,21 @@
       "deadlineDate": "20:00:00, 17/10/2026",
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] final_Test EBRW - Set B - Buổi 3 - Test Paper.pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] final_Test EBRW - Set B - Buổi 3 - Test Paper.pdf",
       "detectedAt": "19:34:25"
     },
     {
       "id": "local_965d4ef01693",
       "filename": "[17.10] [Verbal] final_[2025] Words in Context 5.pdf",
       "title": "Words in Context 5",
-      "url": "",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/11/05/2874057123/noop/03_09_aa14e235bf8b41a9b70ca2b0e2ff949c.pdf",
       "subject": "VERBAL",
       "recommendedSubject": "VERBAL",
       "deadlineTag": "[17.10]",
       "deadlineDate": "20:00:00, 17/10/2026",
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] final_[2025] Words in Context 5.pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] final_[2025] Words in Context 5.pdf",
       "detectedAt": "19:34:25",
       "doneAt": "2026-10-18 23:09"
     },
@@ -308,7 +301,7 @@
       "deadlineDate": "20:00:00, 17/10/2026",
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] final_[2025] Words in Context 6 (1).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] final_[2025] Words in Context 6 (1).pdf",
       "detectedAt": "19:34:25",
       "doneAt": "2026-10-17 20:25"
     },
@@ -323,7 +316,7 @@
       "deadlineDate": "17:00:00, 17/10/2026",
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[17.10] [Math] Lesson 8. Statistics (No.1).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[17.10] [Math] Lesson 8. Statistics (No.1).pdf",
       "detectedAt": "19:34:25",
       "doneAt": "2026-10-17 20:25",
       "customDeadline": null
@@ -339,7 +332,7 @@
       "deadlineDate": "17:00:00, 17/10/2026",
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[17.10] [Math] Lesson 8. Statistics (No.2).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[17.10] [Math] Lesson 8. Statistics (No.2).pdf",
       "detectedAt": "19:34:25",
       "doneAt": "2026-10-17 20:25",
       "customDeadline": null
@@ -355,7 +348,7 @@
       "deadlineDate": "17:00:00, 19/10/2026",
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[19.10] [Math] Lesson_1_HW_Algebra.pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[19.10] [Math] Lesson_1_HW_Algebra.pdf",
       "detectedAt": "19:34:25",
       "customDeadline": null,
       "doneAt": "2026-10-18 23:03"
@@ -373,7 +366,7 @@
       "detectedAt": "20:04:14",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] final_Set 1 - Dune - aanhlle_'s Collections.pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] final_Set 1 - Dune - aanhlle_'s Collections.pdf",
       "doneAt": "2026-10-17 20:25",
       "customDeadline": null
     },
@@ -391,7 +384,7 @@
       "detectedAt": "20:59:11",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[19.10] [Math] Lesson 1 HW_ Algebra (No.3).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[19.10] [Math] Lesson 1 HW_ Algebra (No.3).pdf",
       "doneAt": "2026-10-18 23:03"
     },
     {
@@ -407,7 +400,7 @@
       "detectedAt": "21:27:56",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] [A] Test EBRW - Set A - Buổi 3.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] [A] Test EBRW - Set A - Buổi 3.pdf"
     },
     {
       "id": "9f43a0b4dc633031add618f87c33eb05",
@@ -423,7 +416,7 @@
       "detectedAt": "21:29:35",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] Words in Context 4.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] Words in Context 4.pdf"
     },
     {
       "id": "2a6a6a362847da1fba1f49beb73db115",
@@ -438,7 +431,7 @@
       "detectedAt": "21:49:38",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] Words in Context - 2 (Review).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] Words in Context - 2 (Review).pdf"
     },
     {
       "id": "local_7df3f4780522",
@@ -452,7 +445,7 @@
       "customDeadline": null,
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] Words in Context - 1 (Review).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] Words in Context - 1 (Review).pdf",
       "detectedAt": "22:10:45"
     },
     {
@@ -468,7 +461,7 @@
       "detectedAt": "22:14:35",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[20.10] [Math] Lesson 9. Quadratic Equations (No.3).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[20.10] [Math] Lesson 9. Quadratic Equations (No.3).pdf",
       "doneAt": "2026-10-18 23:03"
     },
     {
@@ -484,7 +477,7 @@
       "detectedAt": "22:35:49",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[21.10] [Math] Lesson 3. Lines, Angles and Triangles (No.3).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 3. Lines, Angles and Triangles (No.3).pdf",
       "doneAt": "2026-10-18 22:15"
     },
     {
@@ -500,7 +493,7 @@
       "detectedAt": "22:16:31",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 10. Quadratic Functions (No.2).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 10. Quadratic Functions (No.2).pdf"
     },
     {
       "id": "777916e98bc391684da1d446edd56a93",
@@ -515,7 +508,7 @@
       "detectedAt": "22:16:39",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 7. Probability (No.1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 7. Probability (No.1).pdf"
     },
     {
       "id": "85f5c6a29c46eaa0501ee363d90098e1",
@@ -530,7 +523,7 @@
       "detectedAt": "22:16:46",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 6. Ratios and Percentages (No.1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 6. Ratios and Percentages (No.1).pdf"
     },
     {
       "id": "3e9fc7b11e4305fc367c988896b0a5f0",
@@ -545,7 +538,7 @@
       "detectedAt": "22:16:53",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 5. Areas and Volumes (No.3).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 5. Areas and Volumes (No.3).pdf"
     },
     {
       "id": "f5785d9f9361aac38a31eabfda95f3cd",
@@ -560,7 +553,7 @@
       "detectedAt": "22:29:36",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 3. Lines, Angles and Triangles (No.2).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 3. Lines, Angles and Triangles (No.2).pdf"
     },
     {
       "id": "1311157abe9635e81ddcc27361bf58be",
@@ -575,7 +568,7 @@
       "detectedAt": "22:29:45",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 9. Quadratic Equations (No.2).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 9. Quadratic Equations (No.2).pdf"
     },
     {
       "id": "40260d9604945e5e6ab31881e7aeb9ea",
@@ -590,7 +583,7 @@
       "detectedAt": "22:17:16",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 6. Ratios and Percentages (No.2).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 6. Ratios and Percentages (No.2).pdf"
     },
     {
       "id": "eb4ae5044302da4f249409bc0bb35629",
@@ -605,7 +598,7 @@
       "detectedAt": "22:17:24",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 4. Circles and Circular Equations (No.2).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 4. Circles and Circular Equations (No.2).pdf"
     },
     {
       "id": "623993bcfd7d098afd7eb32b3f3303eb",
@@ -620,7 +613,7 @@
       "detectedAt": "22:17:32",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 10. Quadratic Functions (No.1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 10. Quadratic Functions (No.1).pdf"
     },
     {
       "id": "e2b2a68cbca239a2e9b4cd39be1bdabf",
@@ -635,7 +628,7 @@
       "detectedAt": "22:17:52",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 8. Statistics (No.3).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 8. Statistics (No.3).pdf"
     },
     {
       "id": "95f6d0a0bc8e8ce64436b34e714fd513",
@@ -650,7 +643,7 @@
       "detectedAt": "16:23:14",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[21.10] [Math] Lesson 6. Ratios and Percentages (No.4).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 6. Ratios and Percentages (No.4).pdf"
     },
     {
       "id": "f4bc4e64749c83869ac5fecaecca117f",
@@ -665,7 +658,7 @@
       "detectedAt": "22:18:08",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 8. Statistics (No.4).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 8. Statistics (No.4).pdf"
     },
     {
       "id": "8aaeb245a6dcf90e144be7991fb00ce7",
@@ -680,7 +673,7 @@
       "detectedAt": "22:18:15",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 5. Areas and Volumes (No.2).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 5. Areas and Volumes (No.2).pdf"
     },
     {
       "id": "8c8003107398ddf2a9e307f11a16347f",
@@ -695,7 +688,7 @@
       "detectedAt": "22:18:22",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 10. Quadratic Functions (No.3).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 10. Quadratic Functions (No.3).pdf"
     },
     {
       "id": "d3013d5e8e788d8d13d184a498fb90c1",
@@ -710,7 +703,7 @@
       "detectedAt": "22:18:36",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 10. Quadratic Functions (No.4).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 10. Quadratic Functions (No.4).pdf"
     },
     {
       "id": "63241fc917607b184c5214524f4aa596",
@@ -725,7 +718,7 @@
       "detectedAt": "22:18:44",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 5. Areas and Volumes (No.1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 5. Areas and Volumes (No.1).pdf"
     },
     {
       "id": "bd0f501552530718341dd8a1ab9d9a98",
@@ -740,7 +733,7 @@
       "detectedAt": "22:18:51",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 4. Circles and Circular Equations (No.4).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 4. Circles and Circular Equations (No.4).pdf"
     },
     {
       "id": "f545edc6f9882873d60e04f98b307906",
@@ -755,7 +748,7 @@
       "detectedAt": "22:30:13",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 4. Circles and Circular equations (No.1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 4. Circles and Circular equations (No.1).pdf"
     },
     {
       "id": "b9ed585177cf4929e31c9842d12d472e",
@@ -770,7 +763,7 @@
       "detectedAt": "22:30:20",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 4. Circles and Circular Equations (No.3).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 4. Circles and Circular Equations (No.3).pdf"
     },
     {
       "id": "608086ab2c5ccb8bed8cf60b5de99c14",
@@ -785,7 +778,7 @@
       "detectedAt": "22:19:21",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 1. Linear Equation & System (No.2).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 1. Linear Equation & System (No.2).pdf"
     },
     {
       "id": "463aff02990c60e8bfa315c7c684c4d6",
@@ -800,7 +793,7 @@
       "detectedAt": "22:19:29",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 2. Linear Functions (No.2).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 2. Linear Functions (No.2).pdf"
     },
     {
       "id": "df59bf7cb2a1f942e4f838113b08f761",
@@ -815,7 +808,7 @@
       "detectedAt": "22:30:29",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 2. Linear Functions (No.1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 2. Linear Functions (No.1).pdf"
     },
     {
       "id": "9c6c118f1f6b67ac2bcd2d17999f5dc8",
@@ -830,7 +823,7 @@
       "detectedAt": "22:30:37",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 3. Lines, Angles and Triangles (No.1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 3. Lines, Angles and Triangles (No.1).pdf"
     },
     {
       "id": "328d70b14114fbdaa2bdfbe11a7dabb8",
@@ -845,7 +838,7 @@
       "detectedAt": "22:30:45",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 2. Linear Functions (No.3).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 2. Linear Functions (No.3).pdf"
     },
     {
       "id": "6a27809be19beca96b39829272971932",
@@ -860,7 +853,7 @@
       "detectedAt": "22:20:06",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set B - Buổi 2 (Review).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set B - Buổi 2 (Review).pdf"
     },
     {
       "id": "d46d79c041ab7fcde25aa688b5dd520b",
@@ -875,7 +868,7 @@
       "detectedAt": "22:20:13",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\Chưa rõ  [Verbal] Words in Context 3 (Review).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] Words in Context 3 (Review).pdf"
     },
     {
       "id": "581f75bc8d2aaea5fe1d1a3faae5253c",
@@ -890,7 +883,7 @@
       "detectedAt": "22:20:21",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set C - Buổi 2 (Review).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set C - Buổi 2 (Review).pdf"
     },
     {
       "id": "b3739400966fc5ae2fbeef3199aa8f16",
@@ -905,7 +898,7 @@
       "detectedAt": "22:20:28",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set A - Buổi 2 (Review).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set A - Buổi 2 (Review).pdf"
     },
     {
       "id": "9fbad27e84a7caf792eb67438699d687",
@@ -920,7 +913,7 @@
       "detectedAt": "22:20:35",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] The Critical Reader _ Set 2 - Society & Markets (Review).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] The Critical Reader _ Set 2 - Society & Markets (Review).pdf"
     },
     {
       "id": "local_414b12ea76a9",
@@ -934,7 +927,7 @@
       "customDeadline": null,
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[20.10] [Math] Lesson 9. Quadratic Equations (No.1).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[20.10] [Math] Lesson 9. Quadratic Equations (No.1).pdf",
       "detectedAt": "22:32:22",
       "doneAt": "2026-10-18 22:15"
     },
@@ -950,7 +943,7 @@
       "customDeadline": null,
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[21.10] [Math] Lesson 1. Linear Equation & System (No.3).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 1. Linear Equation & System (No.3).pdf",
       "detectedAt": "22:33:13",
       "doneAt": "2026-10-18 22:15"
     },
@@ -968,7 +961,7 @@
       "detectedAt": "22:51:49",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[17.10] [Verbal] The Critical Reader _ Set 3 - Literary Arts.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] The Critical Reader _ Set 3 - Literary Arts.pdf"
     },
     {
       "id": "453351d88f47e71ae4cfba4c6a202563",
@@ -984,7 +977,7 @@
       "detectedAt": "18:19:54",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[21.10] [Math] Lesson 3 HW_ Geometry (2).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 3 HW_ Geometry (2).pdf"
     },
     {
       "id": "6faf4ea9b5fb96bcd603cbfc64960de8",
@@ -1000,7 +993,7 @@
       "detectedAt": "19:14:02",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[21.10] [Math] Lesson 2 HW_ Geometry (1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 2 HW_ Geometry (1).pdf"
     },
     {
       "id": "10b6856f058f8a3e4560444aa974bfd4",
@@ -1016,7 +1009,7 @@
       "detectedAt": "19:14:36",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[21.10] [Math] Lesson 3 HW_ Geometry (3).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 3 HW_ Geometry (3).pdf"
     },
     {
       "id": "cde39031e15132f56c2be6812a918b66",
@@ -1032,7 +1025,7 @@
       "detectedAt": "17:25:43",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[22.10] [Math] Lesson 3 HW. Geometry (1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[22.10] [Math] Lesson 3 HW. Geometry (1).pdf"
     },
     {
       "id": "9ba5dcd13d8da3d6e66a2d69b5ade82f",
@@ -1047,7 +1040,7 @@
       "detectedAt": "16:17:13",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[24.10] [Verbal] [A] Test EBRW - Set A - Buổi 4.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[24.10] [Verbal] [A] Test EBRW - Set A - Buổi 4.pdf"
     },
     {
       "id": "ffb220026f5129e456a715afc35b2a64",
@@ -1062,7 +1055,7 @@
       "detectedAt": "16:19:18",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[24.10] [Verbal] [A] Test EBRW - Set B - Buổi 4.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[24.10] [Verbal] [A] Test EBRW - Set B - Buổi 4.pdf"
     },
     {
       "id": "4dbde3ad5892ca0ac06460fc344625a0",
@@ -1078,7 +1071,7 @@
       "detectedAt": "16:20:15",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[24.10] [Verbal] final_[2024] Words in Context 7.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[24.10] [Verbal] final_[2024] Words in Context 7.pdf"
     },
     {
       "id": "60fc98045318f1c735379ca364f19a1e",
@@ -1094,7 +1087,7 @@
       "detectedAt": "16:20:30",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[24.10] [Verbal] final_[2024] Words in Context 8.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[24.10] [Verbal] final_[2024] Words in Context 8.pdf"
     },
     {
       "id": "6146e8b689347321369d0cea42e26b79",
@@ -1110,7 +1103,7 @@
       "detectedAt": "16:20:53",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[24.10] [Verbal] COE for the challengers_v2.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[24.10] [Verbal] COE for the challengers_v2.pdf"
     },
     {
       "id": "405eb3589a5d14db856bc6e405bf8aea",
@@ -1126,7 +1119,7 @@
       "detectedAt": "16:21:09",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[24.10] [Verbal] final_Set 6 - The Secret Garden - aanhlle_'s Collections.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[24.10] [Verbal] final_Set 6 - The Secret Garden - aanhlle_'s Collections.pdf"
     },
     {
       "id": "f0e4ae1ce3170faa1c5c40e99db36b20",
@@ -1142,7 +1135,7 @@
       "detectedAt": "16:21:27",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[24.10] [Verbal] Test EBRW - Set C - Buổi 4.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[24.10] [Verbal] Test EBRW - Set C - Buổi 4.pdf"
     },
     {
       "id": "e9f3f58b5e4a8c42e66f7e254738e501",
@@ -1158,7 +1151,7 @@
       "detectedAt": "16:21:58",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\VERBAL\\[24.10] [Verbal] final_Set 5 - Art & History - aanhlle_'s Collections.pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[24.10] [Verbal] final_Set 5 - Art & History - aanhlle_'s Collections.pdf"
     },
     {
       "id": "local_d96a967c7f03",
@@ -1172,7 +1165,7 @@
       "customDeadline": null,
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 6. Ratios and Percentages (No.3).pdf",
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\Chưa rõ  [Math] Lesson 6. Ratios and Percentages (No.3).pdf",
       "detectedAt": "16:23:14"
     },
     {
@@ -1188,7 +1181,7 @@
       "detectedAt": "16:43:29",
       "downloaded": true,
       "isDone": false,
-      "localPath": "C:\\Users\\Administrator\\Downloads\\10SAT\\MATH\\[21.10] [Math] Lesson 1. Linear Equation & System (No.1).pdf"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 1. Linear Equation & System (No.1).pdf"
     }
   ],
   "todos": [
@@ -1995,6 +1988,94 @@
       "endTime": 1793278800,
       "deadlineDate": "20:00:00, 29/10/2026",
       "deadlineTag": "[29.10]",
+      "isCompleted": false
+    },
+    {
+      "id": 1528143965,
+      "title": "[A] Test EBRW - set C - buổi 5",
+      "courseId": 312895237,
+      "activityId": 1168976654,
+      "timeLimit": 0,
+      "endTime": 1793451600,
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "deadlineTag": "[31.10]",
+      "isCompleted": false
+    },
+    {
+      "id": 1528117471,
+      "title": "Words in Context 9",
+      "courseId": 312895237,
+      "activityId": 1168976733,
+      "timeLimit": 0,
+      "endTime": 1793451600,
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "deadlineTag": "[31.10]",
+      "isCompleted": false
+    },
+    {
+      "id": 1528092015,
+      "title": "The Critical Reader | Set 7 - Matter & Mind",
+      "courseId": 312895237,
+      "activityId": 1168976703,
+      "timeLimit": 0,
+      "endTime": 1793451600,
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "deadlineTag": "[31.10]",
+      "isCompleted": false
+    },
+    {
+      "id": 1528012539,
+      "title": "The Critical Reader | Set 8 - The Time Machine",
+      "courseId": 312895237,
+      "activityId": 1168976704,
+      "timeLimit": 0,
+      "endTime": 1793451600,
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "deadlineTag": "[31.10]",
+      "isCompleted": false
+    },
+    {
+      "id": 1527982703,
+      "title": "[A] Test EBRW - set A - buổi 5",
+      "courseId": 312895237,
+      "activityId": 1168976652,
+      "timeLimit": 0,
+      "endTime": 1793451600,
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "deadlineTag": "[31.10]",
+      "isCompleted": false
+    },
+    {
+      "id": 1527956313,
+      "title": "[A] Inferences for the challengers",
+      "courseId": 312895237,
+      "activityId": 1168976649,
+      "timeLimit": 0,
+      "endTime": 1793451600,
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "deadlineTag": "[31.10]",
+      "isCompleted": false
+    },
+    {
+      "id": 1527924087,
+      "title": "Words in Context 10",
+      "courseId": 312895237,
+      "activityId": 1168976735,
+      "timeLimit": 0,
+      "endTime": 1793451600,
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "deadlineTag": "[31.10]",
+      "isCompleted": false
+    },
+    {
+      "id": 1527923931,
+      "title": "[A] Test EBRW - Set B - Buổi 5",
+      "courseId": 312895237,
+      "activityId": 1168976653,
+      "timeLimit": 0,
+      "endTime": 1793451600,
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "deadlineTag": "[31.10]",
       "isCompleted": false
     }
   ]

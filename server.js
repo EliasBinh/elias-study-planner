@@ -42,8 +42,12 @@ async function calibrateClockOffset() {
   }
 }
 
-// Folders
-const BASE_10SAT = path.join(os.homedir(), 'Downloads', '10SAT');
+// Folders: Priority to in-repo data/10SAT for Cloud Render deployment & standalone execution, fallback to Downloads/10SAT
+const REPO_10SAT = path.join(__dirname, 'data', '10SAT');
+const USER_DOWNLOADS_10SAT = path.join(os.homedir(), 'Downloads', '10SAT');
+const BASE_10SAT = (fs.existsSync(REPO_10SAT) && fs.existsSync(path.join(REPO_10SAT, 'VERBAL'))) 
+  ? REPO_10SAT 
+  : USER_DOWNLOADS_10SAT;
 const VERBAL_DIR = path.join(BASE_10SAT, 'VERBAL');
 const MATH_DIR = path.join(BASE_10SAT, 'MATH');
 const DB_FILE = path.join(__dirname, 'database.json');
@@ -142,7 +146,58 @@ function formatFilename(baseName, deadlineTag, subject, isDone = false) {
   const tag = (deadlineTag || '[17.10]').replace(/Hạn\s*/i, '').replace('-', '.');
   let result = `${tag} [${subj}] ${clean}`;
   if (isDone) result = `[Done] ${result}`;
-  return result.replace(/[<>:"/\\|?*]/g, '_').trim();
+}
+ 
+// Universal PDF path resolver (Local Windows disk + Repo data folder)
+function resolveLocalPdfPath(item) {
+  if (!item) return null;
+  // 1. Direct localPath if exists
+  if (item.localPath && fs.existsSync(item.localPath)) {
+    return item.localPath;
+  }
+  // 2. Relative check in REPO_10SAT and BASE_10SAT
+  const candidateDirs = [
+    item.subject === 'MATH' ? MATH_DIR : VERBAL_DIR,
+    item.subject === 'MATH' ? VERBAL_DIR : MATH_DIR,
+    path.join(REPO_10SAT, 'VERBAL'),
+    path.join(REPO_10SAT, 'MATH'),
+    path.join(USER_DOWNLOADS_10SAT, 'VERBAL'),
+    path.join(USER_DOWNLOADS_10SAT, 'MATH')
+  ];
+
+  if (item.filename) {
+    for (const d of candidateDirs) {
+      if (!fs.existsSync(d)) continue;
+      const direct = path.join(d, item.filename);
+      if (fs.existsSync(direct)) return direct;
+    }
+
+    // Try matching by normalized clean basename
+    const cleanTarget = cleanBaseName(item.filename).toLowerCase();
+    for (const d of candidateDirs) {
+      if (!fs.existsSync(d)) continue;
+      try {
+        const files = fs.readdirSync(d);
+        const match = files.find(f => cleanBaseName(f).toLowerCase() === cleanTarget);
+        if (match) return path.join(d, match);
+      } catch (e) {}
+    }
+  }
+
+  // Also try matching by title
+  if (item.title) {
+    const cleanTitle = cleanBaseName(item.title).toLowerCase();
+    for (const d of candidateDirs) {
+      if (!fs.existsSync(d)) continue;
+      try {
+        const files = fs.readdirSync(d);
+        const match = files.find(f => cleanBaseName(f).replace(/\.pdf$/i, '').toLowerCase() === cleanTitle);
+        if (match) return path.join(d, match);
+      } catch (e) {}
+    }
+  }
+
+  return null;
 }
 
 // Helper: Load database on startup
@@ -981,6 +1036,7 @@ function getMergedItems() {
       // Prioritize the todo that has an active deadline
       const bestTodo = relatedTodos.find(t => t.endTime > 0) || todo;
       const timed = isTimedExam(bestTodo);
+      const fileOnDisk = !!resolveLocalPdfPath(pdf);
       merged.push({
         ...pdf,
         title: bestTodo.title,
@@ -988,8 +1044,8 @@ function getMergedItems() {
         activityId: bestTodo.activityId,
         courseId: bestTodo.courseId,
         timeLimit: bestTodo.timeLimit || (timed ? 80 : 0),
-        hasFile: IS_CLOUD_INSTANCE ? (pdf.downloaded || !!pdf.localPath || !!pdf.url) : (!!pdf.localPath && fs.existsSync(pdf.localPath)),
-        downloaded: IS_CLOUD_INSTANCE ? (pdf.downloaded || !!pdf.localPath) : (!!pdf.localPath && fs.existsSync(pdf.localPath)),
+        hasFile: !!(fileOnDisk || pdf.url || (IS_CLOUD_INSTANCE && pdf.downloaded)),
+        downloaded: !!(fileOnDisk || (IS_CLOUD_INSTANCE && pdf.downloaded)),
         hasCloudUrl: !!(pdf.url && pdf.url.startsWith('http')),
         url: pdf.url || '',
         isTest: timed,
@@ -1005,13 +1061,11 @@ function getMergedItems() {
   for (const pdf of pdfStore.values()) {
     if (!matchedPdfIds.has(pdf.id)) {
       const timed = isTimedExam(pdf);
-      const fileOnDisk = IS_CLOUD_INSTANCE 
-        ? (pdf.downloaded || !!pdf.localPath || !!pdf.url) 
-        : (!!pdf.localPath && fs.existsSync(pdf.localPath));
+      const fileOnDisk = !!resolveLocalPdfPath(pdf);
       merged.push({
         ...pdf,
-        hasFile: fileOnDisk,
-        downloaded: IS_CLOUD_INSTANCE ? (pdf.downloaded || !!pdf.localPath) : fileOnDisk,
+        hasFile: !!(fileOnDisk || pdf.url || (IS_CLOUD_INSTANCE && pdf.downloaded)),
+        downloaded: !!(fileOnDisk || (IS_CLOUD_INSTANCE && pdf.downloaded)),
         hasCloudUrl: !!(pdf.url && pdf.url.startsWith('http')),
         url: pdf.url || '',
         isTest: timed,
@@ -1556,13 +1610,14 @@ const server = http.createServer(async (req, res) => {
     const rawName = (item?.title || item?.filename || 'tai_lieu_sat').replace(/\.pdf$/i, '').trim();
     const cleanFilename = rawName.replace(/[\\/:*?"<>|]/g, '_') + '.pdf';
 
-    if (item?.localPath && fs.existsSync(item.localPath)) {
+    const localFilePath = resolveLocalPdfPath(item);
+    if (localFilePath && fs.existsSync(localFilePath)) {
       res.writeHead(200, {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `inline; filename="${encodeURIComponent(cleanFilename)}"`,
-        'Content-Length': fs.statSync(item.localPath).size
+        'Content-Length': fs.statSync(localFilePath).size
       });
-      return fs.createReadStream(item.localPath).pipe(res);
+      return fs.createReadStream(localFilePath).pipe(res);
     }
 
     if (targetUrl) {
@@ -1587,14 +1642,15 @@ const server = http.createServer(async (req, res) => {
     const rawName = (queryFilename || item?.title || item?.filename || 'tai_lieu_sat').replace(/\.pdf$/i, '').trim();
     const cleanFilename = rawName.replace(/[\\/:*?"<>|]/g, '_') + '.pdf';
 
-    if (item?.localPath && fs.existsSync(item.localPath)) {
+    const localFilePath = resolveLocalPdfPath(item);
+    if (localFilePath && fs.existsSync(localFilePath)) {
       const safeAscii = cleanFilename.replace(/[^\x20-\x7E]/g, '_');
       res.writeHead(200, {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${safeAscii}"; filename*=UTF-8''${encodeURIComponent(cleanFilename)}`,
-        'Content-Length': fs.statSync(item.localPath).size
+        'Content-Length': fs.statSync(localFilePath).size
       });
-      return fs.createReadStream(item.localPath).pipe(res);
+      return fs.createReadStream(localFilePath).pipe(res);
     }
 
     if (targetUrl) {

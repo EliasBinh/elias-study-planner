@@ -7633,9 +7633,6 @@
               <span class="file-title ${item.isDone ? 'done' : ''}" data-tooltip="${displayName}">
                 ${displayName}
               </span>
-              ${item.url ? `
-                <span class="badge-online-link" data-tooltip="Link trực tiếp máy chủ CDN ClassIn">Online</span>
-              ` : ''}
               ${item.isTimed ? `
                 <span class="badge-timed-shield" data-tooltip="Bài thi tính giờ (${item.timeLimit}p) - Đã khóa an toàn để tuyệt đối không bị tính giờ!">
                   <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -7722,14 +7719,10 @@
                   <button class="action-icon-btn btn-cloud-open" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link gốc CDN trong tab mới" title="Mở link gốc">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                   </button>
-                  <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${item.url}', 'Đã sao chép link đề thi trực tiếp (CDN)!')" data-tooltip="Sao chép link đề thi" title="Sao chép link">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  </button>
-                ` : `
-                  <button class="action-icon-btn" onclick="copyLink('${item.localPath}', 'Đã sao chép đường dẫn file!')" data-tooltip="Sao chép đường dẫn file" title="Sao chép đường dẫn">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  </button>
-                `}
+                ` : ''}
+                <button class="action-icon-btn btn-cloud-copy" onclick="copyItemShareLink('${item.id}')" data-tooltip="Sao chép link xem đề thi" title="Sao chép link">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
                 ${(!isCloudHost && item.hasFile) ? `
                   <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Xóa file này">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -8217,9 +8210,6 @@
                         <span class="drawer-file-title ${file.isDone ? 'done' : ''}" data-tooltip="${fileTitle}" ${isCloudHost ? (file.url ? `onclick="window.open('${file.url}', '_blank')" style="cursor:pointer;"` : '') : (file.hasFile ? `onclick="previewFile('${file.id}')" style="cursor:pointer;"` : '')}>
                           ${fileTitle}
                         </span>
-                        ${file.url ? `
-                          <span class="badge-online-link" style="font-size: 9px; padding: 0 4px; margin-left: 4px;" data-tooltip="Link online sẵn sàng">Online</span>
-                        ` : ''}
                         ${file.isTimed ? `
                           <span class="badge-timed-shield" style="font-size: 10px; padding: 1px 5px; margin-left: 5px;" data-tooltip="Bài thi tính giờ (${file.timeLimit}p)">
                             Bài thi ${file.timeLimit}p
@@ -8235,7 +8225,7 @@
                             <button class="action-icon-btn btn-cloud-open" onclick="window.open('${file.url}', '_blank')" data-tooltip="Mở link PDF trực tiếp (CDN)">
                               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                             </button>
-                            <button class="action-icon-btn btn-cloud-copy" onclick="copyLink('${file.url}', 'Đã sao chép link đề thi trực tiếp (CDN)!')" data-tooltip="Sao chép link đề thi">
+                            <button class="action-icon-btn btn-cloud-copy" onclick="copyItemShareLink('${file.id}')" data-tooltip="Sao chép link đề thi">
                               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                             </button>
                           ` : (file.isTimed ? `
@@ -8645,6 +8635,17 @@
         }
       } catch (e) {
         toast('Lỗi tải file');
+      }
+    }
+
+    function copyItemShareLink(id) {
+      const item = allItems.find(i => i.id === id);
+      if (!item) return;
+      if (item.url && item.url.startsWith('http')) {
+        copyLink(item.url, 'Đã sao chép link trực tiếp (CDN)!');
+      } else {
+        const shareUrl = window.location.origin + '/api/preview?id=' + encodeURIComponent(id);
+        copyLink(shareUrl, 'Đã sao chép link xem đề thi!');
       }
     }
 
