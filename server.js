@@ -2855,6 +2855,32 @@ async function runBatchFetchSafe() {
               appSettings.dailyPlanner.activeTimer = null;
               appSettings.dailyPlanner.activeTimerChangedAt = now;
             }
+          } else if (action === 'checkpoint-timer') {
+            if (appSettings.dailyPlanner.activeTimer) {
+              const prev = appSettings.dailyPlanner.activeTimer;
+              const now = getCanonicalNow();
+              const MAX_SESSION_SEC = 4 * 3600;
+              const rawSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
+              const sessionSec = Math.min(MAX_SESSION_SEC, rawSec);
+              if (sessionSec > 0) {
+                const targetTask = appSettings.dailyPlanner.tasks.find(item => item.id === prev.taskId);
+                if (targetTask) {
+                  targetTask.spentSeconds = (targetTask.spentSeconds || 0) + sessionSec;
+                  targetTask.updatedAt = now;
+                }
+                if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
+                  appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
+                }
+                appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
+                appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
+                  appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
+                  sessionSec
+                );
+                // Advance timer startedAt to now so it continues running smoothly without resetting
+                prev.startedAt = now;
+                appSettings.dailyPlanner.activeTimerChangedAt = now;
+              }
+            }
           } else if (action === 'toggle' && id) {
             const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
             if (t) {

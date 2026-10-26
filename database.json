@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-25T11:21:00.341Z",
+  "updatedAt": "2026-10-26T07:30:22.687Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -42,14 +42,9 @@
           "category": "Morning"
         },
         {
-          "id": "h_3",
-          "title": "Gym/Swim/Sport",
-          "category": "Health"
-        },
-        {
-          "id": "h_4",
-          "title": "Học SAT 1 Pomodoro",
-          "category": "Study"
+          "id": "h_1792926550682",
+          "title": "Skin icing",
+          "category": "Discipline"
         },
         {
           "id": "h_5",
@@ -57,29 +52,44 @@
           "category": "School"
         },
         {
+          "id": "h_3",
+          "title": "Gym/Swim/Sport",
+          "category": "Health"
+        },
+        {
           "id": "h_6",
           "title": "Đọc sách khi trống trải",
           "category": "Discipline"
         },
         {
-          "id": "h_1792926550682",
-          "title": "Skin icing",
-          "category": "Discipline"
+          "id": "h_4",
+          "title": "Học SAT 1 Pomodoro",
+          "category": "Study"
         },
         {
           "id": "h_1792926643200",
           "title": "Stare wall 20min",
           "category": "Mindset"
+        },
+        {
+          "id": "h_1792927602231",
+          "title": "Anki 1 pomodoro",
+          "category": "Study"
         }
       ],
       "history": {
-        "2026-10-25": []
+        "2026-10-25": [],
+        "2026-10-26": [
+          "h_1792926550682",
+          "h_5",
+          "h_3"
+        ]
       },
       "deletedHabits": {
         "h_1792926219222": 1792926219236,
         "h_2": 1792926399034
       },
-      "changedAt": 1792927252200
+      "changedAt": 1792998106168
     },
     "dailyPlanner": {
       "tasks": [
@@ -146,6 +156,79 @@
           "createdAt": "2026-10-25T10:43:19.212Z",
           "updatedAt": 1792925045707,
           "completedAt": null
+        },
+        {
+          "id": "dp_1792998485875_6jri",
+          "title": "Vở ghi hóa",
+          "section": "morning",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": false,
+          "status": "partial",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-26T07:08:15.186Z",
+          "updatedAt": 1792998624560,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1792998523820_ex0i",
+          "title": "Xong đề toán4 câu",
+          "section": "morning",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-26T07:08:53.122Z",
+          "updatedAt": 1792998523820
+        },
+        {
+          "id": "dp_1792998621959_4gr6",
+          "title": "Mua thêm bút",
+          "section": "afternoon",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-26T07:10:31.263Z",
+          "updatedAt": 1792998621959
+        },
+        {
+          "id": "dp_1792998878744_y4tr",
+          "title": "Coi lý thuyết bài 1",
+          "section": "afternoon",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-26T07:14:48.052Z",
+          "updatedAt": 1792998878744
+        },
+        {
+          "id": "dp_1792998882595_60jl",
+          "title": "Coi lý thuyết bài 2",
+          "section": "afternoon",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-26T07:14:51.901Z",
+          "updatedAt": 1792998882595
+        },
+        {
+          "id": "dp_1792998885866_3ipi",
+          "title": "Coi lý thuyết bài 3",
+          "section": "afternoon",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-26T07:14:55.170Z",
+          "updatedAt": 1792998885866
         }
       ],
       "daysHistory": {
@@ -180,8 +263,13 @@
         "dp_1792834636314": 1792925057840,
         "dp_1792834628350": 1792925058435
       },
-      "activeTimer": null,
-      "activeTimerChangedAt": 1792924825054
+      "activeTimer": {
+        "taskId": "dp_1792998485875_6jri",
+        "taskTitle": "Vở ghi hóa",
+        "startedAt": 1792998488648,
+        "date": "2026-10-26"
+      },
+      "activeTimerChangedAt": 1792998488631
     },
     "discordRpc": {
       "enabled": true,

@@ -2532,22 +2532,26 @@
       filter: brightness(0.97);
     }
 
-    /* Notion-style 6-dot Drag Handles */
+    /* Notion-style 6-dot Drag Handles (Optimized for both Desktop & Mobile Touch) */
     .task-drag-handle,
     .habit-drag-handle {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 16px;
-      height: 22px;
+      width: 22px;
+      height: 26px;
+      padding: 2px 3px;
       color: #9B9A97;
-      opacity: 0.25;
+      opacity: 0.35;
       cursor: grab;
-      border-radius: 3px;
+      border-radius: 4px;
       transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
       flex-shrink: 0;
       user-select: none;
-      margin-right: -4px;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: none !important;
+      margin-right: -2px;
     }
 
     .planner-task-item:hover .task-drag-handle,
@@ -2567,6 +2571,16 @@
       cursor: grabbing;
     }
 
+    @media (max-width: 768px) {
+      .task-drag-handle,
+      .habit-drag-handle {
+        opacity: 0.75 !important;
+        width: 28px;
+        height: 32px;
+        padding: 4px 6px;
+      }
+    }
+
     /* Dragging ghost styling */
     .planner-task-item.is-dragging,
     .habit-table tr.is-dragging {
@@ -2574,29 +2588,40 @@
       background: rgba(35, 131, 226, 0.08) !important;
     }
 
+    /* Touch dragging active item styling */
+    .planner-task-item.is-touch-dragging,
+    .habit-table tr.is-touch-dragging {
+      opacity: 0.78 !important;
+      background: rgba(35, 131, 226, 0.14) !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
+      border-radius: 6px;
+      z-index: 100 !important;
+      position: relative;
+    }
+
     /* Drop indicator lines */
     .planner-task-item.drag-over-top {
-      border-top: 2px solid var(--notion-blue, #2383E2) !important;
+      border-top: 2.5px solid var(--notion-blue, #2383E2) !important;
     }
 
     .planner-task-item.drag-over-bottom {
-      border-bottom: 2px solid var(--notion-blue, #2383E2) !important;
+      border-bottom: 2.5px solid var(--notion-blue, #2383E2) !important;
     }
 
     .habit-table tr.drag-over-top td {
-      border-top: 2px solid var(--notion-blue, #2383E2) !important;
+      border-top: 2.5px solid var(--notion-blue, #2383E2) !important;
     }
 
     .habit-table tr.drag-over-bottom td {
-      border-bottom: 2px solid var(--notion-blue, #2383E2) !important;
+      border-bottom: 2.5px solid var(--notion-blue, #2383E2) !important;
     }
 
     .planner-task-list.drag-over-empty {
-      background: rgba(35, 131, 226, 0.04);
-      outline: 1.5px dashed var(--notion-blue, #2383E2);
+      background: rgba(35, 131, 226, 0.05);
+      outline: 2px dashed var(--notion-blue, #2383E2);
       outline-offset: -2px;
       border-radius: 6px;
-      min-height: 44px;
+      min-height: 48px;
     }
 
     /* Notion Floating Category Popover Menu */
@@ -3207,6 +3232,34 @@
     .btn-ypt-toggle-cal.active {
       background: #F3F4F6;
       border-color: #D1D5DB;
+      font-weight: 600;
+    }
+
+    .btn-ypt-toggle-notif {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .btn-ypt-toggle-notif:hover {
+      background: var(--bg-hover);
+      border-color: #D3D1CB;
+    }
+
+    .btn-ypt-toggle-notif.active {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: #10B981;
+      color: #059669;
       font-weight: 600;
     }
 
@@ -4923,6 +4976,15 @@
               <span class="ypt-metric-val highlight" id="yptMaxFocusVal">00:00:00</span>
             </div>
 
+            <button class="btn-ypt-toggle-notif" id="btnToggleYptNotif" onclick="toggleYptNotification()"
+              title="Bật/Tắt thông báo đếm giờ trên điện thoại (hiện tiến độ chạy ngầm)">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span id="yptNotifBtnLabel">Bật thông báo</span>
+            </button>
+
             <button class="btn-ypt-toggle-cal" id="btnToggleYptCal" onclick="toggleYptCalendar()">
               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -5583,16 +5645,289 @@
     }
 
     /* ========================================================
+       LOCAL-FIRST PERSISTENCE & AUTO-HEALING CLOUD SYNC
+       Guarantees zero data loss even if Render spins down or sleeps!
+       ======================================================== */
+    const LOCAL_PLANNER_KEY = 'elias_daily_planner_v2';
+    const LOCAL_HABITS_KEY = 'elias_habits_v2';
+
+    function savePlannerToLocal() {
+      try {
+        localStorage.setItem(LOCAL_PLANNER_KEY, JSON.stringify({
+          ...plannerData,
+          localSavedAt: Date.now()
+        }));
+      } catch (e) {
+        console.warn('LocalStorage save planner error:', e);
+      }
+    }
+
+    function loadPlannerFromLocal() {
+      try {
+        const raw = localStorage.getItem(LOCAL_PLANNER_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.tasks)) return parsed;
+      } catch (e) {
+        console.warn('LocalStorage load planner error:', e);
+      }
+      return null;
+    }
+
+    function saveHabitsToLocal() {
+      try {
+        localStorage.setItem(LOCAL_HABITS_KEY, JSON.stringify({
+          ...habitsData,
+          localSavedAt: Date.now()
+        }));
+      } catch (e) {
+        console.warn('LocalStorage save habits error:', e);
+      }
+    }
+
+    function loadHabitsFromLocal() {
+      try {
+        const raw = localStorage.getItem(LOCAL_HABITS_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.list)) return parsed;
+      } catch (e) {
+        console.warn('LocalStorage load habits error:', e);
+      }
+      return null;
+    }
+
+    let _isPushingPlanner = false;
+    async function pushPlannerToServer(dataToSync) {
+      if (_isPushingPlanner) return;
+      _isPushingPlanner = true;
+      try {
+        await fetch('/api/sync-daily', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tasks: dataToSync.tasks,
+            daysHistory: dataToSync.daysHistory,
+            deletedTasks: dataToSync.deletedTasks,
+            activeTimer: dataToSync.activeTimer,
+            activeTimerChangedAt: dataToSync.activeTimerChangedAt,
+            habits: habitsData
+          })
+        });
+      } catch (e) {
+        console.warn('[Auto-Heal] Push planner failed (will retry):', e);
+      } finally {
+        _isPushingPlanner = false;
+      }
+    }
+
+    let _isPushingHabits = false;
+    async function pushHabitsToServer(habitsToSync) {
+      if (_isPushingHabits) return;
+      _isPushingHabits = true;
+      try {
+        await fetch('/api/sync-daily', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tasks: plannerData?.tasks || [],
+            daysHistory: plannerData?.daysHistory || {},
+            deletedTasks: plannerData?.deletedTasks || {},
+            activeTimer: plannerData?.activeTimer || null,
+            activeTimerChangedAt: plannerData?.activeTimerChangedAt || 0,
+            habits: habitsToSync
+          })
+        });
+      } catch (e) {
+        console.warn('[Auto-Heal] Push habits failed:', e);
+      } finally {
+        _isPushingHabits = false;
+      }
+    }
+
+    function reconcileHabitsWithServer(serverHabits) {
+      if (!serverHabits) return;
+      const local = loadHabitsFromLocal() || habitsData || { list: [], history: {}, deletedHabits: {}, changedAt: 0 };
+      const server = serverHabits;
+
+      let needsPush = false;
+      const mergedDeleted = { ...(server.deletedHabits || {}), ...(local.deletedHabits || {}) };
+
+      // Merge habit list
+      const habitMap = new Map();
+      (server.list || []).forEach(h => {
+        if (h && h.id && !mergedDeleted[h.id]) habitMap.set(String(h.id), { ...h });
+      });
+
+      (local.list || []).forEach(h => {
+        if (!h || !h.id || mergedDeleted[h.id]) return;
+        if (!habitMap.has(String(h.id))) {
+          habitMap.set(String(h.id), { ...h });
+          needsPush = true;
+        }
+      });
+
+      // Merge history (Date-Union)
+      const mergedHistory = { ...(server.history || {}) };
+      for (const [dateKey, lArr] of Object.entries(local.history || {})) {
+        if (!Array.isArray(lArr)) continue;
+        if (!mergedHistory[dateKey]) {
+          mergedHistory[dateKey] = [...lArr];
+          if (lArr.length > 0) needsPush = true;
+        } else {
+          const sArr = mergedHistory[dateKey] || [];
+          const union = Array.from(new Set([...sArr, ...lArr])).filter(id => !mergedDeleted[id]);
+          if (union.length !== sArr.length) needsPush = true;
+          mergedHistory[dateKey] = union;
+        }
+      }
+
+      habitsData = {
+        list: Array.from(habitMap.values()),
+        history: mergedHistory,
+        deletedHabits: mergedDeleted,
+        changedAt: Math.max(server.changedAt || 0, local.changedAt || 0)
+      };
+
+      saveHabitsToLocal();
+
+      if (needsPush) {
+        console.log('[Auto-Heal] Pushing restored habits to server');
+        pushHabitsToServer(habitsData);
+      }
+    }
+
+    function reconcilePlannerWithServer(freshData) {
+      if (!freshData) return;
+      const local = loadPlannerFromLocal() || plannerData || { tasks: [], daysHistory: {}, activeTimer: null };
+      const server = freshData;
+
+      let needsPushToServer = false;
+
+      // 1. Merge deletedTasks tombstones
+      const mergedDeleted = { ...(server.deletedTasks || {}), ...(local.deletedTasks || {}) };
+
+      // 2. Build task map from server tasks
+      const taskMap = new Map();
+      (server.tasks || []).forEach(t => {
+        if (t && t.id) taskMap.set(String(t.id), { ...t });
+      });
+
+      // 3. Inspect local tasks
+      (local.tasks || []).forEach(localTask => {
+        if (!localTask || !localTask.id) return;
+        const idStr = String(localTask.id);
+        const delTime = mergedDeleted[idStr];
+        const localUpdated = localTask.updatedAt || (localTask.createdAt ? new Date(localTask.createdAt).getTime() : 0);
+
+        if (delTime && delTime >= localUpdated) {
+          taskMap.delete(idStr);
+          return;
+        }
+
+        if (!taskMap.has(idStr)) {
+          // Render wake-up case: server is missing this task that was created locally!
+          taskMap.set(idStr, { ...localTask });
+          needsPushToServer = true;
+          console.log(`[Auto-Heal] Rescuing task missing on server: "${localTask.title}" (${idStr})`);
+        } else {
+          const serverTask = taskMap.get(idStr);
+          const serverUpdated = serverTask.updatedAt || (serverTask.createdAt ? new Date(serverTask.createdAt).getTime() : 0);
+
+          if (localUpdated > serverUpdated) {
+            taskMap.set(idStr, { ...serverTask, ...localTask });
+            needsPushToServer = true;
+          }
+
+          const currentItem = taskMap.get(idStr);
+          const maxSpent = Math.max(localTask.spentSeconds || 0, serverTask.spentSeconds || 0);
+          if (maxSpent > (currentItem.spentSeconds || 0)) {
+            currentItem.spentSeconds = maxSpent;
+          }
+          if (maxSpent > (serverTask.spentSeconds || 0)) {
+            needsPushToServer = true;
+          }
+        }
+      });
+
+      // 4. Merge daysHistory
+      const mergedHistory = { ...(server.daysHistory || {}) };
+      const localHistory = local.daysHistory || {};
+      for (const [dateKey, lDay] of Object.entries(localHistory)) {
+        if (!mergedHistory[dateKey]) {
+          mergedHistory[dateKey] = { ...lDay };
+          if ((lDay.totalSeconds || 0) > 0) needsPushToServer = true;
+        } else {
+          const sDay = mergedHistory[dateKey];
+          const maxTotal = Math.max(lDay.totalSeconds || 0, sDay.totalSeconds || 0);
+          const maxFocus = Math.max(lDay.maxFocusSeconds || 0, sDay.maxFocusSeconds || 0);
+          if (maxTotal > (sDay.totalSeconds || 0)) {
+            needsPushToServer = true;
+          }
+          mergedHistory[dateKey] = {
+            totalSeconds: maxTotal,
+            maxFocusSeconds: maxFocus
+          };
+        }
+      }
+
+      // 5. Merge activeTimer
+      let finalActiveTimer = server.activeTimer;
+      const localTimerChangedAt = local.activeTimerChangedAt || 0;
+      const serverTimerChangedAt = server.activeTimerChangedAt || 0;
+      if (localTimerChangedAt > serverTimerChangedAt) {
+        finalActiveTimer = local.activeTimer;
+        needsPushToServer = true;
+      }
+
+      const finalTasks = Array.from(taskMap.values()).filter(t => {
+        const delTime = mergedDeleted[t.id];
+        if (!delTime) return true;
+        const tUp = t.updatedAt || (t.createdAt ? new Date(t.createdAt).getTime() : 0);
+        return tUp > delTime;
+      });
+
+      plannerData = {
+        tasks: finalTasks,
+        daysHistory: mergedHistory,
+        activeTimer: finalActiveTimer,
+        activeTimerChangedAt: Math.max(localTimerChangedAt, serverTimerChangedAt),
+        deletedTasks: mergedDeleted
+      };
+
+      savePlannerToLocal();
+
+      if (needsPushToServer) {
+        console.log('[Auto-Heal] Pushing local-first state to restore server after wake-up');
+        pushPlannerToServer(plannerData);
+      }
+    }
+
+    async function checkpointTimerToServer(taskId) {
+      if (isTaskMutating > 0 || isTimerSwitching) return;
+      try {
+        await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'checkpoint-timer', id: taskId })
+        });
+      } catch (e) {
+        // Non-blocking
+      }
+    }
+
+    /* ========================================================
        HABIT TRACKER & DISCIPLINE HEATMAP CONTROLLER
        ======================================================== */
-    let habitsData = { list: [], history: {} };
+    let habitsData = loadHabitsFromLocal() || { list: [], history: {}, deletedHabits: {} };
     let currentHabitWeekOffset = 0; // 0 = current week
 
     async function loadHabits(notify = false) {
       try {
         const res = await fetch('/api/habits');
         if (res.ok) {
-          habitsData = await res.json();
+          const freshHabits = await res.json();
+          reconcileHabitsWithServer(freshHabits);
           renderHabitsPage();
           if (notify) toast('Đã cập nhật dữ liệu kỷ luật');
         }
@@ -5877,7 +6212,8 @@
                   <div class="habit-drag-handle" 
                        title="Kéo để di chuyển" 
                        data-tooltip="Kéo để di chuyển"
-                       onmousedown="enableHabitDrag(event, '${h.id}')">
+                       onmousedown="enableHabitDrag(event, '${h.id}')"
+                       ontouchstart="handleHabitTouchStart(event, '${h.id}')">
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
                       <circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/>
                       <circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/>
@@ -6043,6 +6379,8 @@
         habitsData.history[date].push(id);
       }
 
+      habitsData.changedAt = Date.now();
+      saveHabitsToLocal();
       // Instant optimistic render
       renderHabitsPage();
 
@@ -6073,10 +6411,17 @@
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.habits) habitsData = data.habits;
+          if (data.habits) {
+            habitsData = data.habits;
+            saveHabitsToLocal();
+          }
           titleInput.value = '';
           renderHabitsPage();
           toast(`Đã thêm thói quen: ${title}`);
+          const newlyAdded = (habitsData.list || [])[habitsData.list.length - 1];
+          if (newlyAdded) {
+            setTimeout(() => startInlineHabitTitleEdit(null, newlyAdded.id), 40);
+          }
         }
       } catch (err) {
         console.error('Lỗi thêm habit:', err);
@@ -6101,6 +6446,11 @@
           for (const d of Object.keys(habitsData.history || {})) {
             habitsData.history[d] = (habitsData.history[d] || []).filter(item => String(item) !== String(id));
           }
+          if (!habitsData.deletedHabits) habitsData.deletedHabits = {};
+          habitsData.deletedHabits[id] = Date.now();
+          habitsData.changedAt = Date.now();
+          saveHabitsToLocal();
+
           renderHabitsPage();
           toast(`Đang xóa thói quen: ${title}...`);
 
@@ -6112,17 +6462,22 @@
             });
             if (res.ok) {
               const data = await res.json();
-              if (data.habits) habitsData = data.habits;
+              if (data.habits) {
+                habitsData = data.habits;
+                saveHabitsToLocal();
+              }
               renderHabitsPage();
               toast('Đã xóa thói quen');
             } else {
               habitsData = prevHabits;
+              saveHabitsToLocal();
               renderHabitsPage();
               toast('Lỗi khi xóa thói quen từ máy chủ');
             }
           } catch (err) {
             console.error('Lỗi xóa habit:', err);
             habitsData = prevHabits;
+            saveHabitsToLocal();
             renderHabitsPage();
             toast('Lỗi kết nối khi xóa thói quen');
           }
@@ -6195,6 +6550,10 @@
       const sourceId = draggedHabitId;
       draggedHabitId = null;
 
+      await applyHabitTouchReorder(sourceId, targetId, isTop);
+    }
+
+    async function applyHabitTouchReorder(sourceId, targetId, isTop) {
       const list = [...(habitsData.list || [])];
       const sourceIdx = list.findIndex(h => String(h.id) === String(sourceId));
       if (sourceIdx < 0) return;
@@ -6209,6 +6568,8 @@
       }
 
       habitsData.list = list;
+      habitsData.changedAt = Date.now();
+      saveHabitsToLocal();
       renderHabitsPage();
       toast('Đã đổi thứ tự thói quen');
 
@@ -6223,7 +6584,10 @@
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.habits) habitsData = data.habits;
+          if (data.habits) {
+            habitsData = data.habits;
+            saveHabitsToLocal();
+          }
         }
       } catch (err) {
         console.error('Lỗi lưu thứ tự habit:', err);
@@ -6231,9 +6595,334 @@
     }
 
     /* ========================================================
+       LIVE RUNNING NOTIFICATION & MEDIASESSION CONTROLLER
+       Persistent notification on phone lock screen & notification shade
+       ======================================================== */
+    let silentAudioEl = null;
+    let lastRunningTaskId = null;
+
+    function getOrCreateSilentAudio() {
+      if (!silentAudioEl) {
+        silentAudioEl = document.createElement('audio');
+        silentAudioEl.id = 'yptSilentMediaLoop';
+        silentAudioEl.loop = true;
+        // Inaudible 1-second 44.1kHz WAV loop
+        silentAudioEl.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+        silentAudioEl.setAttribute('playsinline', '');
+        document.body.appendChild(silentAudioEl);
+      }
+      return silentAudioEl;
+    }
+
+    function startMediaSessionAudio() {
+      try {
+        const audio = getOrCreateSilentAudio();
+        if (audio.paused) {
+          audio.play().catch(e => console.log('[MediaSession] Audio note:', e));
+        }
+      } catch (e) {}
+    }
+
+    function stopMediaSessionAudio() {
+      try {
+        if (silentAudioEl && !silentAudioEl.paused) {
+          silentAudioEl.pause();
+        }
+      } catch (e) {}
+    }
+
+    function updateMediaSession(taskTitle, taskTimeSec, todayTotalSec) {
+      if (!('mediaSession' in navigator)) return;
+      try {
+        const titleStr = '🔥 ' + (taskTitle || 'Nhiệm vụ YPT');
+        const artistStr = '⏱ ' + formatHMS(taskTimeSec) + ' • YPT Focus';
+        const albumStr = 'Tổng hôm nay: ' + formatHMS(todayTotalSec);
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: titleStr,
+          artist: artistStr,
+          album: albumStr,
+          artwork: [
+            { src: window.location.origin + '/stewie.png', sizes: '512x512', type: 'image/png' },
+            { src: window.location.origin + '/elias_avatar.jpg', sizes: '512x512', type: 'image/jpeg' },
+            { src: window.location.origin + '/stewie.ico', sizes: '64x64', type: 'image/x-icon' }
+          ]
+        });
+        navigator.mediaSession.playbackState = 'playing';
+
+        navigator.mediaSession.setActionHandler('play', () => {
+          if (!plannerData.activeTimer && lastRunningTaskId) {
+            startTaskYptTimer(lastRunningTaskId);
+          }
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+          stopCurrentYptTimer();
+        });
+        navigator.mediaSession.setActionHandler('stop', () => {
+          stopCurrentYptTimer();
+        });
+      } catch (e) {
+        console.warn('[MediaSession] Metadata error:', e);
+      }
+    }
+
+    function clearMediaSession() {
+      if (!('mediaSession' in navigator)) return;
+      try {
+        navigator.mediaSession.playbackState = 'paused';
+      } catch (e) {}
+    }
+
+    function updateSystemNotification(taskTitle, taskTimeSec, todayTotalSec) {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const title = '🔥 ' + (taskTitle || 'Nhiệm vụ YPT');
+      const timeStr = formatHMS(taskTimeSec);
+      const todayStr = formatHMS(todayTotalSec);
+
+      try {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'UPDATE_TIMER_NOTIFICATION',
+            title: title,
+            timeStr: timeStr,
+            todayStr: todayStr
+          });
+        } else {
+          new Notification(title, {
+            body: `⏱ Thời gian: ${timeStr} • Tổng hôm nay: ${todayStr}`,
+            icon: '/stewie.png',
+            badge: '/stewie.ico',
+            tag: 'elias-ypt-timer',
+            renotify: false,
+            silent: true
+          });
+        }
+      } catch (e) {
+        console.warn('[Notification] Send error:', e);
+      }
+    }
+
+    function clearSystemNotification() {
+      if (!('Notification' in window)) return;
+      try {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'CLEAR_TIMER_NOTIFICATION'
+          });
+        }
+      } catch (e) {}
+    }
+
+    async function toggleYptNotification() {
+      if (!('Notification' in window)) {
+        toast('Trình duyệt không hỗ trợ Web Notification');
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        toast('🔔 Thông báo đếm giờ đang BẬT');
+        updateYptNotifButtonState();
+        updateSystemNotification('Sẵn sàng tập trung!', 0, getDayTotalSeconds(currentPlannerDate));
+        return;
+      }
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm === 'granted') {
+          toast('✅ Đã bật thông báo đếm giờ trên điện thoại!');
+          updateYptNotifButtonState();
+          updateSystemNotification('Sẵn sàng tập trung!', 0, getDayTotalSeconds(currentPlannerDate));
+        } else if (perm === 'denied') {
+          toast('⚠️ Thông báo bị từ chối trong cài đặt trình duyệt');
+          updateYptNotifButtonState();
+        }
+      } catch (e) {
+        console.warn('Request notification error:', e);
+      }
+    }
+
+    function updateYptNotifButtonState() {
+      const btn = document.getElementById('btnToggleYptNotif');
+      const label = document.getElementById('yptNotifBtnLabel');
+      if (!btn || !label) return;
+      if (!('Notification' in window)) {
+        btn.style.display = 'none';
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        btn.classList.add('active');
+        label.innerText = 'Thông báo: Bật';
+      } else if (Notification.permission === 'denied') {
+        btn.classList.remove('active');
+        label.innerText = 'Thông báo: Chặn';
+      } else {
+        btn.classList.remove('active');
+        label.innerText = 'Bật thông báo';
+      }
+    }
+
+    /* ========================================================
+       MOBILE TOUCH DRAG & DROP CONTROLLER (Phone & Tablet)
+       ======================================================== */
+    let touchDragContext = null;
+
+    function handleTaskTouchStart(e, taskId, section) {
+      if (!e.touches || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const taskEl = document.getElementById(`task_${taskId}`);
+      if (!taskEl) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (navigator.vibrate) navigator.vibrate(35);
+
+      touchDragContext = {
+        type: 'task',
+        id: taskId,
+        section: section,
+        element: taskEl,
+        currentTargetEl: null,
+        targetId: null,
+        targetSection: section,
+        dropPosition: null
+      };
+
+      taskEl.classList.add('is-touch-dragging');
+
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleTouchEnd, { passive: false });
+      window.addEventListener('touchcancel', handleTouchCancel, { passive: false });
+    }
+
+    function handleHabitTouchStart(e, habitId) {
+      if (!e.touches || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const rowEl = document.getElementById(`habitRow_${habitId}`);
+      if (!rowEl) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (navigator.vibrate) navigator.vibrate(35);
+
+      touchDragContext = {
+        type: 'habit',
+        id: habitId,
+        element: rowEl,
+        currentTargetEl: null,
+        targetId: null,
+        dropPosition: null
+      };
+
+      rowEl.classList.add('is-touch-dragging');
+
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleTouchEnd, { passive: false });
+      window.addEventListener('touchcancel', handleTouchCancel, { passive: false });
+    }
+
+    function handleTouchMove(e) {
+      if (!touchDragContext) return;
+      e.preventDefault();
+
+      const touch = e.touches[0];
+      const clientX = touch.clientX;
+      const clientY = touch.clientY;
+
+      const margin = 70;
+      if (clientY < margin) {
+        window.scrollBy({ top: -12, behavior: 'instant' });
+      } else if (clientY > window.innerHeight - margin) {
+        window.scrollBy({ top: 12, behavior: 'instant' });
+      }
+
+      const elem = document.elementFromPoint(clientX, clientY);
+      if (!elem) return;
+
+      clearTouchHoverIndicators();
+
+      if (touchDragContext.type === 'task') {
+        const taskItem = elem.closest('.planner-task-item');
+        const sectionList = elem.closest('.planner-task-list');
+
+        if (taskItem && taskItem.id !== `task_${touchDragContext.id}`) {
+          const rect = taskItem.getBoundingClientRect();
+          const isTop = (clientY - rect.top) < (rect.height / 2);
+          touchDragContext.currentTargetEl = taskItem;
+          touchDragContext.targetId = taskItem.getAttribute('data-task-id');
+          touchDragContext.targetSection = taskItem.getAttribute('data-section');
+          touchDragContext.dropPosition = isTop ? 'top' : 'bottom';
+          taskItem.classList.add(isTop ? 'drag-over-top' : 'drag-over-bottom');
+        } else if (sectionList) {
+          const sec = sectionList.id.replace('plannerTaskList_', '');
+          touchDragContext.currentTargetEl = sectionList;
+          touchDragContext.targetId = null;
+          touchDragContext.targetSection = sec;
+          touchDragContext.dropPosition = 'empty';
+          sectionList.classList.add('drag-over-empty');
+        }
+      } else if (touchDragContext.type === 'habit') {
+        const habitRow = elem.closest('#habitTableBody tr');
+        if (habitRow && habitRow.id !== `habitRow_${touchDragContext.id}`) {
+          const rect = habitRow.getBoundingClientRect();
+          const isTop = (clientY - rect.top) < (rect.height / 2);
+          touchDragContext.currentTargetEl = habitRow;
+          touchDragContext.targetId = habitRow.getAttribute('data-habit-id');
+          touchDragContext.dropPosition = isTop ? 'top' : 'bottom';
+          habitRow.classList.add(isTop ? 'drag-over-top' : 'drag-over-bottom');
+        }
+      }
+    }
+
+    async function handleTouchEnd(e) {
+      if (!touchDragContext) return;
+      const ctx = touchDragContext;
+      touchDragContext = null;
+
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchCancel);
+
+      if (ctx.element) ctx.element.classList.remove('is-touch-dragging');
+      clearTouchHoverIndicators();
+
+      if (navigator.vibrate) navigator.vibrate(25);
+
+      if (ctx.type === 'task') {
+        if (ctx.targetId && String(ctx.targetId) !== String(ctx.id)) {
+          await applyTaskReorder(ctx.id, ctx.targetId, ctx.dropPosition === 'top' ? 'before' : 'after', ctx.targetSection);
+        } else if (ctx.dropPosition === 'empty' && ctx.targetSection) {
+          await moveTaskToSectionEnd(ctx.id, ctx.targetSection);
+        }
+      } else if (ctx.type === 'habit') {
+        if (ctx.targetId && String(ctx.targetId) !== String(ctx.id)) {
+          await applyHabitTouchReorder(ctx.id, ctx.targetId, ctx.dropPosition === 'top');
+        }
+      }
+    }
+
+    function handleTouchCancel(e) {
+      if (!touchDragContext) return;
+      if (touchDragContext.element) touchDragContext.element.classList.remove('is-touch-dragging');
+      touchDragContext = null;
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchCancel);
+      clearTouchHoverIndicators();
+    }
+
+    function clearTouchHoverIndicators() {
+      document.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(el => {
+        el.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+      document.querySelectorAll('.drag-over-empty').forEach(el => {
+        el.classList.remove('drag-over-empty');
+      });
+    }
+
+    /* ========================================================
        DAILY PLANNER & YPT FOCUS TIMER CONTROLLER
        ======================================================== */
-    let plannerData = { tasks: [], daysHistory: {}, activeTimer: null };
+    let plannerData = loadPlannerFromLocal() || { tasks: [], daysHistory: {}, activeTimer: null };
     let currentPlannerDate = new Date().toISOString().slice(0, 10);
     let currentPopoverTaskId = null;
     let activeDraftSection = null;
@@ -6344,6 +7033,7 @@
         if (document.title.startsWith('🔥')) {
           document.title = 'ELIAS WORKSPACE';
         }
+        clearMediaSession();
         return;
       }
 
@@ -6387,6 +7077,17 @@
       }
 
       document.title = `🔥 ${formatHMS(taskCumulativeSec)} - ${active.taskTitle || 'Focus'} | ELIAS`;
+
+      // Live Background & Notification updates
+      updateMediaSession(active.taskTitle, taskCumulativeSec, todayTotalSec);
+      if (liveSessionSec % 5 === 0 || liveSessionSec <= 2) {
+        updateSystemNotification(active.taskTitle, taskCumulativeSec, todayTotalSec);
+      }
+      // Periodic 15s Checkpoint to localStorage & server
+      if (liveSessionSec > 0 && liveSessionSec % 15 === 0) {
+        savePlannerToLocal();
+        checkpointTimerToServer(active.taskId);
+      }
     }
 
     let isTimerSwitching = false;
@@ -6409,8 +7110,11 @@
           const taskChanged = plannerData.activeTimer?.taskId !== freshData.activeTimer?.taskId;
 
           // Check if tasks list, statuses, or study history changed
-          const tasksChanged = JSON.stringify(plannerData.tasks || []) !== JSON.stringify(freshData.tasks || []);
-          const historyChanged = JSON.stringify(plannerData.daysHistory || {}) !== JSON.stringify(freshData.daysHistory || {});
+          const prevTasksJson = JSON.stringify(plannerData.tasks || []);
+          const prevHistoryJson = JSON.stringify(plannerData.daysHistory || {});
+
+          // Reconcile conflict-free with local-first source of truth
+          reconcilePlannerWithServer(freshData);
 
           // Avoid re-rendering while user is actively typing in an input field
           const activeEl = document.activeElement;
@@ -6420,9 +7124,11 @@
             activeEl.classList?.contains('planner-draft-input') ||
             activeEl.closest?.('.planner-draft-item')
           );
-          plannerData = freshData;
+
           if (!isUserTyping) {
-            if (wasRunning !== isRunningNow || taskChanged || tasksChanged || historyChanged) {
+            const nowTasksJson = JSON.stringify(plannerData.tasks || []);
+            const nowHistoryJson = JSON.stringify(plannerData.daysHistory || {});
+            if (wasRunning !== isRunningNow || taskChanged || prevTasksJson !== nowTasksJson || prevHistoryJson !== nowHistoryJson) {
               renderDailyPlannerPage();
             }
           }
@@ -6551,7 +7257,8 @@
                   <div class="task-drag-handle" 
                        title="Kéo để di chuyển" 
                        data-tooltip="Kéo để di chuyển"
-                       onmousedown="enableTaskDrag(event, '${t.id}')">
+                       onmousedown="enableTaskDrag(event, '${t.id}')"
+                       ontouchstart="handleTaskTouchStart(event, '${t.id}', '${sec}')">
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
                       <circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/>
                       <circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/>
@@ -6766,6 +7473,7 @@
       }
 
       plannerData.tasks = tasks;
+      savePlannerToLocal();
       renderDailyPlannerPage();
       toast('Đã di chuyển công việc');
 
@@ -6783,8 +7491,9 @@
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.dailyPlanner?.tasks) {
-            plannerData.tasks = data.dailyPlanner.tasks;
+          if (data.dailyPlanner) {
+            reconcilePlannerWithServer(data.dailyPlanner);
+            renderDailyPlannerPage();
           }
         }
       } catch (err) {
@@ -6806,6 +7515,7 @@
       tasks.push(sourceTask);
 
       plannerData.tasks = tasks;
+      savePlannerToLocal();
       renderDailyPlannerPage();
       toast(`Đã chuyển sang ${targetSec.charAt(0).toUpperCase() + targetSec.slice(1)}`);
 
@@ -6823,8 +7533,9 @@
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.dailyPlanner?.tasks) {
-            plannerData.tasks = data.dailyPlanner.tasks;
+          if (data.dailyPlanner) {
+            reconcilePlannerWithServer(data.dailyPlanner);
+            renderDailyPlannerPage();
           }
         }
       } catch (err) {
@@ -6925,6 +7636,10 @@
     async function startTaskYptTimer(taskId) {
       const task = (plannerData.tasks || []).find(t => t.id === taskId);
       if (!task) return;
+      lastRunningTaskId = taskId;
+
+      // Start silent background audio to keep tab alive and show Android media card
+      startMediaSessionAudio();
 
       // If switching from another running task, immediately accumulate previous task time in memory so UI is instant:
       if (plannerData.activeTimer && plannerData.activeTimer.taskId !== taskId) {
@@ -6951,9 +7666,22 @@
         startedAt: getSyncedServerNow(),
         date: currentPlannerDate
       };
+      plannerData.activeTimerChangedAt = Date.now();
+      savePlannerToLocal();
+
       renderDailyPlannerPage();
       updateYptLiveTimers();
       toast(`🔥 Bắt đầu bấm giờ: ${task.title}`);
+
+      // Request notification permission if not yet decided
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(perm => {
+          updateYptNotifButtonState();
+          if (perm === 'granted') {
+            updateSystemNotification(task.title, (task.spentSeconds || 0), getDayTotalSeconds(currentPlannerDate));
+          }
+        });
+      }
 
       isTimerSwitching = true;
       try {
@@ -6974,7 +7702,9 @@
           if (data.serverTime) {
             updateServerClockSkew(data.serverTime, reqStart, reqEnd);
           }
-          if (data.dailyPlanner) plannerData = data.dailyPlanner;
+          if (data.dailyPlanner) {
+            reconcilePlannerWithServer(data.dailyPlanner);
+          }
           renderDailyPlannerPage();
           updateYptLiveTimers();
         }
@@ -7004,6 +7734,13 @@
         sessionSec
       );
       plannerData.activeTimer = null;
+      plannerData.activeTimerChangedAt = Date.now();
+      savePlannerToLocal();
+
+      stopMediaSessionAudio();
+      clearMediaSession();
+      clearSystemNotification();
+
       document.title = 'ELIAS WORKSPACE';
       renderDailyPlannerPage();
       updateYptLiveTimers();
@@ -7023,7 +7760,9 @@
           if (data.serverTime) {
             updateServerClockSkew(data.serverTime, reqStart, reqEnd);
           }
-          if (data.dailyPlanner) plannerData = data.dailyPlanner;
+          if (data.dailyPlanner) {
+            reconcilePlannerWithServer(data.dailyPlanner);
+          }
           renderDailyPlannerPage();
           updateYptLiveTimers();
         }
@@ -7050,6 +7789,7 @@
       task.status = status;
       task.completed = (status === 'completed');
       task.updatedAt = Date.now();
+      savePlannerToLocal();
 
       if (status === 'completed' && plannerData.activeTimer?.taskId === taskId) {
         await stopCurrentYptTimer();
@@ -7066,8 +7806,10 @@
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.dailyPlanner) plannerData = data.dailyPlanner;
-          renderDailyPlannerPage();
+          if (data.dailyPlanner) {
+            reconcilePlannerWithServer(data.dailyPlanner);
+            renderDailyPlannerPage();
+          }
         }
       } catch (err) {
         console.error('Lỗi set status:', err);
@@ -7148,7 +7890,10 @@
 
         if (res.ok) {
           const data = await res.json();
-          if (data.dailyPlanner) plannerData = data.dailyPlanner;
+          if (data.dailyPlanner) {
+            reconcilePlannerWithServer(data.dailyPlanner);
+          }
+          savePlannerToLocal();
           toast(`Đã thêm: ${title}`);
           if (window.innerWidth > 768) {
             activeDraftSection = section;
@@ -7186,6 +7931,7 @@
         } else {
           task.completedAt = null;
         }
+        savePlannerToLocal();
         renderDailyPlannerPage();
       }
 
@@ -7199,7 +7945,7 @@
         if (res.ok) {
           const data = await res.json();
           if (data.dailyPlanner) {
-            plannerData = data.dailyPlanner;
+            reconcilePlannerWithServer(data.dailyPlanner);
             renderDailyPlannerPage();
           }
         }
@@ -7215,6 +7961,9 @@
       if (plannerData.activeTimer?.taskId === id) {
         plannerData.activeTimer = null;
       }
+      if (!plannerData.deletedTasks) plannerData.deletedTasks = {};
+      plannerData.deletedTasks[id] = Date.now();
+      savePlannerToLocal();
       renderDailyPlannerPage();
 
       isTaskMutating++;
@@ -7431,6 +8180,7 @@
           task.deadline = val;
           task.updatedAt = Date.now();
         }
+        savePlannerToLocal();
         renderDailyPlannerPage();
 
         isTaskMutating++;
@@ -7493,6 +8243,7 @@
           task.title = newTitle;
           task.updatedAt = Date.now();
         }
+        savePlannerToLocal();
         renderDailyPlannerPage();
 
         isTaskMutating++;
@@ -9983,10 +10734,13 @@
               const wasRunning = !!plannerData.activeTimer;
               const isRunningNow = !!data.dailyPlanner?.activeTimer;
               const taskChanged = plannerData.activeTimer?.taskId !== data.dailyPlanner?.activeTimer?.taskId;
-              const tasksChanged = JSON.stringify(plannerData.tasks || []) !== JSON.stringify(data.dailyPlanner?.tasks || []);
-              const historyChanged = JSON.stringify(plannerData.daysHistory || {}) !== JSON.stringify(data.dailyPlanner?.daysHistory || {});
+              const prevTasksJson = JSON.stringify(plannerData.tasks || []);
+              const prevHistoryJson = JSON.stringify(plannerData.daysHistory || {});
 
-              plannerData = data.dailyPlanner;
+              if (data.dailyPlanner) {
+                reconcilePlannerWithServer(data.dailyPlanner);
+              }
+
               const activeEl = document.activeElement;
               const isUserTyping = activeEl && (
                 activeEl.classList?.contains('inline-task-title-input') ||
@@ -9994,19 +10748,20 @@
                 activeEl.classList?.contains('planner-draft-input') ||
                 activeEl.closest?.('.planner-draft-item')
               );
-              if (!isUserTyping && (wasRunning !== isRunningNow || taskChanged || tasksChanged || historyChanged)) {
-                renderDailyPlannerPage();
+              if (!isUserTyping) {
+                const nowTasksJson = JSON.stringify(plannerData.tasks || []);
+                const nowHistoryJson = JSON.stringify(plannerData.daysHistory || {});
+                if (wasRunning !== isRunningNow || taskChanged || prevTasksJson !== nowTasksJson || prevHistoryJson !== nowHistoryJson) {
+                  renderDailyPlannerPage();
+                }
               }
               updateYptLiveTimers();
 
               // Also update habits if present
               if (data.habits) {
-                const habitsStr = JSON.stringify(data.habits);
-                if (habitsStr !== JSON.stringify(habitsData)) {
-                  habitsData = data.habits;
-                  if (currentPage === 'habits' && !isUserTyping) {
-                    renderHabitsPage();
-                  }
+                reconcileHabitsWithServer(data.habits);
+                if (currentPage === 'habits' && !isUserTyping) {
+                  renderHabitsPage();
                 }
               }
             }
@@ -10028,6 +10783,23 @@
 
     // Fallback poll: only runs every 10s as safety net when SSE is active
     setInterval(() => { if (!_sseConnected) loadDailyPlanner(false); }, 10000);
+
+    // Save timer checkpoint on page hide or tab close
+    window.addEventListener('visibilitychange', () => {
+      if (plannerData.activeTimer) {
+        savePlannerToLocal();
+        checkpointTimerToServer(plannerData.activeTimer.taskId);
+      }
+    });
+    window.addEventListener('beforeunload', () => {
+      if (plannerData.activeTimer) {
+        savePlannerToLocal();
+        checkpointTimerToServer(plannerData.activeTimer.taskId);
+      }
+    });
+
+    // Update notification button state on boot
+    updateYptNotifButtonState();
 
     // On Cloud / Mobile: default to Daily Plan so user lands directly on tasks
     const defaultPage = isCloudHost ? 'planner' : 'sat';
