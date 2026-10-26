@@ -1,5 +1,5 @@
-// Minimal Service Worker for PWA installation & Background Timer Notifications
-const CACHE_NAME = 'elias-pwa-v5';
+// Minimal Service Worker for PWA installation
+const CACHE_NAME = 'elias-pwa-v6';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -9,9 +9,10 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     Promise.all([
       self.clients.claim(),
+      // Close all notifications on device permanently
       self.registration.getNotifications().then(notifs => {
         notifs.forEach(n => n.close());
-      })
+      }).catch(() => {})
     ])
   );
 });
@@ -20,41 +21,5 @@ self.addEventListener('fetch', (event) => {
   // Pass-through fetch with network first
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
-  );
-});
-
-// Timer Notification Handlers for Mobile Phone & PC (Exact YPT Style)
-self.addEventListener('message', (event) => {
-  if (event.data?.type === 'UPDATE_TIMER_NOTIFICATION') {
-    const { title } = event.data;
-    const origin = self.location.origin;
-    self.registration.showNotification(title, {
-      body: '',
-      icon: origin + '/app_icon.png',
-      tag: 'elias-ypt-timer',
-      renotify: false,
-      silent: true,
-      requireInteraction: true
-    }).catch(e => console.warn('[SW] Notification error:', e));
-  } else if (event.data?.type === 'CLEAR_TIMER_NOTIFICATION') {
-    self.registration.getNotifications({ tag: 'elias-ypt-timer' }).then(notifs => {
-      notifs.forEach(n => n.close());
-    });
-  }
-});
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      for (const client of windowClients) {
-        if (client.url && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow('/');
-      }
-    })
   );
 });

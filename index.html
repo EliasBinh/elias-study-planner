@@ -3235,33 +3235,6 @@
       font-weight: 600;
     }
 
-    .btn-ypt-toggle-notif {
-      background: #FFFFFF;
-      border: 1px solid var(--border-subtle);
-      color: var(--text-primary);
-      padding: 5px 11px;
-      border-radius: 6px;
-      font-size: 12.5px;
-      font-weight: 500;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .btn-ypt-toggle-notif:hover {
-      background: var(--bg-hover);
-      border-color: #D3D1CB;
-    }
-
-    .btn-ypt-toggle-notif.active {
-      background: rgba(16, 185, 129, 0.08);
-      border-color: #10B981;
-      color: #059669;
-      font-weight: 600;
-    }
 
     /* Discord Rich Presence Status Dot & UI */
     .discord-status-dot {
@@ -4976,14 +4949,6 @@
               <span class="ypt-metric-val highlight" id="yptMaxFocusVal">00:00:00</span>
             </div>
 
-            <button class="btn-ypt-toggle-notif" id="btnToggleYptNotif" onclick="toggleYptNotification()"
-              title="Bật/Tắt thông báo đếm giờ trên điện thoại (hiện tiến độ chạy ngầm)">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span id="yptNotifBtnLabel">Bật thông báo</span>
-            </button>
 
             <button class="btn-ypt-toggle-cal" id="btnToggleYptCal" onclick="toggleYptCalendar()">
               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -6595,260 +6560,25 @@
     }
 
     /* ========================================================
-       LIVE RUNNING NOTIFICATION & MEDIASESSION CONTROLLER
-       Persistent notification on phone lock screen & notification shade
+       NOTIFICATIONS PERMANENTLY DISABLED
        ======================================================== */
-    let silentAudioEl = null;
-    let lastRunningTaskId = null;
-    let cachedSilentWavUrl = null;
-
-    // Generate valid 5-second silent PCM WAV so Android ExoPlayer / Chrome creates persistent media notification
-    function generateSilentWavBlobUrl() {
-      if (cachedSilentWavUrl) return cachedSilentWavUrl;
-      const sampleRate = 8000;
-      const numSamples = sampleRate * 5; // 5 seconds
-      const buffer = new ArrayBuffer(44 + numSamples);
-      const view = new DataView(buffer);
-
-      // RIFF identifier
-      view.setUint32(0, 0x52494646, false); // "RIFF"
-      view.setUint32(4, 36 + numSamples, true);
-      view.setUint32(8, 0x57415645, false); // "WAVE"
-
-      // fmt sub-chunk
-      view.setUint32(12, 0x666d7420, false); // "fmt "
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true); // PCM format
-      view.setUint16(22, 1, true); // Mono
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, sampleRate, true);
-      view.setUint16(32, 1, true);
-      view.setUint16(34, 8, true); // 8-bit
-
-      // data sub-chunk
-      view.setUint32(36, 0x64617461, false); // "data"
-      // Generate 25Hz sub-audible tone (inaudible on phone speakers, but non-zero RMS so Chromium MediaSession activates)
-      for (let i = 0; i < numSamples; i++) {
-        const t = i / sampleRate;
-        bytes[i] = Math.round(128 + 4 * Math.sin(2 * Math.PI * 25 * t));
-      }
-
-      const blob = new Blob([buffer], { type: 'audio/wav' });
-      cachedSilentWavUrl = URL.createObjectURL(blob);
-      return cachedSilentWavUrl;
-    }
-
-    function getOrCreateSilentAudio() {
-      if (!silentAudioEl) {
-        silentAudioEl = document.createElement('audio');
-        silentAudioEl.id = 'yptSilentMediaLoop';
-        silentAudioEl.loop = true;
-        silentAudioEl.volume = 0.5;
-        silentAudioEl.src = '/keepalive.wav';
-        silentAudioEl.onerror = () => {
-          silentAudioEl.src = generateSilentWavBlobUrl();
-        };
-        silentAudioEl.setAttribute('playsinline', '');
-        silentAudioEl.setAttribute('preload', 'auto');
-        document.body.appendChild(silentAudioEl);
-      }
-      return silentAudioEl;
-    }
-
-    function startMediaSessionAudio() {
-      try {
-        const audio = getOrCreateSilentAudio();
-        audio.play().then(() => {
-          console.log('[MediaSession] Playing background audio loop');
-        }).catch(e => {
-          // If /keepalive.wav failed, try blob fallback
-          audio.src = generateSilentWavBlobUrl();
-          audio.play().catch(err => console.log('[MediaSession] Fallback play note:', err));
-        });
-      } catch (e) {}
-    }
-
-    function stopMediaSessionAudio() {
-      try {
-        if (silentAudioEl && !silentAudioEl.paused) {
-          silentAudioEl.pause();
-        }
-      } catch (e) {}
-    }
-
-    function formatYptNotificationDuration(sec) {
-      const s = Math.max(0, Math.floor(sec || 0));
-      const hrs = Math.floor(s / 3600);
-      const mins = Math.floor((s % 3600) / 60);
-      const secs = s % 60;
-      const pad = (n) => String(n).padStart(2, '0');
-      if (hrs > 0) {
-        return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
-      }
-      return `${pad(mins)}:${pad(secs)}`;
-    }
-
-    function formatYptNotificationTitle(rawTitle, timeSec) {
-      let cleanTitle = String(rawTitle || 'Nhiệm vụ').replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
-      if (!cleanTitle) cleanTitle = 'Nhiệm vụ';
-      const timeStr = formatYptNotificationDuration(timeSec);
-      const maxTitleLen = 22;
-      const safeTitle = cleanTitle.length > maxTitleLen ? cleanTitle.slice(0, maxTitleLen - 1) + '…' : cleanTitle;
-      return `${safeTitle}   ${timeStr}`;
-    }
-
-    function updateMediaSession(taskTitle, taskTimeSec, todayTotalSec) {
-      if (!('mediaSession' in navigator)) return;
-      try {
-        let cleanTitle = String(taskTitle || 'Nhiệm vụ').replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
-        const timeStr = formatYptNotificationDuration(taskTimeSec);
-
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: cleanTitle,
-          artist: timeStr,
-          album: '',
-          artwork: [
-            { src: window.location.origin + '/app_icon.png', sizes: '512x512', type: 'image/png' },
-            { src: window.location.origin + '/app_icon_192.png', sizes: '192x192', type: 'image/png' }
-          ]
-        });
-        navigator.mediaSession.playbackState = 'playing';
-
-        navigator.mediaSession.setActionHandler('play', () => {
-          if (!plannerData.activeTimer && lastRunningTaskId) {
-            startTaskYptTimer(lastRunningTaskId);
-          }
-        });
-        navigator.mediaSession.setActionHandler('pause', () => {
-          stopCurrentYptTimer();
-        });
-        navigator.mediaSession.setActionHandler('stop', () => {
-          stopCurrentYptTimer();
-        });
-      } catch (e) {
-        console.warn('[MediaSession] Metadata error:', e);
-      }
-    }
-
-    function clearMediaSession() {
-      if (!('mediaSession' in navigator)) return;
-      try {
-        navigator.mediaSession.playbackState = 'paused';
-      } catch (e) {}
-    }
-
-    async function updateSystemNotification(taskTitle, taskTimeSec, todayTotalSec) {
-      if (!('Notification' in window) || Notification.permission !== 'granted') return;
-      const title = formatYptNotificationTitle(taskTitle, taskTimeSec);
-
-      const notifOptions = {
-        body: '',
-        icon: window.location.origin + '/app_icon.png',
-        tag: 'elias-ypt-timer',
-        renotify: false,
-        silent: true,
-        requireInteraction: true
-      };
-
-      try {
-        if ('serviceWorker' in navigator) {
-          const reg = await navigator.serviceWorker.ready;
-          if (reg && reg.showNotification) {
-            await reg.showNotification(title, notifOptions);
-            return;
-          }
-        }
-      } catch (err) {
-        console.warn('[SW Notification] ready.showNotification error:', err);
-      }
-
-      // Safe Desktop fallback only (Android throws Illegal Constructor for new Notification)
-      try {
-        if (!navigator.userAgent.includes('Android')) {
-          new Notification(title, notifOptions);
-        }
-      } catch (e) {}
-    }
-
-    async function clearSystemNotification() {
-      try {
-        if ('serviceWorker' in navigator) {
-          const reg = await navigator.serviceWorker.ready;
+    // Purge any lingering notifications on device
+    try {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(reg => {
           if (reg && reg.getNotifications) {
-            const notifs = await reg.getNotifications({ tag: 'elias-ypt-timer' });
-            notifs.forEach(n => n.close());
+            reg.getNotifications().then(notifs => notifs.forEach(n => n.close())).catch(() => {});
           }
-        }
-      } catch (e) {}
-    }
-
-    async function toggleYptNotification() {
-      if (!('Notification' in window)) {
-        toast('Trình duyệt không hỗ trợ Web Notification');
-        return;
+        }).catch(() => {});
       }
+    } catch (e) {}
 
-      if (Notification.permission === 'granted') {
-        toast('Đang gửi thông báo thử nghiệm...');
-        updateYptNotifButtonState();
-        await updateSystemNotification('Sẵn sàng tập trung', 0, 0);
-        return;
-      }
-
-      if (Notification.permission === 'denied') {
-        showNotificationPermissionGuide();
-        return;
-      }
-
-      try {
-        const perm = await Notification.requestPermission();
-        if (perm === 'granted') {
-          toast('Đã bật thông báo đếm giờ trên điện thoại!');
-          updateYptNotifButtonState();
-          await updateSystemNotification('Đã bật thông báo YPT', 0, 0);
-        } else {
-          showNotificationPermissionGuide();
-        }
-      } catch (e) {
-        console.warn('Request notification error:', e);
-      }
-    }
-
-    function showNotificationPermissionGuide() {
-      showGeneralConfirmModal({
-        title: 'Cần cấp quyền Thông báo',
-        iconSvg: `<svg width="20" height="20" fill="none" stroke="#2563EB" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>`,
-        message: `Trình duyệt trên điện thoại của bạn đang chặn thông báo. Để hiện thông báo đếm giờ ngoài màn hình khóa:`,
-        note: `<div style="display:flex; flex-direction:column; gap:8px; font-size:13px; line-height:1.5;">
-          <div>1. Nhấn vào biểu tượng 🔒 hoặc ⚙️ bên trái thanh địa chỉ web trên Chrome.</div>
-          <div>2. Chọn <strong>Quyền (Permissions)</strong> → Bật <strong>Thông báo (Notifications)</strong>.</div>
-          <div>3. Nếu điện thoại Samsung/Android vẫn chặn: Vào <strong>Cài đặt điện thoại → Ứng dụng → Chrome → Thông báo → Cho phép thông báo</strong>.</div>
-        </div>`,
-        confirmText: 'Đã hiểu',
-        confirmColor: '#2563EB',
-        onConfirm: () => {}
-      });
-    }
-
-    function updateYptNotifButtonState() {
-      const btn = document.getElementById('btnToggleYptNotif');
-      const label = document.getElementById('yptNotifBtnLabel');
-      if (!btn || !label) return;
-      if (!('Notification' in window)) {
-        btn.style.display = 'none';
-        return;
-      }
-      if (Notification.permission === 'granted') {
-        btn.classList.add('active');
-        label.innerText = 'Thông báo: Bật';
-      } else if (Notification.permission === 'denied') {
-        btn.classList.remove('active');
-        label.innerText = 'Thông báo: Chặn';
-      } else {
-        btn.classList.remove('active');
-        label.innerText = 'Bật thông báo';
-      }
-    }
+    // Safe no-ops so nothing throws errors
+    function updateMediaSession() {}
+    function clearMediaSession() {}
+    function updateSystemNotification() {}
+    function clearSystemNotification() {}
+    function updateYptNotifButtonState() {}
 
     /* ========================================================
        MOBILE TOUCH DRAG & DROP CONTROLLER (Phone & Tablet)
@@ -7167,8 +6897,6 @@
 
       document.title = `${formatHMS(taskCumulativeSec)} - ${active.taskTitle || 'Focus'} | YPT`;
 
-      // Live YPT-style MediaSession notification updates (No browser push spam)
-      updateMediaSession(active.taskTitle, taskCumulativeSec, todayTotalSec);
       // Periodic 15s Checkpoint to localStorage & server
       if (liveSessionSec > 0 && liveSessionSec % 15 === 0) {
         savePlannerToLocal();
@@ -7724,12 +7452,6 @@
       if (!task) return;
       lastRunningTaskId = taskId;
 
-      // Clear any lingering browser push notifications from drawer
-      clearSystemNotification();
-      // Start background audio to trigger native Android MediaSession card
-      startMediaSessionAudio();
-      updateMediaSession(task.title, task.spentSeconds || 0, getDayTotalSeconds(currentPlannerDate));
-
       // If switching from another running task, immediately accumulate previous task time in memory so UI is instant:
       if (plannerData.activeTimer && plannerData.activeTimer.taskId !== taskId) {
         const prev = plannerData.activeTimer;
@@ -7761,16 +7483,6 @@
       renderDailyPlannerPage();
       updateYptLiveTimers();
       toast(`Bắt đầu bấm giờ: ${task.title}`);
-
-      // Request notification permission if not yet decided
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission().then(perm => {
-          updateYptNotifButtonState();
-          if (perm === 'granted') {
-            updateSystemNotification(task.title, (task.spentSeconds || 0), getDayTotalSeconds(currentPlannerDate));
-          }
-        });
-      }
 
       isTimerSwitching = true;
       try {
@@ -7825,10 +7537,6 @@
       plannerData.activeTimer = null;
       plannerData.activeTimerChangedAt = Date.now();
       savePlannerToLocal();
-
-      stopMediaSessionAudio();
-      clearMediaSession();
-      clearSystemNotification();
 
       document.title = 'YPT - Study Planner';
       renderDailyPlannerPage();
@@ -10893,8 +10601,6 @@
       }
     });
 
-    // Update notification button state on boot
-    updateYptNotifButtonState();
 
     // On Cloud / Mobile: default to Daily Plan so user lands directly on tasks
     const defaultPage = isCloudHost ? 'planner' : 'sat';
