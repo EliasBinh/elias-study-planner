@@ -6852,7 +6852,6 @@
         });
 
         document.title = 'YPT - Study Planner';
-        clearMediaSession();
         return;
       }
 
@@ -7450,7 +7449,7 @@
     async function startTaskYptTimer(taskId) {
       const task = (plannerData.tasks || []).find(t => t.id === taskId);
       if (!task) return;
-      lastRunningTaskId = taskId;
+
 
       // If switching from another running task, immediately accumulate previous task time in memory so UI is instant:
       if (plannerData.activeTimer && plannerData.activeTimer.taskId !== taskId) {
