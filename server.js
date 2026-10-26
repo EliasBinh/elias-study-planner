@@ -2601,6 +2601,21 @@ async function runBatchFetchSafe() {
     return res.end(JSON.stringify({ success: true }));
   }
 
+  // 9.8 API: 24/7 Keep-Alive & Health Ping (Prevents Render Free Tier sleep)
+  if (parsedUrl.pathname === '/api/ping' || parsedUrl.pathname === '/ping' || parsedUrl.pathname === '/healthz') {
+    res.writeHead(200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-cache, no-store'
+    });
+    return res.end(JSON.stringify({
+      status: 'ok',
+      service: 'elias-study-planner',
+      isCloud: IS_CLOUD_INSTANCE,
+      uptimeSec: Math.floor(process.uptime()),
+      timestamp: Date.now()
+    }));
+  }
+
   // 10. API: App Settings (Exam countdown date & streak)
   if (parsedUrl.pathname === '/api/settings') {
     if (req.method === 'POST') {
@@ -3429,6 +3444,34 @@ server.listen(PORT, '0.0.0.0', async () => {
     // Real-time Cloud Synchronization loop: every 1.5 seconds
     setInterval(triggerCloudSync, 1500);
   }
+
+  // 24/7 Keep-Alive System: Pings the public Render instance every 10 minutes to prevent sleep
+  startKeepAliveSystem();
 });
+
+function startKeepAliveSystem() {
+  const publicUrl = process.env.RENDER_EXTERNAL_URL || CLOUD_SYNC_URL;
+  const pingUrl = `${publicUrl}/api/ping`;
+  const intervalMs = 10 * 60 * 1000; // 10 minutes (Render sleeps after 15 minutes of inactivity)
+
+  async function sendKeepAlive() {
+    try {
+      const res = await fetch(pingUrl, {
+        signal: AbortSignal.timeout(20000),
+        headers: { 'User-Agent': 'EliasKeepAlive247/1.0' }
+      });
+      if (res.ok) {
+        console.log(`[Keep-Alive 24/7] Heartbeat OK: ${pingUrl}`);
+      }
+    } catch (e) {
+      // Non-blocking
+    }
+  }
+
+  // Initial ping 45 seconds after start
+  setTimeout(sendKeepAlive, 45000);
+  // Recurring ping every 10 minutes
+  setInterval(sendKeepAlive, intervalMs);
+}
 
 

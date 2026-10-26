@@ -1,0 +1,18 @@
+name: Render 24/7 Keep-Alive
+
+on:
+  schedule:
+    # Trigger every 12 minutes (well within Render's 15-minute inactivity limit)
+    - cron: '*/12 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep_alive:
+    name: Ping Render Web Service
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send HTTP Ping to Render
+        run: |
+          echo "Sending Keep-Alive ping to https://elias-study-planner.onrender.com/api/ping..."
+          curl -s -f -m 30 -A "GitHub-Actions-KeepAlive/1.0" https://elias-study-planner.onrender.com/api/ping || echo "Ping dispatched"
