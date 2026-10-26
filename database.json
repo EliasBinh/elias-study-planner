@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-26T07:41:43.215Z",
+  "updatedAt": "2026-10-26T07:51:06.026Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -163,36 +163,38 @@
           "section": "morning",
           "date": "2026-10-26",
           "deadline": "",
-          "completed": false,
-          "status": "partial",
-          "spentSeconds": 0,
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 2352,
           "createdAt": "2026-10-26T07:08:15.186Z",
-          "updatedAt": 1792998624560,
-          "completedAt": null
+          "updatedAt": 1793000859206,
+          "completedAt": "2026-10-26T07:46:36.936Z"
         },
         {
           "id": "dp_1792998523820_ex0i",
-          "title": "Xong đề toán4 câu",
-          "section": "morning",
-          "date": "2026-10-26",
-          "deadline": "",
-          "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 0,
-          "createdAt": "2026-10-26T07:08:53.122Z",
-          "updatedAt": 1792998523820
-        },
-        {
-          "id": "dp_1792998621959_4gr6",
-          "title": "Mua thêm bút",
+          "title": "Xong 4 câu toán",
           "section": "afternoon",
           "date": "2026-10-26",
           "deadline": "",
           "completed": false,
           "status": "incomplete",
-          "spentSeconds": 0,
+          "spentSeconds": 14,
+          "createdAt": "2026-10-26T07:08:53.122Z",
+          "updatedAt": 1793001055154,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1792998621959_4gr6",
+          "title": "Mua thêm bút + đi in hóa",
+          "section": "afternoon",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 48,
           "createdAt": "2026-10-26T07:10:31.263Z",
-          "updatedAt": 1792998621959
+          "updatedAt": 1793001019945,
+          "completedAt": null
         },
         {
           "id": "dp_1792998878744_y4tr",
@@ -247,6 +249,10 @@
         "2026-10-25": {
           "totalSeconds": 447,
           "maxFocusSeconds": 152
+        },
+        "2026-10-26": {
+          "totalSeconds": 2414,
+          "maxFocusSeconds": 2295
         }
       },
       "deletedTasks": {
@@ -263,13 +269,8 @@
         "dp_1792834636314": 1792925057840,
         "dp_1792834628350": 1792925058435
       },
-      "activeTimer": {
-        "taskId": "dp_1792998485875_6jri",
-        "taskTitle": "Vở ghi hóa",
-        "startedAt": 1792998488648,
-        "date": "2026-10-26"
-      },
-      "activeTimerChangedAt": 1792998488631
+      "activeTimer": null,
+      "activeTimerChangedAt": 1793001029228
     },
     "discordRpc": {
       "enabled": true,

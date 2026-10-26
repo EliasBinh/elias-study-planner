@@ -1,5 +1,5 @@
 // Minimal Service Worker for PWA installation & Background Timer Notifications
-const CACHE_NAME = 'elias-pwa-v2';
+const CACHE_NAME = 'elias-pwa-v3';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -20,10 +20,11 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'UPDATE_TIMER_NOTIFICATION') {
     const { title, timeStr, todayStr } = event.data;
+    const origin = self.location.origin;
     self.registration.showNotification(title, {
       body: `⏱ Thời gian: ${timeStr} • Tổng hôm nay: ${todayStr}`,
-      icon: '/stewie.png',
-      badge: '/stewie.ico',
+      icon: origin + '/stewie.png',
+      badge: origin + '/stewie.ico',
       tag: 'elias-ypt-timer',
       renotify: false,
       silent: true,
