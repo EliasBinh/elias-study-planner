@@ -16,15 +16,14 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Timer Notification Handlers for Mobile Phone & PC
+// Timer Notification Handlers for Mobile Phone & PC (Exact YPT Style)
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'UPDATE_TIMER_NOTIFICATION') {
-    const { title, timeStr, todayStr } = event.data;
+    const { title } = event.data;
     const origin = self.location.origin;
     self.registration.showNotification(title, {
-      body: `⏱ Thời gian: ${timeStr} • Tổng hôm nay: ${todayStr}`,
-      icon: origin + '/stewie.png',
-      badge: origin + '/stewie.ico',
+      body: '',
+      icon: origin + '/app_icon.png',
       tag: 'elias-ypt-timer',
       renotify: false,
       silent: true,

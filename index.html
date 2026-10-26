@@ -6669,21 +6669,40 @@
       } catch (e) {}
     }
 
+    function formatYptNotificationDuration(sec) {
+      const s = Math.max(0, Math.floor(sec || 0));
+      const hrs = Math.floor(s / 3600);
+      const mins = Math.floor((s % 3600) / 60);
+      const secs = s % 60;
+      const pad = (n) => String(n).padStart(2, '0');
+      if (hrs > 0) {
+        return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+      }
+      return `${pad(mins)}:${pad(secs)}`;
+    }
+
+    function formatYptNotificationTitle(rawTitle, timeSec) {
+      let cleanTitle = String(rawTitle || 'Nhiệm vụ').replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+      if (!cleanTitle) cleanTitle = 'Nhiệm vụ';
+      const timeStr = formatYptNotificationDuration(timeSec);
+      const maxTitleLen = 22;
+      const safeTitle = cleanTitle.length > maxTitleLen ? cleanTitle.slice(0, maxTitleLen - 1) + '…' : cleanTitle;
+      return `${safeTitle}   ${timeStr}`;
+    }
+
     function updateMediaSession(taskTitle, taskTimeSec, todayTotalSec) {
       if (!('mediaSession' in navigator)) return;
       try {
-        const titleStr = '🔥 ' + (taskTitle || 'Nhiệm vụ YPT');
-        const artistStr = '⏱ ' + formatHMS(taskTimeSec) + ' • YPT Focus';
-        const albumStr = 'Tổng hôm nay: ' + formatHMS(todayTotalSec);
+        let cleanTitle = String(taskTitle || 'Nhiệm vụ').replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+        const timeStr = formatYptNotificationDuration(taskTimeSec);
 
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: titleStr,
-          artist: artistStr,
-          album: albumStr,
+          title: cleanTitle,
+          artist: timeStr,
+          album: '',
           artwork: [
-            { src: window.location.origin + '/stewie.png', sizes: '512x512', type: 'image/png' },
-            { src: window.location.origin + '/stewie.jpg', sizes: '512x512', type: 'image/jpeg' },
-            { src: window.location.origin + '/stewie.ico', sizes: '64x64', type: 'image/x-icon' }
+            { src: window.location.origin + '/app_icon.png', sizes: '512x512', type: 'image/png' },
+            { src: window.location.origin + '/app_icon_192.png', sizes: '192x192', type: 'image/png' }
           ]
         });
         navigator.mediaSession.playbackState = 'playing';
@@ -6713,14 +6732,11 @@
 
     async function updateSystemNotification(taskTitle, taskTimeSec, todayTotalSec) {
       if (!('Notification' in window) || Notification.permission !== 'granted') return;
-      const title = '🔥 ' + (taskTitle || 'Nhiệm vụ YPT');
-      const timeStr = formatHMS(taskTimeSec);
-      const todayStr = formatHMS(todayTotalSec);
+      const title = formatYptNotificationTitle(taskTitle, taskTimeSec);
 
       const notifOptions = {
-        body: `⏱ Thời gian: ${timeStr} • Tổng hôm nay: ${todayStr}`,
-        icon: window.location.origin + '/stewie.png',
-        badge: window.location.origin + '/stewie.ico',
+        body: '',
+        icon: window.location.origin + '/app_icon.png',
         tag: 'elias-ypt-timer',
         renotify: false,
         silent: true,
@@ -6766,9 +6782,9 @@
       }
 
       if (Notification.permission === 'granted') {
-        toast('🔔 Đang gửi thông báo thử nghiệm...');
+        toast('Đang gửi thông báo thử nghiệm...');
         updateYptNotifButtonState();
-        await updateSystemNotification('Sẵn sàng tập trung!', 0, getDayTotalSeconds(currentPlannerDate));
+        await updateSystemNotification('Sẵn sàng tập trung', 0, 0);
         return;
       }
 
@@ -6780,9 +6796,9 @@
       try {
         const perm = await Notification.requestPermission();
         if (perm === 'granted') {
-          toast('✅ Đã bật thông báo đếm giờ trên điện thoại!');
+          toast('Đã bật thông báo đếm giờ trên điện thoại!');
           updateYptNotifButtonState();
-          await updateSystemNotification('Đã bật thông báo YPT!', 0, getDayTotalSeconds(currentPlannerDate));
+          await updateSystemNotification('Đã bật thông báo YPT', 0, 0);
         } else {
           showNotificationPermissionGuide();
         }
@@ -7098,9 +7114,7 @@
           if (icon) icon.innerText = '⏱';
         });
 
-        if (document.title.startsWith('🔥')) {
-          document.title = 'ELIAS WORKSPACE';
-        }
+        document.title = 'YPT - Study Planner';
         clearMediaSession();
         return;
       }
@@ -7144,7 +7158,7 @@
         if (popTimerText) popTimerText.innerText = formatHMS(taskCumulativeSec);
       }
 
-      document.title = `🔥 ${formatHMS(taskCumulativeSec)} - ${active.taskTitle || 'Focus'} | ELIAS`;
+      document.title = `${formatHMS(taskCumulativeSec)} - ${active.taskTitle || 'Focus'} | YPT`;
 
       // Live Background & Notification updates
       updateMediaSession(active.taskTitle, taskCumulativeSec, todayTotalSec);
@@ -7739,7 +7753,7 @@
 
       renderDailyPlannerPage();
       updateYptLiveTimers();
-      toast(`🔥 Bắt đầu bấm giờ: ${task.title}`);
+      toast(`Bắt đầu bấm giờ: ${task.title}`);
 
       // Request notification permission if not yet decided
       if ('Notification' in window && Notification.permission === 'default') {
@@ -7809,10 +7823,10 @@
       clearMediaSession();
       clearSystemNotification();
 
-      document.title = 'ELIAS WORKSPACE';
+      document.title = 'YPT - Study Planner';
       renderDailyPlannerPage();
       updateYptLiveTimers();
-      toast('⏸ Đã tạm dừng bấm giờ');
+      toast('Đã tạm dừng bấm giờ');
 
       isTimerSwitching = true;
       try {
