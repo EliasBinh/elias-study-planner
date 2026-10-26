@@ -1,12 +1,19 @@
 // Minimal Service Worker for PWA installation & Background Timer Notifications
-const CACHE_NAME = 'elias-pwa-v3';
+const CACHE_NAME = 'elias-pwa-v5';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(
+    Promise.all([
+      self.clients.claim(),
+      self.registration.getNotifications().then(notifs => {
+        notifs.forEach(n => n.close());
+      })
+    ])
+  );
 });
 
 self.addEventListener('fetch', (event) => {

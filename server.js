@@ -2616,6 +2616,36 @@ async function runBatchFetchSafe() {
     }));
   }
 
+  // 9.9 API: Sub-audible WAV for Android MediaSession notification card (YPT style)
+  if (parsedUrl.pathname === '/keepalive.wav') {
+    const sampleRate = 8000;
+    const numSamples = sampleRate * 5; // 5 seconds
+    const buf = Buffer.alloc(44 + numSamples);
+    buf.write('RIFF', 0);
+    buf.writeUInt32LE(36 + numSamples, 4);
+    buf.write('WAVE', 8);
+    buf.write('fmt ', 12);
+    buf.writeUInt32LE(16, 16);
+    buf.writeUInt16LE(1, 20); // PCM
+    buf.writeUInt16LE(1, 22); // Mono
+    buf.writeUInt32LE(sampleRate, 24);
+    buf.writeUInt32LE(sampleRate, 28);
+    buf.writeUInt16LE(1, 32);
+    buf.writeUInt16LE(8, 34); // 8-bit
+    buf.write('data', 36);
+    buf.writeUInt32LE(numSamples, 40);
+    for (let i = 0; i < numSamples; i++) {
+      const t = i / sampleRate;
+      buf[44 + i] = Math.round(128 + 4 * Math.sin(2 * Math.PI * 25 * t));
+    }
+    res.writeHead(200, {
+      'Content-Type': 'audio/wav',
+      'Content-Length': buf.length,
+      'Cache-Control': 'public, max-age=86400'
+    });
+    return res.end(buf);
+  }
+
   // 10. API: App Settings (Exam countdown date & streak)
   if (parsedUrl.pathname === '/api/settings') {
     if (req.method === 'POST') {

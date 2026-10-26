@@ -6627,11 +6627,11 @@
 
       // data sub-chunk
       view.setUint32(36, 0x64617461, false); // "data"
-      view.setUint32(40, numSamples, true);
-
-      // 128 is silence in unsigned 8-bit PCM
-      const bytes = new Uint8Array(buffer, 44);
-      bytes.fill(128);
+      // Generate 25Hz sub-audible tone (inaudible on phone speakers, but non-zero RMS so Chromium MediaSession activates)
+      for (let i = 0; i < numSamples; i++) {
+        const t = i / sampleRate;
+        bytes[i] = Math.round(128 + 4 * Math.sin(2 * Math.PI * 25 * t));
+      }
 
       const blob = new Blob([buffer], { type: 'audio/wav' });
       cachedSilentWavUrl = URL.createObjectURL(blob);
@@ -6643,8 +6643,11 @@
         silentAudioEl = document.createElement('audio');
         silentAudioEl.id = 'yptSilentMediaLoop';
         silentAudioEl.loop = true;
-        silentAudioEl.volume = 0.05; // Audible-level flag so Android creates media notification card
-        silentAudioEl.src = generateSilentWavBlobUrl();
+        silentAudioEl.volume = 0.5;
+        silentAudioEl.src = '/keepalive.wav';
+        silentAudioEl.onerror = () => {
+          silentAudioEl.src = generateSilentWavBlobUrl();
+        };
         silentAudioEl.setAttribute('playsinline', '');
         silentAudioEl.setAttribute('preload', 'auto');
         document.body.appendChild(silentAudioEl);
@@ -6657,7 +6660,11 @@
         const audio = getOrCreateSilentAudio();
         audio.play().then(() => {
           console.log('[MediaSession] Playing background audio loop');
-        }).catch(e => console.log('[MediaSession] Audio note:', e));
+        }).catch(e => {
+          // If /keepalive.wav failed, try blob fallback
+          audio.src = generateSilentWavBlobUrl();
+          audio.play().catch(err => console.log('[MediaSession] Fallback play note:', err));
+        });
       } catch (e) {}
     }
 
@@ -7160,11 +7167,8 @@
 
       document.title = `${formatHMS(taskCumulativeSec)} - ${active.taskTitle || 'Focus'} | YPT`;
 
-      // Live Background & Notification updates
+      // Live YPT-style MediaSession notification updates (No browser push spam)
       updateMediaSession(active.taskTitle, taskCumulativeSec, todayTotalSec);
-      if (liveSessionSec % 5 === 0 || liveSessionSec <= 2) {
-        updateSystemNotification(active.taskTitle, taskCumulativeSec, todayTotalSec);
-      }
       // Periodic 15s Checkpoint to localStorage & server
       if (liveSessionSec > 0 && liveSessionSec % 15 === 0) {
         savePlannerToLocal();
@@ -7720,8 +7724,11 @@
       if (!task) return;
       lastRunningTaskId = taskId;
 
-      // Start silent background audio to keep tab alive and show Android media card
+      // Clear any lingering browser push notifications from drawer
+      clearSystemNotification();
+      // Start background audio to trigger native Android MediaSession card
       startMediaSessionAudio();
+      updateMediaSession(task.title, task.spentSeconds || 0, getDayTotalSeconds(currentPlannerDate));
 
       // If switching from another running task, immediately accumulate previous task time in memory so UI is instant:
       if (plannerData.activeTimer && plannerData.activeTimer.taskId !== taskId) {
@@ -10254,6 +10261,7 @@
       const regSW = () => {
         navigator.serviceWorker.register('/sw.js').then(reg => {
           console.log('[PWA] ServiceWorker registered:', reg.scope);
+          if (reg.update) reg.update();
         }).catch(err => {
           console.warn('[PWA] ServiceWorker error:', err);
         });
