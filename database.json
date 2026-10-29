@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-26T09:51:10.675Z",
+  "updatedAt": "2026-10-29T09:55:08.683Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -21,7 +21,9 @@
       "lesson 3 lines angles and triangles no 4",
       1503040215,
       "a test ebrw set c buổi 5",
-      1528143965
+      1528143965,
+      "the critical reader set 7 matter & mind",
+      1528092015
     ],
     "manualFileGroups": {
       "todo_1512996758": "verbal_ebrw",
@@ -38,7 +40,7 @@
       "list": [
         {
           "id": "h_1",
-          "title": "Dậy 4h30 sáng",
+          "title": "5h dậy",
           "category": "Morning"
         },
         {
@@ -82,14 +84,26 @@
         "2026-10-26": [
           "h_1792926550682",
           "h_5",
-          "h_3"
+          "h_3",
+          "h_1792926643200"
+        ],
+        "2026-10-27": [
+          "h_1792926550682",
+          "h_5",
+          "h_3",
+          "h_6",
+          "h_1792926643200"
+        ],
+        "2026-10-28": [
+          "h_5",
+          "h_1792926643200"
         ]
       },
       "deletedHabits": {
         "h_1792926219222": 1792926219236,
         "h_2": 1792926399034
       },
-      "changedAt": 1792998106168
+      "changedAt": 1793193072059
     },
     "dailyPlanner": {
       "tasks": [
@@ -165,9 +179,9 @@
           "deadline": "",
           "completed": true,
           "status": "completed",
-          "spentSeconds": 3594,
+          "spentSeconds": 6147,
           "createdAt": "2026-10-26T07:08:15.186Z",
-          "updatedAt": 1793008260638,
+          "updatedAt": 1793010890800,
           "completedAt": "2026-10-26T07:46:36.936Z"
         },
         {
@@ -176,12 +190,12 @@
           "section": "afternoon",
           "date": "2026-10-26",
           "deadline": "",
-          "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 62,
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 4776,
           "createdAt": "2026-10-26T07:08:53.122Z",
-          "updatedAt": 1793001479027,
-          "completedAt": null
+          "updatedAt": 1793017482483,
+          "completedAt": "2026-10-26T12:24:42.483Z"
         },
         {
           "id": "dp_1792998621959_4gr6",
@@ -189,48 +203,226 @@
           "section": "afternoon",
           "date": "2026-10-26",
           "deadline": "",
-          "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 48,
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 1152,
           "createdAt": "2026-10-26T07:10:31.263Z",
-          "updatedAt": 1793001019945,
+          "updatedAt": 1793012244964,
+          "completedAt": "2026-10-26T10:38:29.409Z"
+        },
+        {
+          "id": "dp_1793010903125_rx7t",
+          "title": "Gym",
+          "section": "morning",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 233,
+          "createdAt": "2026-10-26T10:35:03.125Z",
+          "updatedAt": 1793027582875,
+          "completedAt": "2026-10-26T10:35:04.284Z"
+        },
+        {
+          "id": "dp_1793012329983_hzy6",
+          "title": "Lý part1 eznigga",
+          "section": "evening",
+          "date": "2026-10-26",
+          "deadline": "22:00",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 8568,
+          "createdAt": "2026-10-26T10:58:49.983Z",
+          "updatedAt": 1793027754081,
+          "completedAt": "2026-10-26T15:10:02.657Z"
+        },
+        {
+          "id": "dp_1793012335025_d1z1",
+          "title": "Lý 2",
+          "section": "evening",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-26T10:58:55.025Z",
+          "updatedAt": 1793027535997,
+          "completedAt": "2026-10-26T15:12:10.842Z"
+        },
+        {
+          "id": "dp_1793012339780_r1hf",
+          "title": "Lý bài 3",
+          "section": "evening",
+          "date": "2026-10-26",
+          "deadline": "",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-26T10:58:59.780Z",
+          "updatedAt": 1793027533487,
           "completedAt": null
         },
         {
-          "id": "dp_1792998878744_y4tr",
-          "title": "Coi lý thuyết bài 1",
-          "section": "afternoon",
+          "id": "dp_1793012343041_rk6k",
+          "title": "Lý bài 4",
+          "section": "evening",
           "date": "2026-10-26",
           "deadline": "",
           "completed": false,
-          "status": "incomplete",
+          "status": "failed",
           "spentSeconds": 0,
-          "createdAt": "2026-10-26T07:14:48.052Z",
-          "updatedAt": 1792998878744
+          "createdAt": "2026-10-26T10:59:03.041Z",
+          "updatedAt": 1793027534638,
+          "completedAt": null
         },
         {
-          "id": "dp_1792998882595_60jl",
-          "title": "Coi lý thuyết bài 2",
+          "id": "dp_1793027692974_nx8j",
+          "title": "Bóng chuyền",
           "section": "afternoon",
-          "date": "2026-10-26",
-          "deadline": "",
-          "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 0,
-          "createdAt": "2026-10-26T07:14:51.901Z",
-          "updatedAt": 1792998882595
+          "date": "2026-10-27",
+          "deadline": "11:30",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 16399,
+          "createdAt": "2026-10-26T15:14:52.974Z",
+          "updatedAt": 1793114227029,
+          "completedAt": "2026-10-27T13:08:36.633Z"
         },
         {
-          "id": "dp_1792998885866_3ipi",
-          "title": "Coi lý thuyết bài 3",
+          "id": "dp_1793107672306_4pdy",
+          "title": "Ôn thi Ghk1 Lý",
+          "section": "evening",
+          "date": "2026-10-27",
+          "deadline": "22:00",
+          "completed": false,
+          "status": "partial",
+          "spentSeconds": 6290,
+          "createdAt": "2026-10-27T13:28:03.545Z",
+          "updatedAt": 1793114242916,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1793147718824_x0mj",
+          "title": "Lý b1",
+          "section": "morning",
+          "date": "2026-10-28",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 1346,
+          "createdAt": "2026-10-28T00:35:18.824Z",
+          "updatedAt": 1793192838927,
+          "completedAt": "2026-10-28T13:07:18.927Z"
+        },
+        {
+          "id": "dp_1793176081669_twke",
+          "title": "Dạy họcc",
           "section": "afternoon",
-          "date": "2026-10-26",
+          "date": "2026-10-28",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 7298,
+          "createdAt": "2026-10-28T08:28:15.249Z",
+          "updatedAt": 1793190741007,
+          "completedAt": "2026-10-28T12:32:21.007Z"
+        },
+        {
+          "id": "dp_1793190735373_88oh",
+          "title": "Xong Lý",
+          "section": "evening",
+          "date": "2026-10-28",
+          "deadline": "",
+          "completed": false,
+          "status": "partial",
+          "spentSeconds": 2847,
+          "createdAt": "2026-10-28T12:32:29.128Z",
+          "updatedAt": 1793198865400,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1793267435631_p9yr",
+          "title": "toán xong tờ mới",
+          "section": "afternoon",
+          "date": "2026-10-29",
           "deadline": "",
           "completed": false,
           "status": "incomplete",
           "spentSeconds": 0,
-          "createdAt": "2026-10-26T07:14:55.170Z",
-          "updatedAt": 1792998885866
+          "createdAt": "2026-10-29T09:50:35.631Z",
+          "updatedAt": 1793267435631
+        },
+        {
+          "id": "dp_1793267452226_n84q",
+          "title": "toán ghk1",
+          "section": "evening",
+          "date": "2026-10-29",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-29T09:50:52.226Z",
+          "updatedAt": 1793267452226
+        },
+        {
+          "id": "dp_1793267463894_yow6",
+          "title": "Lý vghi b2",
+          "section": "evening",
+          "date": "2026-10-29",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-29T09:51:03.894Z",
+          "updatedAt": 1793267463894
+        },
+        {
+          "id": "dp_1793267466813_8c2x",
+          "title": "b3",
+          "section": "evening",
+          "date": "2026-10-29",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-29T09:51:06.813Z",
+          "updatedAt": 1793267466813
+        },
+        {
+          "id": "dp_1793267468687_tp05",
+          "title": "b4",
+          "section": "evening",
+          "date": "2026-10-29",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-29T09:51:08.687Z",
+          "updatedAt": 1793267468687
+        },
+        {
+          "id": "dp_1793267471151_2aoi",
+          "title": "b5",
+          "section": "evening",
+          "date": "2026-10-29",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-29T09:51:11.151Z",
+          "updatedAt": 1793267471151
+        },
+        {
+          "id": "dp_1793267471582_ijjf",
+          "title": "b6",
+          "section": "evening",
+          "date": "2026-10-29",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-10-29T09:51:11.582Z",
+          "updatedAt": 1793267471582
         }
       ],
       "daysHistory": {
@@ -251,8 +443,16 @@
           "maxFocusSeconds": 152
         },
         "2026-10-26": {
-          "totalSeconds": 3704,
+          "totalSeconds": 20876,
           "maxFocusSeconds": 2295
+        },
+        "2026-10-27": {
+          "totalSeconds": 26311,
+          "maxFocusSeconds": 15805
+        },
+        "2026-10-28": {
+          "totalSeconds": 11491,
+          "maxFocusSeconds": 1143
         }
       },
       "deletedTasks": {
@@ -267,15 +467,24 @@
         "dp_1792834648386": 1792925056361,
         "dp_1792834640107": 1792925057160,
         "dp_1792834636314": 1792925057840,
-        "dp_1792834628350": 1792925058435
+        "dp_1792834628350": 1792925058435,
+        "dp_1792998878744_y4tr": 1793012308201,
+        "dp_1792998882595_60jl": 1793012309594,
+        "dp_1792998885866_3ipi": 1793012310826,
+        "dp_1793027725251_rj6d": 1793106492648,
+        "dp_1793027694892_tvv3": 1793106493345,
+        "dp_1793027690708_55r5": 1793106493848,
+        "dp_1793027646226_vclj": 1793106495975,
+        "dp_1793027645039_738v": 1793106497151,
+        "dp_1793027644002_1jco": 1793106498060,
+        "dp_1793027642725_mx29": 1793106499251,
+        "dp_1793027641189_if41": 1793106499759,
+        "dp_1793027637973_3ws5": 1793106500561,
+        "dp_1793106514083_mpsm": 1793106517776,
+        "dp_1793091701173_myxn": 1793107668068
       },
-      "activeTimer": {
-        "taskId": "dp_1792998485875_6jri",
-        "taskTitle": "Vở ghi hóa",
-        "startedAt": 1793008260638,
-        "date": "2026-10-26"
-      },
-      "activeTimerChangedAt": 1793008260638
+      "activeTimer": null,
+      "activeTimerChangedAt": 1793198534527
     },
     "discordRpc": {
       "enabled": true,
@@ -285,9 +494,9 @@
       "stateFormat": "today_stats",
       "customState": "",
       "restTitle": "REST",
-      "largeImageStudy": "https://i.pinimg.com/736x/d1/2f/d7/d12fd7bd514608a985cb5499e9d452ca.jpg",
+      "largeImageStudy": "https://files.catbox.moe/nw9czp.png",
       "largeImageRest": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=512&auto=format&fit=crop&q=80",
-      "smallIconStudy": "https://i.pinimg.com/736x/a7/e3/33/a7e33371061d6520ca8a18df73961ed9.jpg",
+      "smallIconStudy": "https://cdn-icons-png.flaticon.com/512/924/924514.png",
       "smallIconRest": "https://cdn-icons-png.flaticon.com/512/924/924514.png",
       "smallTextStudy": "Study is my only option",
       "smallTextRest": "Resting",
@@ -1246,6 +1455,190 @@
       "downloaded": true,
       "isDone": false,
       "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 1. Linear Equation & System (No.1).pdf"
+    },
+    {
+      "id": "64a46c8ca898e8271e6f4bc2329ba5cc",
+      "filename": "[31.10] [Verbal] Words in Context 9.pdf",
+      "title": "Words in Context 9",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/7d/63/3014216001/noop/03_09_165e905a5c1244b0afe4d56e5f1ea897.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[31.10]",
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "customDeadline": null,
+      "detectedAt": "19:26:03",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] Words in Context 9.pdf"
+    },
+    {
+      "id": "f6b9bab2b2125fdba12321076aa8f0f3",
+      "filename": "[31.10] [Verbal] The Critical Reader _ Set 8 - The Time Machine.pdf",
+      "title": "The Critical Reader | Set 8 - The Time Machine",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/ff/dd/2771322921/noop/03_09_61f56a8-17b0-b6e-6588-f338ca3152e6_1775622647985.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[31.10]",
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "customDeadline": null,
+      "detectedAt": "19:26:26",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] The Critical Reader _ Set 8 - The Time Machine.pdf"
+    },
+    {
+      "id": "09980bfc7e426901fb7e3b7422d826dc",
+      "filename": "[31.10] [Verbal] [A] Test EBRW - set A - buổi 5.pdf",
+      "title": "[A] Test EBRW - set A - buổi 5",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/73/78/2927668141/noop/03_09_010aeaebb84c4750b69686e01bde241b.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[31.10]",
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "customDeadline": null,
+      "detectedAt": "19:26:34",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] [A] Test EBRW - set A - buổi 5.pdf"
+    },
+    {
+      "id": "1bd6df6a0d123a58ab21224751ea9249",
+      "filename": "[31.10] [Verbal] [A] Inferences for the challengers.pdf",
+      "title": "[A] Inferences for the challengers",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/5b/c0/2543331916/noop/03_09_6e7fa-d5ad-4ba5-074-d108a68ea0f_1762350279435.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[31.10]",
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "customDeadline": null,
+      "detectedAt": "19:26:42",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] [A] Inferences for the challengers.pdf"
+    },
+    {
+      "id": "57bfa5df21cb9bb06533624c7cc42c56",
+      "filename": "[31.10] [Verbal] Words in Context 10.pdf",
+      "title": "Words in Context 10",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/a4/4f/3120330857/noop/03_09_173d6980e5774189ae995110c368068d.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[31.10]",
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "customDeadline": null,
+      "detectedAt": "19:26:49",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] Words in Context 10.pdf"
+    },
+    {
+      "id": "ca9b6be447a247a8589720e685e90e74",
+      "filename": "[31.10] [Verbal] [A] Test EBRW - Set B - Buổi 5.pdf",
+      "title": "[A] Test EBRW - Set B - Buổi 5",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/45/7c/2437727288/noop/03_09_baf1304-10db-6e64-8dc0-e2aacd4835b_1756456108437.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[31.10]",
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "customDeadline": null,
+      "detectedAt": "19:26:57",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] [A] Test EBRW - Set B - Buổi 5.pdf"
+    },
+    {
+      "id": "2ad42663dabbe3b855c92fdddb581614",
+      "filename": "[31.10] [Verbal] The Critical Reader _ Set 7 - Matter & Mind.pdf",
+      "title": "The Critical Reader | Set 7 - Matter & Mind",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/6f/0b/2771069221/noop/03_09_f576162-13-46e-c575-d3d6ce615de5_1775621101757.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[31.10]",
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "customDeadline": null,
+      "detectedAt": "19:27:09",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] The Critical Reader _ Set 7 - Matter & Mind.pdf"
+    },
+    {
+      "id": "9004cb912769b5e8d5b8a2f7651f46c6",
+      "filename": "[31.10] [Verbal] final_[A] Test EBRW - set C - Buổi 5 - Test Paper.pdf",
+      "title": "[A] Test EBRW - set C - buổi 5",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/24/6a/2927306121/noop/03_09_6d82660081b8476881d467e365b02c9b.pdf",
+      "pageUrl": "https://b1s-cdn.eeo.cn/client/lms/desktop/answersheet/join?activityId=1168976654&answerSheetJoinOpenFrom=1&courseId=312895237&isImSubWindow=true&lmsOpenFrom=4&role=student&schoolId=69201116",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[31.10]",
+      "deadlineDate": "20:00:00, 31/10/2026",
+      "customDeadline": null,
+      "detectedAt": "19:30:14",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] final_[A] Test EBRW - set C - Buổi 5 - Test Paper.pdf"
+    },
+    {
+      "id": "local_64f37fda18e7",
+      "filename": "[17.10] [Verbal] ClassIn_Homework.pdf",
+      "title": "ClassIn_Homework",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] ClassIn_Homework.pdf",
+      "detectedAt": "20:24:42"
+    },
+    {
+      "id": "ccc52c2c464c3cedf94619f6100472ec",
+      "filename": "[29.10] [Math] Lesson 4 HW. Data Analysis (3).pdf",
+      "title": "Lesson 4 HW. Data Analysis (No.3)",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/78/63/2922109766/noop/03_09_9e4233682be540869a61ce7baf458b27.pdf",
+      "pageUrl": "https://b1s-cdn.eeo.cn/client/lms/desktop/answersheet/join?activityId=1173007793&answerSheetJoinOpenFrom=1&courseId=312895237&isImSubWindow=true&lmsOpenFrom=4&role=student&schoolId=69201116",
+      "subject": "MATH",
+      "recommendedSubject": "MATH",
+      "deadlineTag": "[29.10]",
+      "deadlineDate": "17:00:00, 29/10/2026",
+      "customDeadline": null,
+      "detectedAt": "16:30:48",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[29.10] [Math] Lesson 4 HW. Data Analysis (3).pdf",
+      "todoId": 1526215648
+    },
+    {
+      "id": "6a80559e7447f58633cb3cffb488276e",
+      "filename": "[17.10] [Verbal] Lesson_17_Exercise.pdf",
+      "title": "Lesson_17_Exercise.pdf",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/10/03/2726369499/noop/03_09_4f0a087-ee57-014f-602e-3a521d2783e_1773066972200.pdf",
+      "pageUrl": "https://b1s-cdn.eeo.cn/client/lms/desktop/answersheet/join?activityId=1138026514&answerSheetJoinOpenFrom=1&courseId=306643591&isImSubWindow=true&lmsOpenFrom=4&role=student&schoolId=69201116",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "detectedAt": "16:31:07",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] Lesson_17_Exercise.pdf"
+    },
+    {
+      "id": "local_1c75dbf66344",
+      "filename": "[29.10] [Math] Lesson 4 HW. Data Analysis (2).pdf",
+      "title": "Lesson 4 HW. Data Analysis (No.2)",
+      "url": "",
+      "subject": "MATH",
+      "recommendedSubject": "MATH",
+      "deadlineTag": "[29.10]",
+      "deadlineDate": "17:00:00, 29/10/2026",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[29.10] [Math] Lesson 4 HW. Data Analysis (2).pdf",
+      "detectedAt": "16:53:51"
     }
   ],
   "todos": [

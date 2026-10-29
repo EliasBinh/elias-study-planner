@@ -577,7 +577,8 @@ function detectSubject(title = '', altText = '') {
     'triangle', 'circle', 'polynomial', 'graph', 'm-ad', 'sat m-', 'calculus', 
     'probability', 'arithmetic', 'coordinate', 'parabola', 'linear',
     'area', 'volume', 'ratio', 'percentage', 'percent', 'angle', 'line', 'rates',
-    'quadratic', 'integer', 'exponent', 'quadrilateral', 'polygon', 'inequality', 'system'
+    'quadratic', 'integer', 'exponent', 'quadrilateral', 'polygon', 'inequality', 'system',
+    'data analysis', 'data anaysis', 'analysis', 'data'
   ];
   const verbalKeywords = [
     'verbal', 'ebrw', 'words in context', 'critical reader', 'literary art', 'central idea', 
@@ -636,7 +637,13 @@ function extractSetNumbers(str = '') {
   if (lessonMatch) res.lesson = lessonMatch[1];
   
   const noMatch = norm.match(/no\s*(\d+)/);
-  if (noMatch) res.no = noMatch[1];
+  if (noMatch) {
+    res.no = noMatch[1];
+  } else {
+    // Check for parenthesized number e.g. (2) or (No. 2) or trailing number like - 2
+    const parenMatch = str.match(/\(\s*(?:no\.?)?\s*(\d+)\s*\)/i) || str.match(/[\s\-_](\d+)\s*(?:\.pdf)?$/i);
+    if (parenMatch) res.no = parenMatch[1];
+  }
 
   const setMatch = norm.match(/set\s*(\d+|[a-z])\b/);
   if (setMatch) res.set = setMatch[1];
@@ -649,6 +656,14 @@ function extractSetNumbers(str = '') {
 
 // Helper: Match PDF title with known To-do items
 function matchTodo(title = '', filename = '', excludeIds = null) {
+  // Direct Ground-Truth Match: Check if title or filename contains activityId=XXXXX
+  const actMatch = (title + ' ' + filename).match(/activityId=(\d+)/i);
+  if (actMatch) {
+    const actId = actMatch[1];
+    const directTodo = Array.from(todoStore.values()).find(t => String(t.activityId) === String(actId));
+    if (directTodo) return directTodo;
+  }
+
   const combined = (title + ' ' + filename).toLowerCase();
   const fileNumbers = extractSetNumbers(combined);
   const normSearch = normalizeTitle(title || filename);
@@ -956,25 +971,57 @@ async function scanClassIn() {
 
         ws.close();
 
-        const pdfUrls = perfRes?.result?.value || [];
+        let targetActivityId = null;
+        try {
+          const parsed = new URL(target.url);
+          targetActivityId = parsed.searchParams.get('activityId') || parsed.searchParams.get('activity_id');
+        } catch (e) {
+          const match = target.url.match(/activityId=(\d+)/i);
+          if (match) targetActivityId = match[1];
+        }
+
+        const uniquePdfUrls = Array.from(new Set(perfRes?.result?.value || []));
         const domNames = domRes?.result?.value || [];
         const defaultName = domNames.find(n => n.endsWith('.pdf')) || domNames[0] || 'ClassIn_Homework.pdf';
 
-        for (const pdfUrl of pdfUrls) {
+        for (const pdfUrl of uniquePdfUrls) {
           let cleanName = defaultName;
           if (!cleanName.toLowerCase().endsWith('.pdf')) cleanName += '.pdf';
           cleanName = cleanName.replace(/[<>:"/\\|?*]/g, '_').trim();
 
           const uniqueId = crypto.createHash('md5').update(pdfUrl).digest('hex');
-          const detectedSubject = detectSubject(cleanName, target.title);
-          const todo = matchTodo(cleanName, target.title);
-          const deadlineTag = getDeadlineTag(todo) || (detectedSubject === 'MATH' ? '[21.10]' : '[17.10]');
 
+          // Match Todo with absolute priority:
+          // 1. Direct activityId match from target URL (100% ground-truth)
+          let todo = null;
+          if (targetActivityId) {
+            todo = Array.from(todoStore.values()).find(t => String(t.activityId) === String(targetActivityId));
+          }
+          // 2. Exact/fuzzy match with DOM text names
+          if (!todo) {
+            for (const dName of domNames) {
+              todo = matchTodo(dName, target.title);
+              if (todo) break;
+            }
+          }
+          // 3. Match with cleanName & target.title
+          if (!todo) {
+            todo = matchTodo(cleanName, target.title);
+          }
+
+          const detectedSubject = todo ? detectSubject(todo.title) : detectSubject(cleanName, target.title);
+          const deadlineTag = getDeadlineTag(todo) || (detectedSubject === 'MATH' ? '[21.10]' : '[17.10]');
+          const canonicalTitle = todo ? todo.title : (domNames.find(n => !n.endsWith('.pdf')) || domNames[0] || cleanName);
+
+          // Find existing item STRICTLY:
+          // 1. By exact uniqueId or pdfUrl
+          // 2. OR by cleanBaseName
+          // 3. OR by exact todoId
           let existingItem = pdfStore.get(pdfUrl) || Array.from(pdfStore.values()).find(i => 
             i.id === uniqueId || 
             i.url === pdfUrl ||
-            (i.filename && cleanBaseName(i.filename) === cleanBaseName(cleanName)) ||
-            (todo && (i.todoId === todo.id || i.title === todo.title))
+            (i.filename && cleanBaseName(i.filename).toLowerCase() === cleanBaseName(cleanName).toLowerCase()) ||
+            (todo && i.todoId === todo.id)
           );
 
           const subj = existingItem?.subject || detectedSubject;
@@ -988,10 +1035,12 @@ async function scanClassIn() {
 
           if (!hasLocal) {
             try {
+              console.log(`[ClassIn CDP] Đang tự động tải bài tập: ${cleanName} -> ${formattedName}`);
               await fetchFile(pdfUrl, destPath);
               downloaded = true;
               finalPath = destPath;
             } catch (dlErr) {
+              console.error(`[ClassIn CDP] Lỗi tải file ${cleanName}:`, dlErr.message);
             }
           }
 
@@ -999,9 +1048,12 @@ async function scanClassIn() {
             pdfStore.set(pdfUrl, {
               id: uniqueId,
               filename: formattedName,
-              title: todo ? todo.title : (domNames.length > 1 ? domNames[1] : cleanName),
+              title: canonicalTitle,
               url: pdfUrl,
               pageUrl: target.url,
+              todoId: todo ? todo.id : null,
+              activityId: todo ? todo.activityId : (targetActivityId ? Number(targetActivityId) : null),
+              courseId: todo ? todo.courseId : null,
               subject: subj,
               recommendedSubject: detectedSubject,
               deadlineTag: deadlineTag,
@@ -1012,16 +1064,23 @@ async function scanClassIn() {
               isDone: false,
               localPath: downloaded ? finalPath : null
             });
+            matchAllTodos();
             saveDatabase();
-            console.log(`[+]  ${cleanBaseName(cleanName)} [${subj}] ${deadlineTag}`);
+            console.log(`[+] Đã nhận diện bài tập ClassIn: ${cleanBaseName(cleanName)} [${subj}] ${deadlineTag}`);
           } else {
-            if (!existingItem.url) existingItem.url = pdfUrl;
+            let changed = false;
+            if (!existingItem.url) { existingItem.url = pdfUrl; changed = true; }
+            if (todo && !existingItem.todoId) { existingItem.todoId = todo.id; existingItem.title = todo.title; changed = true; }
             if (downloaded && (!existingItem.localPath || !fs.existsSync(existingItem.localPath))) {
               existingItem.localPath = finalPath;
               existingItem.downloaded = true;
               existingItem.filename = formattedName;
+              changed = true;
+            }
+            if (changed) {
+              matchAllTodos();
               saveDatabase();
-              console.log(`[+]  ${cleanBaseName(cleanName)} [${subj}] ${deadlineTag}`);
+              console.log(`[+] Cập nhật bài tập ClassIn: ${cleanBaseName(cleanName)} [${subj}] ${deadlineTag}`);
             }
           }
         }
