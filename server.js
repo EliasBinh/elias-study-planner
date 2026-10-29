@@ -1122,6 +1122,21 @@ function fetchFile(url, destPath) {
       res.pipe(stream);
       stream.on('finish', () => {
         stream.close();
+        // Also mirror to user's Downloads/10SAT folder if running locally on Windows
+        try {
+          if (!IS_CLOUD_INSTANCE && USER_DOWNLOADS_10SAT && destPath) {
+            const fileName = path.basename(destPath);
+            const parentDir = path.basename(path.dirname(destPath)); // 'MATH' or 'VERBAL'
+            if (['MATH', 'VERBAL'].includes(parentDir)) {
+              const targetDir = path.join(USER_DOWNLOADS_10SAT, parentDir);
+              fs.mkdirSync(targetDir, { recursive: true });
+              const mirrorPath = path.join(targetDir, fileName);
+              if (path.resolve(destPath) !== path.resolve(mirrorPath)) {
+                fs.copyFileSync(destPath, mirrorPath);
+              }
+            }
+          }
+        } catch (_) {}
         resolve(destPath);
       });
       stream.on('error', reject);
@@ -3320,16 +3335,30 @@ async function runBatchFetchSafe() {
   // 12. API: Open folder in Windows Explorer reliably via PowerShell
   if (parsedUrl.pathname === '/api/open-folder') {
     const target = (parsedUrl.searchParams.get('folder') || 'ALL').toUpperCase();
-    let folderToOpen = BASE_10SAT;
-    if (target === 'VERBAL') folderToOpen = VERBAL_DIR;
-    else if (target === 'MATH') folderToOpen = MATH_DIR;
+    const filename = parsedUrl.searchParams.get('filename');
 
-    const cmd = `powershell.exe -NoProfile -Command "Start-Process explorer.exe '${folderToOpen}'"`;
+    const base = (fs.existsSync(USER_DOWNLOADS_10SAT) || process.platform === 'win32') ? USER_DOWNLOADS_10SAT : BASE_10SAT;
+    let folderToOpen = base;
+    if (target === 'VERBAL') folderToOpen = path.join(base, 'VERBAL');
+    else if (target === 'MATH') folderToOpen = path.join(base, 'MATH');
+
+    if (!fs.existsSync(folderToOpen)) {
+      try { fs.mkdirSync(folderToOpen, { recursive: true }); } catch (e) {}
+    }
+
+    let cmd = `powershell.exe -NoProfile -Command "Start-Process explorer.exe '${folderToOpen}'"`;
+    if (filename) {
+      const targetFilePath = path.join(folderToOpen, filename);
+      if (fs.existsSync(targetFilePath)) {
+        cmd = `powershell.exe -NoProfile -Command "explorer.exe /select, '${targetFilePath}'"`;
+      }
+    }
+
     exec(cmd, (err) => {
       if (err) console.error('Explorer error:', err);
     });
 
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     return res.end(JSON.stringify({ success: true, folder: folderToOpen }));
   }
 

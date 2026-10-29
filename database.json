@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-29T10:12:07.608Z",
+  "updatedAt": "2026-10-29T10:21:54.442Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -46,11 +46,6 @@
           "category": "Morning"
         },
         {
-          "id": "h_1792926550682",
-          "title": "Skin icing",
-          "category": "Discipline"
-        },
-        {
           "id": "h_5",
           "title": "Làm 1 TASK trên trường",
           "category": "School"
@@ -66,31 +61,19 @@
           "category": "Discipline"
         },
         {
-          "id": "h_4",
-          "title": "Học SAT 1 Pomodoro",
-          "category": "Study"
-        },
-        {
           "id": "h_1792926643200",
           "title": "Stare wall 20min",
           "category": "Mindset"
-        },
-        {
-          "id": "h_1792927602231",
-          "title": "Anki 1 pomodoro",
-          "category": "Study"
         }
       ],
       "history": {
         "2026-10-25": [],
         "2026-10-26": [
-          "h_1792926550682",
           "h_5",
           "h_3",
           "h_1792926643200"
         ],
         "2026-10-27": [
-          "h_1792926550682",
           "h_5",
           "h_3",
           "h_6",
@@ -99,13 +82,20 @@
         "2026-10-28": [
           "h_5",
           "h_1792926643200"
+        ],
+        "2026-10-29": [
+          "h_1792926643200",
+          "h_5"
         ]
       },
       "deletedHabits": {
         "h_1792926219222": 1792926219236,
-        "h_2": 1792926399034
+        "h_2": 1792926399034,
+        "h_4": 1793269141733,
+        "h_1792927602231": 1793269145744,
+        "h_1792926550682": 1793269148349
       },
-      "changedAt": 1793193072059
+      "changedAt": 1793269148349
     },
     "dailyPlanner": {
       "tasks": [
@@ -350,9 +340,10 @@
           "deadline": "",
           "completed": false,
           "status": "incomplete",
-          "spentSeconds": 0,
+          "spentSeconds": 424,
           "createdAt": "2026-10-29T09:50:35.631Z",
-          "updatedAt": 1793267435631
+          "updatedAt": 1793269285638,
+          "completedAt": null
         },
         {
           "id": "dp_1793267452226_n84q",
@@ -455,6 +446,10 @@
         "2026-10-28": {
           "totalSeconds": 11491,
           "maxFocusSeconds": 1143
+        },
+        "2026-10-29": {
+          "totalSeconds": 424,
+          "maxFocusSeconds": 30
         }
       },
       "deletedTasks": {
@@ -485,8 +480,13 @@
         "dp_1793106514083_mpsm": 1793106517776,
         "dp_1793091701173_myxn": 1793107668068
       },
-      "activeTimer": null,
-      "activeTimerChangedAt": 1793198534527
+      "activeTimer": {
+        "taskId": "dp_1793267435631_p9yr",
+        "taskTitle": "toán xong tờ mới",
+        "startedAt": 1793269285638,
+        "date": "2026-10-29"
+      },
+      "activeTimerChangedAt": 1793269285638
     },
     "discordRpc": {
       "enabled": true,
