@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-29T09:55:08.683Z",
+  "updatedAt": "2026-10-29T10:12:07.608Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -23,7 +23,9 @@
       "a test ebrw set c buổi 5",
       1528143965,
       "the critical reader set 7 matter & mind",
-      1528092015
+      1528092015,
+      "words in context 6",
+      1503038855
     ],
     "manualFileGroups": {
       "todo_1512996758": "verbal_ebrw",
@@ -1578,21 +1580,6 @@
       "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] final_[A] Test EBRW - set C - Buổi 5 - Test Paper.pdf"
     },
     {
-      "id": "local_64f37fda18e7",
-      "filename": "[17.10] [Verbal] ClassIn_Homework.pdf",
-      "title": "ClassIn_Homework",
-      "url": "",
-      "subject": "VERBAL",
-      "recommendedSubject": "VERBAL",
-      "deadlineTag": "[17.10]",
-      "deadlineDate": "",
-      "customDeadline": null,
-      "isDone": false,
-      "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] ClassIn_Homework.pdf",
-      "detectedAt": "20:24:42"
-    },
-    {
       "id": "ccc52c2c464c3cedf94619f6100472ec",
       "filename": "[29.10] [Math] Lesson 4 HW. Data Analysis (3).pdf",
       "title": "Lesson 4 HW. Data Analysis (No.3)",
@@ -1639,6 +1626,25 @@
       "downloaded": true,
       "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[29.10] [Math] Lesson 4 HW. Data Analysis (2).pdf",
       "detectedAt": "16:53:51"
+    },
+    {
+      "id": "6b6087f2f9b52941776a513823c23d29",
+      "filename": "[29.10] [Math] Lesson 4 HW. Data Analysis (4).pdf",
+      "title": "Lesson 4 HW. Data Analysis (No.4)",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/3d/41/2921877962/noop/03_09_70531f02dead48668141603892abaa4c.pdf",
+      "pageUrl": "https://b1s-cdn.eeo.cn/client/lms/desktop/answersheet/join?activityId=1173007794&answerSheetJoinOpenFrom=1&courseId=312895237&isImSubWindow=true&lmsOpenFrom=4&role=student&schoolId=69201116",
+      "todoId": 1526215563,
+      "activityId": 1173007794,
+      "courseId": 312895237,
+      "subject": "MATH",
+      "recommendedSubject": "MATH",
+      "deadlineTag": "[29.10]",
+      "deadlineDate": "17:00:00, 29/10/2026",
+      "customDeadline": null,
+      "detectedAt": "17:02:33",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[29.10] [Math] Lesson 4 HW. Data Analysis (4).pdf"
     }
   ],
   "todos": [

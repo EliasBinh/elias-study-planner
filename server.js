@@ -154,19 +154,25 @@ function formatFilename(baseName, deadlineTag, subject = 'Verbal', isDone = fals
 // Universal PDF path resolver (Local Windows disk + Repo data folder)
 function resolveLocalPdfPath(item) {
   if (!item) return null;
-  // 1. Direct localPath if exists
+  const isMath = (item.subject || '').toUpperCase() === 'MATH';
+  const isVerbal = (item.subject || '').toUpperCase() === 'VERBAL';
+
+  // 1. Direct localPath if exists and matches subject directory
   if (item.localPath && fs.existsSync(item.localPath)) {
-    return item.localPath;
+    const normPath = item.localPath.replace(/\\/g, '/');
+    if (isMath && normPath.includes('/VERBAL/')) {
+      // Discard wrong subject directory
+    } else if (isVerbal && normPath.includes('/MATH/')) {
+      // Discard wrong subject directory
+    } else {
+      return item.localPath;
+    }
   }
-  // 2. Relative check in REPO_10SAT and BASE_10SAT
-  const candidateDirs = [
-    item.subject === 'MATH' ? MATH_DIR : VERBAL_DIR,
-    item.subject === 'MATH' ? VERBAL_DIR : MATH_DIR,
-    path.join(REPO_10SAT, 'VERBAL'),
-    path.join(REPO_10SAT, 'MATH'),
-    path.join(USER_DOWNLOADS_10SAT, 'VERBAL'),
-    path.join(USER_DOWNLOADS_10SAT, 'MATH')
-  ];
+
+  // 2. Candidate dirs restricted strictly by subject
+  const candidateDirs = isMath
+    ? [MATH_DIR, path.join(REPO_10SAT, 'MATH'), path.join(USER_DOWNLOADS_10SAT, 'MATH')]
+    : [VERBAL_DIR, path.join(REPO_10SAT, 'VERBAL'), path.join(USER_DOWNLOADS_10SAT, 'VERBAL')];
 
   if (item.filename) {
     for (const d of candidateDirs) {
