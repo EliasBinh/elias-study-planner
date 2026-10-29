@@ -5312,6 +5312,22 @@
         </label>
       </div>
 
+      <!-- Windows Startup Switch -->
+      <div id="rowDiscordAutostart"
+        style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0 10px; margin-bottom: 10px; border-bottom: 1px solid var(--border-subtle);">
+        <div style="padding-right: 12px;">
+          <div style="font-size: 13px; font-weight: 600;">Khởi động cùng Windows (Chạy ngầm)</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 1px; line-height: 1.4;">Tự chạy ngầm khi bật máy tính, không cần mở trình duyệt</div>
+        </div>
+        <label style="position: relative; display: inline-block; width: 36px; height: 18px; flex-shrink: 0;">
+          <input type="checkbox" id="chkDiscordAutostart" onchange="toggleDiscordAutostart(this.checked)"
+            style="opacity: 0; width: 0; height: 0;">
+          <span
+            style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-subtle); transition: .2s; border-radius: 20px;"
+            id="sliderAutostartToggle"></span>
+        </label>
+      </div>
+
       <!-- Prefix Buttons -->
       <label class="rpc-group-label">Prefix</label>
       <div class="rpc-pill-row">
@@ -10276,6 +10292,23 @@
       currentDiscordPreviewMode = plannerData.activeTimer ? 'study' : 'rest';
       switchPreviewMode(currentDiscordPreviewMode);
 
+      // Check Windows Autostart status
+      const chkAutostart = document.getElementById('chkDiscordAutostart');
+      const rowAutostart = document.getElementById('rowDiscordAutostart');
+      if (chkAutostart) {
+        fetch('/api/autostart')
+          .then(r => r.json())
+          .then(d => {
+            if (rowAutostart) {
+              rowAutostart.style.display = (d.isWindows || !isCloudHost) ? 'flex' : 'none';
+            }
+            chkAutostart.checked = !!d.enabled;
+            const slider = document.getElementById('sliderAutostartToggle');
+            if (slider) slider.style.backgroundColor = d.enabled ? '#5865F2' : 'var(--border-subtle)';
+          })
+          .catch(() => {});
+      }
+
       modal.style.display = 'flex';
       modal.classList.add('active');
 
@@ -10298,6 +10331,26 @@
       if (discordPreviewInterval) {
         clearInterval(discordPreviewInterval);
         discordPreviewInterval = null;
+      }
+    }
+
+    async function toggleDiscordAutostart(enable) {
+      try {
+        const slider = document.getElementById('sliderAutostartToggle');
+        if (slider) slider.style.backgroundColor = enable ? '#5865F2' : 'var(--border-subtle)';
+        const res = await fetch('/api/autostart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enable })
+        });
+        const data = await res.json();
+        if (data.success) {
+          toast(enable ? 'Đã bật tự động chạy ngầm khi mở máy tính!' : 'Đã tắt tự khởi động cùng Windows');
+        } else {
+          toast('Không thể thay đổi cài đặt khởi động');
+        }
+      } catch (e) {
+        toast('Lỗi kết nối máy tính');
       }
     }
 

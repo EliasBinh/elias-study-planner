@@ -3150,6 +3150,7 @@ async function runBatchFetchSafe() {
               tasks: filteredTasks
             },
             habits: appSettings.habits,
+            discordRpc: appSettings.discordRpc,
             serverTime: getCanonicalNow()
           }));
         } catch (e) {
@@ -3362,6 +3363,51 @@ async function runBatchFetchSafe() {
     return res.end(JSON.stringify({ success: true, folder: folderToOpen }));
   }
 
+  // 12.1 API: Get or Set Windows Startup auto-run status
+  if (parsedUrl.pathname === '/api/autostart') {
+    const startupDir = path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup');
+    const startupVbs = path.join(startupDir, 'EliasDiscordRPC.vbs');
+
+    if (req.method === 'GET') {
+      const isEnabled = fs.existsSync(startupVbs);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({ enabled: isEnabled, path: startupVbs, isWindows: process.platform === 'win32' }));
+    }
+
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const { enable } = JSON.parse(body || '{}');
+          if (enable) {
+            if (!fs.existsSync(startupDir)) {
+              fs.mkdirSync(startupDir, { recursive: true });
+            }
+            const vbsContent = [
+              'Set WshShell = CreateObject("WScript.Shell")',
+              `WshShell.CurrentDirectory = "${__dirname}"`,
+              'WshShell.Run "node server.js", 0, False',
+              ''
+            ].join('\r\n');
+            fs.writeFileSync(startupVbs, vbsContent, 'utf8');
+          } else {
+            if (fs.existsSync(startupVbs)) {
+              try { fs.unlinkSync(startupVbs); } catch (e) {}
+            }
+          }
+          const isEnabled = fs.existsSync(startupVbs);
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({ success: true, enabled: isEnabled }));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: e.message }));
+        }
+      });
+      return;
+    }
+  }
+
   // 13. API: Get open ClassIn targets/windows
   if (parsedUrl.pathname === '/api/targets') {
     try {
@@ -3507,6 +3553,18 @@ async function triggerCloudSync() {
           broadcastPlannerUpdate();
         }
       }
+
+      if (data && data.discordRpc && typeof data.discordRpc === 'object') {
+        const cloudRpc = data.discordRpc;
+        const localRpcStr = JSON.stringify(appSettings.discordRpc || {});
+        const cloudRpcStr = JSON.stringify(cloudRpc);
+        if (localRpcStr !== cloudRpcStr) {
+          appSettings.discordRpc = { ...appSettings.discordRpc, ...cloudRpc };
+          initDiscordIpc();
+          syncDiscordPresenceFromActiveTimer(true);
+          saveDatabase();
+        }
+      }
     }
   } catch (err) {
     console.error('[Cloud Sync] Lỗi đồng bộ:', err.message);
@@ -3516,6 +3574,13 @@ async function triggerCloudSync() {
 }
 
 // Start server
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`[Startup] Cổng ${PORT} đã đang được chạy bởi một tiến trình khác.`);
+    process.exit(0);
+  }
+});
+
 server.listen(PORT, '0.0.0.0', async () => {
   loadDatabase();
   initDiscordIpc();
