@@ -5488,6 +5488,21 @@
       setTimeout(() => t.classList.remove('show'), 2600);
     }
 
+    // Helper: Định dạng chuẩn YYYY-MM-DD theo múi giờ Việt Nam (Asia/Ho_Chi_Minh)
+    function getLocalDateStr(dateInput = new Date()) {
+      try {
+        const d = (dateInput instanceof Date) ? dateInput : new Date(dateInput);
+        if (isNaN(d.getTime())) return '';
+        return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(d);
+      } catch (e) {
+        const d = (dateInput instanceof Date) ? dateInput : new Date(dateInput);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+    }
+
     /* ========================================================
        PAGE ROUTING & CONTROLLER (SAT | HABITS | PLANNER)
        ======================================================== */
@@ -5938,7 +5953,7 @@
           date: isoDate,
           dayLabel: dayNames[i],
           formatted: `${dd}.${mm}`,
-          isToday: isoDate === new Date().toISOString().slice(0, 10),
+          isToday: isoDate === getLocalDateStr(),
           dayNum: dd,
           monthNum: mm
         });
@@ -6312,7 +6327,7 @@
       const habitsList = habitsData.list || [];
       const totalHabits = habitsList.length;
       const history = habitsData.history || {};
-      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayStr = getLocalDateStr();
 
       // Today rate
       const todayDone = (history[todayStr] || []).length;
@@ -6334,7 +6349,7 @@
         }
 
         for (let i = 0; i < 365; i++) {
-          const dStr = checkDate.toISOString().slice(0, 10);
+          const dStr = getLocalDateStr(checkDate);
           const doneCount = (history[dStr] || []).length;
           if (doneCount >= totalHabits) {
             streak++;
@@ -6760,7 +6775,7 @@
        DAILY PLANNER & YPT FOCUS TIMER CONTROLLER
        ======================================================== */
     let plannerData = loadPlannerFromLocal() || { tasks: [], daysHistory: {}, activeTimer: null };
-    let currentPlannerDate = new Date().toISOString().slice(0, 10);
+    let currentPlannerDate = getLocalDateStr();
     let currentPopoverTaskId = null;
     let activeDraftSection = null;
     let serverClockSkew = 0; // Milliseconds offset: serverTime - clientLocalTime
@@ -6787,7 +6802,7 @@
 
     let yptCalYear = new Date().getFullYear();
     let yptCalMonth = new Date().getMonth(); // 0 to 11
-    let selectedCalDate = new Date().toISOString().slice(0, 10);
+    let selectedCalDate = getLocalDateStr();
 
     /* Time format helpers */
     function formatHMS(seconds) {
@@ -6810,7 +6825,7 @@
       if (plannerData.daysHistory && plannerData.daysHistory[dateStr]) {
         total = plannerData.daysHistory[dateStr].totalSeconds || 0;
       }
-      const dayTasks = (plannerData.tasks || []).filter(t => (t.date || new Date().toISOString().slice(0, 10)) === dateStr);
+      const dayTasks = (plannerData.tasks || []).filter(t => (t.date || getLocalDateStr()) === dateStr);
       let tasksSum = 0;
       dayTasks.forEach(t => tasksSum += (t.spentSeconds || 0));
       total = Math.max(total, tasksSum);
@@ -6850,6 +6865,11 @@
 
       if (todayTotalEl) todayTotalEl.innerText = formatHMS(todayTotalSec);
       if (maxFocusEl) maxFocusEl.innerText = formatHMS(todayMaxFocusSec);
+
+      // Cập nhật màu sắc deadline theo thời gian thực (chuyển sang đỏ ngay khi quá giờ)
+      if (currentPage === 'planner') {
+        updateLiveDeadlines();
+      }
 
       if (!active) {
         if (clockEl) {
@@ -6970,14 +6990,15 @@
     }
 
     function changePlannerDate(days) {
-      const d = new Date(currentPlannerDate);
-      d.setDate(d.getDate() + days);
-      currentPlannerDate = d.toISOString().slice(0, 10);
+      const [y, m, d] = currentPlannerDate.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      dateObj.setDate(dateObj.getDate() + days);
+      currentPlannerDate = getLocalDateStr(dateObj);
       renderDailyPlannerPage();
     }
 
     function resetPlannerDateToToday() {
-      currentPlannerDate = new Date().toISOString().slice(0, 10);
+      currentPlannerDate = getLocalDateStr();
       renderDailyPlannerPage();
     }
 
@@ -6987,20 +7008,35 @@
       if (!task.deadline) return false;
 
       const now = new Date();
-      const todayStr = now.toISOString().slice(0, 10);
+      const todayStr = getLocalDateStr(now);
       const taskDate = task.date || selectedDate || todayStr;
 
+      // Nếu ngày của task là ngày trước hôm nay -> Chắc chắn đã quá hạn
       if (taskDate < todayStr) return true;
 
+      // Nếu ngày của task là hôm nay -> So sánh giờ:phút theo múi giờ Việt Nam
       if (taskDate === todayStr) {
-        const timeMatch = task.deadline.match(/^(\d{1,2}):(\d{2})$/);
+        const timeMatch = task.deadline.match(/^\s*(\d{1,2})[:hH](\d{1,2})\s*$/);
         if (timeMatch) {
           const dlHours = parseInt(timeMatch[1], 10);
           const dlMinutes = parseInt(timeMatch[2], 10);
-          const currentHours = now.getHours();
-          const currentMinutes = now.getMinutes();
 
-          if (currentHours > dlHours || (currentHours === dlHours && currentMinutes > dlMinutes)) {
+          let currentHours = now.getHours();
+          let currentMinutes = now.getMinutes();
+          try {
+            const parts = new Intl.DateTimeFormat('en-GB', {
+              timeZone: 'Asia/Ho_Chi_Minh',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            }).formatToParts(now);
+            const h = parts.find(p => p.type === 'hour')?.value;
+            const m = parts.find(p => p.type === 'minute')?.value;
+            if (h !== undefined) currentHours = parseInt(h, 10);
+            if (m !== undefined) currentMinutes = parseInt(m, 10);
+          } catch (e) {}
+
+          if (currentHours > dlHours || (currentHours === dlHours && currentMinutes >= dlMinutes)) {
             return true;
           }
         }
@@ -7008,9 +7044,23 @@
       return false;
     }
 
+    /* Cập nhật màu sắc deadline theo thời gian thực (1s) */
+    function updateLiveDeadlines() {
+      const tasks = plannerData.tasks || [];
+      tasks.forEach(t => {
+        const badge = document.getElementById(`deadlineBadge_${t.id}`);
+        if (badge && t.deadline && !badge.querySelector('input')) {
+          const isOverdue = checkIsOverdue(t, currentPlannerDate);
+          badge.classList.remove('deadline-upcoming', 'deadline-overdue');
+          badge.classList.add(isOverdue ? 'deadline-overdue' : 'deadline-upcoming');
+          badge.setAttribute('data-tooltip', isOverdue ? 'Đã quá deadline!' : 'Hạn: ' + t.deadline);
+        }
+      });
+    }
+
     function renderDailyPlannerPage() {
       const tasks = plannerData.tasks || [];
-      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayStr = getLocalDateStr();
 
       // Date heading
       const headingEl = document.getElementById('plannerDateHeading');
@@ -7019,8 +7069,11 @@
         let prefix = '';
         if (currentPlannerDate === todayStr) prefix = 'Hôm nay - ';
         else {
-          const dObj = new Date(currentPlannerDate);
-          const diffDays = Math.round((dObj - new Date(todayStr)) / (1000 * 60 * 60 * 24));
+          const [cy, cm, cd] = currentPlannerDate.split('-').map(Number);
+          const [ty, tm, td] = todayStr.split('-').map(Number);
+          const dObj = new Date(cy, cm - 1, cd);
+          const tObj = new Date(ty, tm - 1, td);
+          const diffDays = Math.round((dObj - tObj) / (1000 * 60 * 60 * 24));
           if (diffDays === -1) prefix = 'Hôm qua - ';
           else if (diffDays === 1) prefix = 'Ngày mai - ';
         }
@@ -7830,7 +7883,7 @@
       const now = new Date();
       yptCalYear = now.getFullYear();
       yptCalMonth = now.getMonth();
-      selectedCalDate = now.toISOString().slice(0, 10);
+      selectedCalDate = getLocalDateStr(now);
       renderYptCalendar();
     }
 
@@ -7856,7 +7909,7 @@
       ];
       titleEl.innerText = `${monthNames[yptCalMonth]}, ${yptCalYear}`;
 
-      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayStr = getLocalDateStr();
 
       const firstDayOfMonth = new Date(yptCalYear, yptCalMonth, 1);
       let startDayOfWeek = firstDayOfMonth.getDay() - 1;
@@ -10409,7 +10462,7 @@
       // Study format: "<task_elapsed> - Total: <today_total>" (e.g. 01:10 - Total: 39m)
       // Rest format: "Total: <today_total>" (e.g. Total: 39m)
       // NO emojis!
-      const todayTotalSec = typeof getDayTotalSeconds === 'function' ? getDayTotalSeconds(new Date().toISOString().slice(0, 10)) : 2340;
+      const todayTotalSec = typeof getDayTotalSeconds === 'function' ? getDayTotalSeconds(getLocalDateStr()) : 2340;
       let taskElapsedSec = 70;
       if (isStudy) {
         if (plannerData.activeTimer?.startedAt) {

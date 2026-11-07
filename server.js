@@ -23,6 +23,20 @@ function getCanonicalNow() {
   return Date.now() + cloudTimeOffset;
 }
 
+// Helper: Lấy chuỗi ngày YYYY-MM-DD theo múi giờ Việt Nam (Asia/Ho_Chi_Minh)
+function getVnDateStr(timestampOrDate = getCanonicalNow()) {
+  try {
+    const d = (timestampOrDate instanceof Date) ? timestampOrDate : new Date(timestampOrDate);
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(d);
+  } catch (e) {
+    const d = new Date(timestampOrDate);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+}
+
 async function calibrateClockOffset() {
   if (IS_CLOUD_INSTANCE) return;
   try {
@@ -1320,7 +1334,7 @@ let discordTestClearTimer = null;
 let discordRestStartedAt = Date.now();
 
 function getTodayStudySeconds() {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getVnDateStr();
   const dayStats = appSettings.dailyPlanner?.daysHistory?.[today];
   let total = dayStats?.totalSeconds || 0;
   const active = appSettings.dailyPlanner?.activeTimer;
@@ -1494,7 +1508,7 @@ function syncDiscordPresenceFromActiveTimer(immediate = false) {
     return;
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getVnDateStr();
   const todayTotalSec = getTodayStudySeconds();
   const activityType = Number(appSettings.discordRpc?.activityType !== undefined ? appSettings.discordRpc.activityType : 3); // 3: Watching, 0: Playing, 5: Competing
   const active = appSettings.dailyPlanner?.activeTimer;
@@ -2755,7 +2769,7 @@ async function runBatchFetchSafe() {
           const { action, id, title, category, date } = parsed;
 
           if (action === 'toggle') {
-            const d = date || new Date().toISOString().slice(0, 10);
+            const d = date || getVnDateStr();
             if (!appSettings.habits.history) appSettings.habits.history = {};
             if (!Array.isArray(appSettings.habits.history[d])) appSettings.habits.history[d] = [];
 
@@ -2852,7 +2866,7 @@ async function runBatchFetchSafe() {
               id: 'dp_' + getCanonicalNow() + '_' + Math.random().toString(36).slice(2, 6),
               title: title.trim(),
               section: section || 'morning',
-              date: date || new Date().toISOString().slice(0, 10),
+              date: date || getVnDateStr(),
               deadline: deadline || '',
               completed: false,
               status: 'incomplete', // 'incomplete' | 'partial' | 'completed' | 'failed'
@@ -2892,7 +2906,7 @@ async function runBatchFetchSafe() {
           } else if (action === 'start-timer' && id) {
             const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
             if (t) {
-              const taskDate = date || t.date || new Date().toISOString().slice(0, 10);
+              const taskDate = date || t.date || getVnDateStr();
               const now = getCanonicalNow();
 
               if (appSettings.dailyPlanner.activeTimer) {
