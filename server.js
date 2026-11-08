@@ -2892,9 +2892,12 @@ async function runBatchFetchSafe() {
                     appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
                   }
                   appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
+                  const origStart = prev.sessionStartedAt || prev.startedAt;
+                  const continuousSessionSec = Math.max(0, Math.floor((now - origStart) / 1000));
                   appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
                     appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                    sessionSec
+                    continuousSessionSec,
+                    t.spentSeconds || 0
                   );
                   appSettings.dailyPlanner.activeTimer = null;
                   appSettings.dailyPlanner.activeTimerChangedAt = now;
@@ -2923,9 +2926,12 @@ async function runBatchFetchSafe() {
                   appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
                 }
                 appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
+                const origStart = prev.sessionStartedAt || prev.startedAt;
+                const continuousSessionSec = Math.min(MAX_SESSION_SEC, Math.max(0, Math.floor((now - origStart) / 1000)));
                 appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
                   appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                  sessionSec
+                  continuousSessionSec,
+                  prevTask ? (prevTask.spentSeconds || 0) : 0
                 );
               }
 
@@ -2937,6 +2943,7 @@ async function runBatchFetchSafe() {
                 taskId: t.id,
                 taskTitle: t.title,
                 startedAt: startedAtTime,
+                sessionStartedAt: startedAtTime,
                 date: taskDate
               };
               appSettings.dailyPlanner.activeTimerChangedAt = now;
@@ -2957,9 +2964,12 @@ async function runBatchFetchSafe() {
                 appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
               }
               appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
+              const origStart = prev.sessionStartedAt || prev.startedAt;
+              const continuousSessionSec = Math.min(MAX_SESSION_SEC, Math.max(0, Math.floor((now - origStart) / 1000)));
               appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
                 appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                sessionSec
+                continuousSessionSec,
+                targetTask ? (targetTask.spentSeconds || 0) : 0
               );
               appSettings.dailyPlanner.activeTimer = null;
               appSettings.dailyPlanner.activeTimerChangedAt = now;
@@ -2981,11 +2991,15 @@ async function runBatchFetchSafe() {
                   appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
                 }
                 appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
+                const origStart = prev.sessionStartedAt || prev.startedAt;
+                const continuousSessionSec = Math.min(MAX_SESSION_SEC, Math.max(0, Math.floor((now - origStart) / 1000)));
                 appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
                   appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                  sessionSec
+                  continuousSessionSec,
+                  targetTask ? (targetTask.spentSeconds || 0) : 0
                 );
-                // Advance timer startedAt to now so it continues running smoothly without resetting
+                // Advance timer startedAt for increment calculation, preserve sessionStartedAt for continuous focus duration
+                if (!prev.sessionStartedAt) prev.sessionStartedAt = origStart;
                 prev.startedAt = now;
                 appSettings.dailyPlanner.activeTimerChangedAt = now;
               }
@@ -3007,9 +3021,12 @@ async function runBatchFetchSafe() {
                     appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
                   }
                   appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
+                  const origStart = prev.sessionStartedAt || prev.startedAt;
+                  const continuousSessionSec = Math.max(0, Math.floor((now - origStart) / 1000));
                   appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
                     appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                    sessionSec
+                    continuousSessionSec,
+                    t.spentSeconds || 0
                   );
                   appSettings.dailyPlanner.activeTimer = null;
                   appSettings.dailyPlanner.activeTimerChangedAt = now;

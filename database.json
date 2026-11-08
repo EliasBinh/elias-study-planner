@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-07T17:17:33.110Z",
+  "updatedAt": "2026-11-08T07:49:27.666Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -16,7 +16,7 @@
       "list": [
         {
           "id": "h_1",
-          "title": "5h dậy",
+          "title": "dậy sớm hơn 15p",
           "category": "Morning"
         },
         {
@@ -30,14 +30,19 @@
           "category": "Health"
         },
         {
-          "id": "h_6",
-          "title": "Đọc sách khi trống trải",
-          "category": "Discipline"
-        },
-        {
           "id": "h_1792926643200",
           "title": "Stare wall 20min",
           "category": "Mindset"
+        },
+        {
+          "id": "h_6",
+          "title": "ngủ sớm hơn 15p",
+          "category": "Discipline"
+        },
+        {
+          "id": "h_1794115281246",
+          "title": "Hydrate 3l",
+          "category": "Discipline"
         }
       ],
       "history": {
@@ -59,6 +64,12 @@
         "2026-10-29": [
           "h_1792926643200",
           "h_5"
+        ],
+        "2026-11-08": [
+          "h_1",
+          "h_3",
+          "h_5",
+          "h_1792926643200"
         ]
       },
       "deletedHabits": {
@@ -68,7 +79,7 @@
         "h_1792927602231": 1793269145744,
         "h_1792926550682": 1793269148349
       },
-      "changedAt": 1794071276241
+      "changedAt": 1794115284065
     },
     "dailyPlanner": {
       "tasks": [
@@ -802,6 +813,71 @@
           "createdAt": "2026-11-07T16:18:00.237Z",
           "updatedAt": 1794071015314,
           "completedAt": null
+        },
+        {
+          "id": "dp_1794101145865_mr7m",
+          "title": "Gym",
+          "section": "morning",
+          "date": "2026-11-08",
+          "deadline": "13:00",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 4632,
+          "createdAt": "2026-11-08T01:25:50.382Z",
+          "updatedAt": 1794123605366,
+          "completedAt": "2026-11-08T05:24:18.314Z"
+        },
+        {
+          "id": "dp_1794101147655_yv4m",
+          "title": "Chương 2 Hóa",
+          "section": "morning",
+          "date": "2026-11-08",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 6023,
+          "createdAt": "2026-11-08T01:25:52.180Z",
+          "updatedAt": 1794123529566,
+          "completedAt": "2026-11-08T07:38:49.566Z"
+        },
+        {
+          "id": "dp_1794101150497_nph9",
+          "title": "Hóa C3",
+          "section": "afternoon",
+          "date": "2026-11-08",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 4,
+          "createdAt": "2026-11-08T01:25:55.021Z",
+          "updatedAt": 1794123532370,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1794101158323_zrpg",
+          "title": "Hóa C4",
+          "section": "afternoon",
+          "date": "2026-11-08",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-08T01:26:02.847Z",
+          "updatedAt": 1794123533683,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1794101159866_gsu4",
+          "title": "Hóa C5",
+          "section": "afternoon",
+          "date": "2026-11-08",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-08T01:26:04.394Z",
+          "updatedAt": 1794123535044,
+          "completedAt": null
         }
       ],
       "daysHistory": {
@@ -868,6 +944,10 @@
         "2026-11-07": {
           "totalSeconds": 11330,
           "maxFocusSeconds": 2520
+        },
+        "2026-11-08": {
+          "totalSeconds": 10659,
+          "maxFocusSeconds": 6023
         }
       },
       "deletedTasks": {
@@ -894,10 +974,11 @@
         "dp_1793976222555_y1qn": 1793985280709,
         "dp_1793985299526_isu3": 1794030964238,
         "dp_1793985254496_l4wu": 1794064553020,
-        "dp_1793985275670_bjfb": 1794064598573
+        "dp_1793985275670_bjfb": 1794064598573,
+        "dp_1794123529021_dmf5": 1794123536202
       },
       "activeTimer": null,
-      "activeTimerChangedAt": 1794071003062
+      "activeTimerChangedAt": 1794123529566
     },
     "discordRpc": {
       "enabled": true,
@@ -951,18 +1032,18 @@
     },
     {
       "id": "local_edbffdaa14fb",
-      "filename": "[07.11] [Verbal] [A] Test EBRW - Set B - Buổi 6.pdf",
-      "title": "[A] Test EBRW - Set B - Buổi 6",
+      "filename": "Chưa rõ  [Verbal] [A] Test EBRW - Set B - Buổi 2 (Review).pdf",
+      "title": "[A] Test EBRW - Set B - Buổi 2 (Review)",
       "url": "",
       "subject": "VERBAL",
       "recommendedSubject": "VERBAL",
-      "deadlineTag": "[07.11]",
-      "deadlineDate": "19:30:00, 7/11/2026",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
       "customDeadline": null,
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[07.11] [Verbal] [A] Test EBRW - Set B - Buổi 6.pdf",
-      "detectedAt": "12:00:22"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set B - Buổi 2 (Review).pdf",
+      "detectedAt": "08:18:58"
     },
     {
       "id": "local_83dba241c22d",
@@ -1022,11 +1103,11 @@
       "isDone": false,
       "downloaded": true,
       "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[07.11] [Verbal] [A] Test EBRW - Set A - Buổi 6.pdf",
-      "detectedAt": "00:17:32"
+      "detectedAt": "14:49:27"
     },
     {
       "id": "local_85ad8315cf9c",
-      "filename": "[07.11] [Verbal] Test EBRW - Set B - Buổi 6.pdf",
+      "filename": "[07.11] [Verbal] [A] Test EBRW - Set B - Buổi 6.pdf",
       "title": "[A] Test EBRW - Set B - Buổi 6",
       "url": "",
       "subject": "VERBAL",
@@ -1036,8 +1117,8 @@
       "customDeadline": null,
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[07.11] [Verbal] Test EBRW - Set B - Buổi 6.pdf",
-      "detectedAt": "00:17:32"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[07.11] [Verbal] [A] Test EBRW - Set B - Buổi 6.pdf",
+      "detectedAt": "14:49:27"
     },
     {
       "id": "local_651f7cea0f38",
@@ -1206,18 +1287,18 @@
     },
     {
       "id": "local_389b7876594c",
-      "filename": "[17.10] [Verbal] final_Test EBRW - Set B - Buổi 3 - Test Paper.pdf",
-      "title": "[A] Test EBRW - Set B - Buổi 6",
+      "filename": "[31.10] [Verbal] [A] Test EBRW - Set B - Buổi 5.pdf",
+      "title": "[A] Test EBRW - Set B - Buổi 5",
       "url": "",
       "subject": "VERBAL",
       "recommendedSubject": "VERBAL",
-      "deadlineTag": "[07.11]",
-      "deadlineDate": "19:30:00, 7/11/2026",
+      "deadlineTag": "[31.10]",
+      "deadlineDate": "20:00:00, 31/10/2026",
       "customDeadline": null,
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] final_Test EBRW - Set B - Buổi 3 - Test Paper.pdf",
-      "detectedAt": "00:17:32"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] [A] Test EBRW - Set B - Buổi 5.pdf",
+      "detectedAt": "14:49:27"
     },
     {
       "id": "local_b1976edbe08a",

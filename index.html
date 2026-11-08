@@ -2897,6 +2897,14 @@
       font-weight: 600;
     }
 
+    /* Green completed deadline (Task đã hoàn thành) */
+    .planner-deadline-badge.deadline-done {
+      color: #059669;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      opacity: 0.85;
+    }
+
     .planner-deadline-badge.empty {
       background: transparent;
       border: 1px dashed var(--border-checkbox);
@@ -6842,8 +6850,18 @@
       if (plannerData.daysHistory && plannerData.daysHistory[dateStr]) {
         maxSec = plannerData.daysHistory[dateStr].maxFocusSeconds || 0;
       }
+
+      // Quét tất cả task của ngày này: nếu có task nào học lâu hơn maxSec thì dùng luôn
+      const dayTasks = (plannerData.tasks || []).filter(t => (t.date || getLocalDateStr()) === dateStr);
+      dayTasks.forEach(t => {
+        if ((t.spentSeconds || 0) > maxSec) {
+          maxSec = t.spentSeconds;
+        }
+      });
+
       if (plannerData.activeTimer && plannerData.activeTimer.date === dateStr) {
-        const liveSec = Math.max(0, Math.floor((getSyncedServerNow() - plannerData.activeTimer.startedAt) / 1000));
+        const origStart = plannerData.activeTimer.sessionStartedAt || plannerData.activeTimer.startedAt;
+        const liveSec = Math.max(0, Math.floor((getSyncedServerNow() - origStart) / 1000));
         maxSec = Math.max(maxSec, liveSec);
       }
       return maxSec;
@@ -7004,7 +7022,6 @@
 
     /* Helper: check if a deadline is overdue */
     function checkIsOverdue(task, selectedDate) {
-      if (task.completed || task.status === 'completed') return false;
       if (!task.deadline) return false;
 
       const now = new Date();
@@ -7044,16 +7061,32 @@
       return false;
     }
 
+    /* Helper: Phân loại trạng thái deadline chuẩn xác (done | overdue | upcoming | empty) */
+    function getTaskDeadlineInfo(task, selectedDate) {
+      if (!task.deadline) {
+        return { className: 'empty', tooltip: 'Bấm để nhập deadline' };
+      }
+      const isDone = (task.completed || task.status === 'completed');
+      if (isDone) {
+        return { className: 'deadline-done', tooltip: `Đã hoàn thành! (Hạn: ${task.deadline})` };
+      }
+      const isOverdue = checkIsOverdue(task, selectedDate);
+      if (isOverdue) {
+        return { className: 'deadline-overdue', tooltip: `Đã quá deadline! (Hạn: ${task.deadline})` };
+      }
+      return { className: 'deadline-upcoming', tooltip: `Hạn: ${task.deadline}` };
+    }
+
     /* Cập nhật màu sắc deadline theo thời gian thực (1s) */
     function updateLiveDeadlines() {
       const tasks = plannerData.tasks || [];
       tasks.forEach(t => {
         const badge = document.getElementById(`deadlineBadge_${t.id}`);
         if (badge && t.deadline && !badge.querySelector('input')) {
-          const isOverdue = checkIsOverdue(t, currentPlannerDate);
-          badge.classList.remove('deadline-upcoming', 'deadline-overdue');
-          badge.classList.add(isOverdue ? 'deadline-overdue' : 'deadline-upcoming');
-          badge.setAttribute('data-tooltip', isOverdue ? 'Đã quá deadline!' : 'Hạn: ' + t.deadline);
+          const info = getTaskDeadlineInfo(t, currentPlannerDate);
+          badge.classList.remove('deadline-upcoming', 'deadline-overdue', 'deadline-done', 'empty');
+          badge.classList.add(info.className);
+          badge.setAttribute('data-tooltip', info.tooltip);
         }
       });
     }
@@ -7108,8 +7141,7 @@
           let tasksHtml = '';
           if (secTasks.length > 0) {
             tasksHtml = secTasks.map(t => {
-              const isOverdue = checkIsOverdue(t, currentPlannerDate);
-              const deadlineClass = isOverdue ? 'deadline-overdue' : 'deadline-upcoming';
+              const dlInfo = getTaskDeadlineInfo(t, currentPlannerDate);
               const taskStatus = t.status || (t.completed ? 'completed' : 'incomplete');
               const isRunning = (plannerData.activeTimer?.taskId === t.id);
               const liveSec = isRunning ? Math.max(0, Math.floor((getSyncedServerNow() - plannerData.activeTimer.startedAt) / 1000)) : 0;
@@ -7173,10 +7205,10 @@
                   </span>
 
                   <!-- Inline Deadline Badge -->
-                  <span class="planner-deadline-badge ${t.deadline ? deadlineClass : 'empty'}" 
+                  <span class="planner-deadline-badge ${dlInfo.className}" 
                         id="deadlineBadge_${t.id}"
                         onclick="startInlineDeadlineEdit(event, '${t.id}')"
-                        data-tooltip="${isOverdue ? 'Đã quá deadline!' : (t.deadline ? 'Hạn: ' + t.deadline : 'Bấm để nhập deadline')}">
+                        data-tooltip="${dlInfo.tooltip}">
                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg>
                     <span id="deadlineVal_${t.id}">${t.deadline || '+ Hạn'}</span>
                   </span>
@@ -7533,9 +7565,12 @@
           plannerData.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
         }
         plannerData.daysHistory[prev.date].totalSeconds += sessionSec;
+
+        const origStart = prev.sessionStartedAt || prev.startedAt;
+        const continuousSessionSec = Math.max(0, Math.floor((getSyncedServerNow() - origStart) / 1000));
         plannerData.daysHistory[prev.date].maxFocusSeconds = Math.max(
           plannerData.daysHistory[prev.date].maxFocusSeconds || 0,
-          sessionSec
+          continuousSessionSec
         );
       }
 
@@ -7543,6 +7578,7 @@
         taskId: task.id,
         taskTitle: task.title,
         startedAt: getSyncedServerNow(),
+        sessionStartedAt: getSyncedServerNow(),
         date: currentPlannerDate
       };
       plannerData.activeTimerChangedAt = Date.now();
@@ -7598,9 +7634,12 @@
         plannerData.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
       }
       plannerData.daysHistory[prev.date].totalSeconds += sessionSec;
+
+      const origStart = prev.sessionStartedAt || prev.startedAt;
+      const continuousSessionSec = Math.max(0, Math.floor((getSyncedServerNow() - origStart) / 1000));
       plannerData.daysHistory[prev.date].maxFocusSeconds = Math.max(
         plannerData.daysHistory[prev.date].maxFocusSeconds || 0,
-        sessionSec
+        continuousSessionSec
       );
       plannerData.activeTimer = null;
       plannerData.activeTimerChangedAt = Date.now();
