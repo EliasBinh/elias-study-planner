@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elx Scribd</title>
+    
+    <!-- Blue Document Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232383E2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'%3E%3C/path%3E%3Cpolyline points='14 2 14 8 20 8'%3E%3C/polyline%3E%3Cline x1='16' y1='13' x2='8' y2='13'%3E%3C/line%3E%3Cline x1='16' y1='17' x2='8' y2='17'%3E%3C/line%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #FFFFFF;
+            --bg-secondary: #F7F7F5;
+            --bg-hover: #EFEFEF;
+            --border-subtle: #E9E9E7;
+            --border-hover: #D3D1CB;
+            --text-primary: #2F3437;
+            --text-secondary: #787774;
+            --text-muted: #9B9A97;
+            --notion-blue: #2383E2;
+            --notion-blue-hover: #1b6ec2;
+            --notion-blue-subtle: #EBF3F5;
+            --error-bg: #FDF2F2;
+            --error-border: #F8D7DA;
+            --error-text: #9B2C2C;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Breadcrumb Navigation */
+        header {
+            background: var(--bg-main);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 12px 24px;
+        }
+
+        .header-inner {
+            max-width: 660px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .breadcrumb-current {
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Main Center Container */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 70px 24px 80px 24px;
+        }
+
+        .content-box {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .page-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--notion-blue);
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.6px;
+        }
+
+        /* Input Card */
+        .card {
+            background: var(--bg-main);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px 26px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .card-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 12px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 14.5px;
+            font-family: inherit;
+            color: var(--text-primary);
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--notion-blue);
+            box-shadow: 0 0 0 2px rgba(35, 131, 226, 0.15);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-primary {
+            background-color: var(--notion-blue);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 12px 22px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+            transition: background-color 0.12s ease;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--notion-blue-hover);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Progress Card */
+        .progress-card {
+            display: none;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin-top: 16px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .progress-status {
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-pct {
+            font-weight: 600;
+            color: var(--notion-blue);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 5px;
+            background-color: var(--border-subtle);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--notion-blue);
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+
+        /* Result Card */
+        .result-card {
+            display: none;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            padding: 16px 18px;
+            margin-top: 16px;
+        }
+
+        .result-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .file-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--notion-blue);
+            flex-shrink: 0;
+        }
+
+        .file-info h4 {
+            font-size: 14.5px;
+            font-weight: 600;
+            color: var(--text-primary);
+            word-break: break-all;
+            margin-bottom: 2px;
+        }
+
+        .file-info p {
+            font-size: 12.5px;
+            color: var(--text-secondary);
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-main);
+            color: var(--notion-blue);
+            border: 1px solid var(--border-subtle);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.12s ease;
+        }
+
+        .btn-download:hover {
+            background: var(--notion-blue-subtle);
+            border-color: #CFE3F7;
+        }
+
+        /* Error Card */
+        .error-card {
+            display: none;
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--error-text);
+            font-size: 13px;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 13px;
+            height: 13px;
+            border: 2px solid rgba(47, 52, 55, 0.2);
+            border-top-color: var(--text-primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            bottom: 16px;
+            right: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            user-select: none;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @media (max-width: 640px) {
+            .input-row {
+                flex-direction: column;
+            }
+            .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+            .page-header h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-inner">
+            <div class="breadcrumb">
+                <span class="breadcrumb-item">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Workspace
+                </span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2383E2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    Scribd Downloader
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="content-box">
+            <div class="page-header">
+                <div class="page-icon">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2383E2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                </div>
+                <h1>Scribd Downloader</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Document link</div>
+                <form id="downloadForm">
+                    <div class="input-row">
+                        <div class="input-wrapper">
+                            <input type="text" id="scribdUrl" placeholder="https://www.scribd.com/document/..." required autocomplete="off">
+                        </div>
+                        <button type="submit" id="btnSubmit" class="btn-primary">
+                            <span id="btnIcon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                            </span>
+                            <span id="btnText">Download PDF</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Progress Box -->
+                <div id="progressCard" class="progress-card">
+                    <div class="progress-header">
+                        <span id="statusText" class="progress-status">
+                            <div class="spinner"></div>
+                            Connecting...
+                        </span>
+                        <span id="statusPct" class="progress-pct">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Result Box -->
+                <div id="resultCard" class="result-card">
+                    <div class="result-meta">
+                        <div class="file-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2383E2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                        </div>
+                        <div class="file-info">
+                            <h4 id="resultTitle">Document</h4>
+                            <p id="resultDetails">PDF • Ready</p>
+                        </div>
+                    </div>
+                    <a id="btnDownloadLink" href="#" class="btn-download">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Save PDF
+                    </a>
+                </div>
+
+                <!-- Error Box -->
+                <div id="errorCard" class="error-card"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Subtle watermark -->
+    <div class="watermark">made by Elias</div>
+
+    <script>
+        const form = document.getElementById('downloadForm');
+        const urlInput = document.getElementById('scribdUrl');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        const progressCard = document.getElementById('progressCard');
+        const statusText = document.getElementById('statusText');
+        const statusPct = document.getElementById('statusPct');
+        const progressBar = document.getElementById('progressBar');
+        const resultCard = document.getElementById('resultCard');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultDetails = document.getElementById('resultDetails');
+        const btnDownloadLink = document.getElementById('btnDownloadLink');
+        const errorCard = document.getElementById('errorCard');
+
+        function setProgress(text, pct) {
+            statusText.innerHTML = `<div class="spinner"></div> ${text}`;
+            statusPct.textContent = `${pct}%`;
+            progressBar.style.width = `${pct}%`;
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = urlInput.value.trim();
+            if (!url) return;
+
+            errorCard.style.display = 'none';
+            resultCard.style.display = 'none';
+            progressCard.style.display = 'block';
+            btnSubmit.disabled = true;
+            btnText.textContent = 'Processing...';
+            btnIcon.innerHTML = '<div class="spinner"></div>';
+            setProgress('Connecting...', 20);
+
+            try {
+                const progressTimer = setInterval(() => {
+                    const cur = parseInt(statusPct.textContent);
+                    if (cur < 50) {
+                        setProgress('Fetching pages...', cur + 15);
+                    } else if (cur < 85) {
+                        setProgress('Rendering PDF...', cur + 10);
+                    }
+                }, 1200);
+
+                const response = await fetch('/api/convert', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+
+                clearInterval(progressTimer);
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Failed to process document. Please check the URL.');
+                }
+
+                setProgress('Complete', 100);
+                setTimeout(() => {
+                    progressCard.style.display = 'none';
+                    resultCard.style.display = 'block';
+                    resultTitle.textContent = data.title;
+                    resultDetails.textContent = `${data.pages} pages • ${formatBytes(data.file_size)} • PDF`;
+                    btnDownloadLink.href = data.download_url;
+                    btnDownloadLink.setAttribute('download', data.filename);
+                    
+                    window.location.href = data.download_url;
+                }, 350);
+
+            } catch (err) {
+                progressCard.style.display = 'none';
+                errorCard.style.display = 'block';
+                errorCard.textContent = err.message;
+            } finally {
+                btnSubmit.disabled = false;
+                btnText.textContent = 'Download PDF';
+                btnIcon.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
