@@ -2965,17 +2965,45 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 10px;
-      border-bottom: 1px solid rgba(55, 53, 47, 0.05);
-      transition: background 0.12s ease;
+      padding: 7px 10px;
+      margin: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(55, 53, 47, 0.08);
+      background: #FFFFFF;
+      transition: all 0.14s ease;
       cursor: default;
       position: relative;
     }
     .notion-goal-item:hover {
-      background: rgba(55, 53, 47, 0.035);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
-    .notion-goal-item:last-child {
-      border-bottom: none;
+    .notion-goal-item.priority-high {
+      background: #FFE2DD;
+      border-color: rgba(196, 85, 77, 0.28);
+    }
+    .notion-goal-item.priority-high:hover {
+      background: #FFD9D3;
+    }
+    .notion-goal-item.priority-medium {
+      background: #FDECC8;
+      border-color: rgba(217, 115, 13, 0.28);
+    }
+    .notion-goal-item.priority-medium:hover {
+      background: #FCE4B6;
+    }
+    .notion-goal-item.priority-low {
+      background: #E0F2FE;
+      border-color: rgba(2, 132, 199, 0.28);
+    }
+    .notion-goal-item.priority-low:hover {
+      background: #D4EDFC;
+    }
+    .notion-goal-item.priority-none {
+      background: #FFFFFF;
+      border-color: rgba(55, 53, 47, 0.08);
+    }
+    .notion-goal-item.priority-none:hover {
+      background: rgba(55, 53, 47, 0.035);
     }
     .notion-goal-handle {
       color: #9CA3AF;
@@ -3131,16 +3159,6 @@
       font-size: 12px;
       color: #9CA3AF;
       font-style: italic;
-    }
-    .planner-timetable-heading {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 14px;
-      font-weight: 650;
-      color: #37352F;
-      margin-bottom: 14px;
-      letter-spacing: -0.01em;
     }
 
     /* Notion floating context menu */
@@ -5376,14 +5394,8 @@
       <div class="notion-goals-card" id="notionGoalsCard">
         <div class="notion-goals-header-bar">
           <div class="notion-goals-header-left">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #6B7280;">
-              <circle cx="12" cy="12" r="10"></circle>
-              <circle cx="12" cy="12" r="6"></circle>
-              <circle cx="12" cy="12" r="2"></circle>
-            </svg>
             <span class="notion-goals-main-title">Goals</span>
           </div>
-          <span class="notion-goals-tip">Right-click a goal to set priority</span>
         </div>
 
         <div class="notion-goals-grid">
@@ -5402,7 +5414,6 @@
               <span>New</span>
             </div>
             <div class="notion-goal-input-box" id="goalInputBox_day" style="display: none;">
-              <span class="notion-goal-badge badge-medium" id="newGoalBadge_day" onclick="toggleNewGoalPriorityMenu(event, 'day')">MEDIUM</span>
               <input type="text" id="newGoalInput_day" class="notion-goal-input" placeholder="New day goal..." onkeydown="handleNewGoalKeyDown(event, 'day')" onblur="handleNewGoalBlur('day')" />
             </div>
           </div>
@@ -5422,7 +5433,6 @@
               <span>New</span>
             </div>
             <div class="notion-goal-input-box" id="goalInputBox_week" style="display: none;">
-              <span class="notion-goal-badge badge-medium" id="newGoalBadge_week" onclick="toggleNewGoalPriorityMenu(event, 'week')">MEDIUM</span>
               <input type="text" id="newGoalInput_week" class="notion-goal-input" placeholder="New week goal..." onkeydown="handleNewGoalKeyDown(event, 'week')" onblur="handleNewGoalBlur('week')" />
             </div>
           </div>
@@ -5442,19 +5452,10 @@
               <span>New</span>
             </div>
             <div class="notion-goal-input-box" id="goalInputBox_month" style="display: none;">
-              <span class="notion-goal-badge badge-medium" id="newGoalBadge_month" onclick="toggleNewGoalPriorityMenu(event, 'month')">MEDIUM</span>
               <input type="text" id="newGoalInput_month" class="notion-goal-input" placeholder="New month goal..." onkeydown="handleNewGoalKeyDown(event, 'month')" onblur="handleNewGoalBlur('month')" />
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Time table Header (Matching user's Notion screenshot: Time table) -->
-      <div class="planner-timetable-heading">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="color: #6B7280;">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        </svg>
-        <span>Time table</span>
       </div>
 
       <!-- Sessions (Morning, Afternoon, Evening) -->
@@ -7661,16 +7662,14 @@
       }
 
       listEl.innerHTML = goals.map(g => {
-        const priority = (g.priority || 'medium').toLowerCase();
-        const badgeText = priority.toUpperCase();
+        const priority = (g.priority || 'none').toLowerCase();
         const isCompleted = !!g.completed;
 
-        return '<div class="notion-goal-item" data-goal-id="' + g.id + '" oncontextmenu="handleGoalContextMenu(event, \'' + g.id + '\'); return false;">' +
+        return '<div class="notion-goal-item priority-' + priority + '" data-goal-id="' + g.id + '" oncontextmenu="handleGoalContextMenu(event, \'' + g.id + '\'); return false;" title="Right-click to set priority">' +
           '<span class="notion-goal-handle" title="Drag">⋮⋮</span>' +
           '<button type="button" class="notion-goal-checkbox ' + (isCompleted ? 'checked' : '') + '" onclick="toggleGoalItem(\'' + g.id + '\')" title="' + (isCompleted ? 'Mark incomplete' : 'Mark completed') + '">' +
             (isCompleted ? '<svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5L4.8 9L9.5 3.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') +
           '</button>' +
-          '<span class="notion-goal-badge badge-' + priority + '" onclick="openGoalPriorityMenuForElement(event, \'' + g.id + '\')" title="Click or right-click to change priority">' + badgeText + '</span>' +
           '<span class="notion-goal-text ' + (isCompleted ? 'completed' : '') + '" contenteditable="true" spellcheck="false" onblur="handleGoalTextEditBlur(\'' + g.id + '\', this)" onkeydown="handleGoalTextEditKeyDown(event, \'' + g.id + '\', this)">' + escapeHtml(g.text) + '</span>' +
           '<button type="button" class="notion-goal-delete-btn" onclick="deleteGoalItem(\'' + g.id + '\')" title="Delete goal">✕</button>' +
         '</div>';
@@ -7681,16 +7680,9 @@
       const triggerEl = document.getElementById('goalAddTrigger_' + type);
       const inputBox = document.getElementById('goalInputBox_' + type);
       const inputEl = document.getElementById('newGoalInput_' + type);
-      const badgeEl = document.getElementById('newGoalBadge_' + type);
 
       if (triggerEl) triggerEl.style.display = 'none';
       if (inputBox) inputBox.style.display = 'flex';
-
-      const curPriority = newGoalSelectedPriority[type] || 'medium';
-      if (badgeEl) {
-        badgeEl.className = 'notion-goal-badge badge-' + curPriority;
-        badgeEl.innerText = curPriority.toUpperCase();
-      }
 
       if (inputEl) {
         inputEl.value = '';
@@ -7747,7 +7739,7 @@
           scopeKey = getMonthScopeKey(currentPlannerDate);
         }
 
-        const priority = newGoalSelectedPriority[type] || 'medium';
+        const priority = 'none';
         const newGoal = {
           id: 'goal_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
           type: type,

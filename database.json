@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-09T16:31:33.698Z",
+  "updatedAt": "2026-11-09T16:41:30.153Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -1038,10 +1038,10 @@
           "type": "week",
           "scopeKey": "2026-11-09",
           "text": "Complete 3 Verbal Reading Sets",
-          "priority": "medium",
+          "priority": "low",
           "completed": false,
           "createdAt": "2026-11-09T16:00:00.000Z",
-          "updatedAt": 1794241381000
+          "updatedAt": 1794241990679
         },
         {
           "id": "goal_month_1",
@@ -1052,6 +1052,26 @@
           "completed": false,
           "createdAt": "2026-11-09T16:00:00.000Z",
           "updatedAt": 1794241382000
+        },
+        {
+          "id": "goal_1794241973261_sq52",
+          "type": "day",
+          "scopeKey": "2026-11-09",
+          "text": "hi",
+          "priority": "high",
+          "completed": false,
+          "createdAt": "2026-11-09T16:32:53.261Z",
+          "updatedAt": 1794241983758
+        },
+        {
+          "id": "goal_1794242483777_6plu",
+          "type": "week",
+          "scopeKey": "2026-11-09",
+          "text": "hi",
+          "priority": "high",
+          "completed": false,
+          "createdAt": "2026-11-09T16:41:23.777Z",
+          "updatedAt": 1794242488513
         }
       ],
       "daysHistory": {
