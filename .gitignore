@@ -12,6 +12,10 @@ scribd-web/*.png
 .github/
 *.png
 *.pdf
+!data/10SAT/**/*.pdf
+gdrive_downloads/
+*.jsonp
+cb.js
 test*
 check*
 build*

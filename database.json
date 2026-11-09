@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-08T07:49:27.666Z",
+  "updatedAt": "2026-11-09T13:51:19.216Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -9,7 +9,28 @@
       "lastDoneTime": "19:40",
       "history": {}
     },
-    "skippedNoPdf": [],
+    "skippedNoPdf": [
+      "lesson 12 exponential functions no 3",
+      1503124108,
+      "a test ebrw set b buổi 3",
+      1502878366,
+      "lesson 12 exponential functions no 1",
+      1503124225,
+      "lesson 11 polynomials and function notations no 3",
+      1503124219,
+      "lesson 11 polynomials and function notations no 2",
+      1503124057,
+      "lesson 12 exponential functions no 4",
+      1503040439,
+      "lesson 11 polynomials and function notations no 1",
+      1502992558,
+      "words in context 6",
+      1503038855,
+      "lesson 12 exponential functions no 2",
+      1502957123,
+      "lesson 3 lines angles and triangles no 4",
+      1503040215
+    ],
     "manualFileGroups": {},
     "customTopicFolders": [],
     "habits": {
@@ -35,6 +56,16 @@
           "category": "Mindset"
         },
         {
+          "id": "h_1794204093786",
+          "title": "Phase 1 : Hardcore môn ở trường",
+          "category": "Study"
+        },
+        {
+          "id": "h_1794200503213",
+          "title": "Phase 2 : 200 câu verbal / 150 câu math",
+          "category": "Study"
+        },
+        {
           "id": "h_6",
           "title": "ngủ sớm hơn 15p",
           "category": "Discipline"
@@ -42,6 +73,11 @@
         {
           "id": "h_1794115281246",
           "title": "Hydrate 3l",
+          "category": "Discipline"
+        },
+        {
+          "id": "h_1794204092443",
+          "title": "Thói quen mới",
           "category": "Discipline"
         }
       ],
@@ -70,16 +106,21 @@
           "h_3",
           "h_5",
           "h_1792926643200"
+        ],
+        "2026-11-09": [
+          "h_1",
+          "h_5",
+          "h_3",
+          "h_1794204093786",
+          "h_1792926643200"
         ]
       },
       "deletedHabits": {
-        "h_1792926219222": 1792926219236,
-        "h_2": 1792926399034,
         "h_4": 1793269141733,
         "h_1792927602231": 1793269145744,
         "h_1792926550682": 1793269148349
       },
-      "changedAt": 1794115284065
+      "changedAt": 1794228245547
     },
     "dailyPlanner": {
       "tasks": [
@@ -847,10 +888,10 @@
           "date": "2026-11-08",
           "deadline": "",
           "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 4,
+          "status": "partial",
+          "spentSeconds": 1349,
           "createdAt": "2026-11-08T01:25:55.021Z",
-          "updatedAt": 1794123532370,
+          "updatedAt": 1794153875422,
           "completedAt": null
         },
         {
@@ -860,10 +901,10 @@
           "date": "2026-11-08",
           "deadline": "",
           "completed": false,
-          "status": "incomplete",
+          "status": "failed",
           "spentSeconds": 0,
           "createdAt": "2026-11-08T01:26:02.847Z",
-          "updatedAt": 1794123533683,
+          "updatedAt": 1794153869653,
           "completedAt": null
         },
         {
@@ -873,11 +914,89 @@
           "date": "2026-11-08",
           "deadline": "",
           "completed": false,
-          "status": "incomplete",
+          "status": "failed",
           "spentSeconds": 0,
           "createdAt": "2026-11-08T01:26:04.394Z",
-          "updatedAt": 1794123535044,
+          "updatedAt": 1794153872716,
           "completedAt": null
+        },
+        {
+          "id": "dp_1794153876254_ybm8",
+          "title": "Hóa 3.1",
+          "section": "morning",
+          "date": "2026-11-09",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 9273,
+          "createdAt": "2026-11-08T16:04:36.254Z",
+          "updatedAt": 1794229324941,
+          "completedAt": "2026-11-09T04:48:22.168Z"
+        },
+        {
+          "id": "dp_1794153894085_f842",
+          "title": "Hóa 3.3",
+          "section": "afternoon",
+          "date": "2026-11-09",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-08T16:04:54.085Z",
+          "updatedAt": 1794229302654,
+          "completedAt": "2026-11-09T13:01:42.654Z"
+        },
+        {
+          "id": "dp_1794153896728_9aaz",
+          "title": "Hóa C4",
+          "section": "afternoon",
+          "date": "2026-11-09",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 949,
+          "createdAt": "2026-11-08T16:04:56.728Z",
+          "updatedAt": 1794230317864,
+          "completedAt": "2026-11-09T13:18:37.864Z"
+        },
+        {
+          "id": "dp_1794153899897_tph9",
+          "title": "Hóa 5.1",
+          "section": "afternoon",
+          "date": "2026-11-09",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-08T16:04:59.897Z",
+          "updatedAt": 1794230318282,
+          "completedAt": "2026-11-09T13:18:38.282Z"
+        },
+        {
+          "id": "dp_1794153904025_erzv",
+          "title": "Hóa 5.2",
+          "section": "afternoon",
+          "date": "2026-11-09",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-08T16:05:04.025Z",
+          "updatedAt": 1794230318660,
+          "completedAt": "2026-11-09T13:18:38.660Z"
+        },
+        {
+          "id": "dp_1794229326778_w5ss",
+          "title": "Hóa 3.2",
+          "section": "afternoon",
+          "date": "2026-11-09",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-09T13:02:06.778Z",
+          "updatedAt": 1794229337899,
+          "completedAt": "2026-11-09T13:02:17.899Z"
         }
       ],
       "daysHistory": {
@@ -946,17 +1065,15 @@
           "maxFocusSeconds": 2520
         },
         "2026-11-08": {
-          "totalSeconds": 10659,
+          "totalSeconds": 12004,
           "maxFocusSeconds": 6023
+        },
+        "2026-11-09": {
+          "totalSeconds": 11395,
+          "maxFocusSeconds": 9273
         }
       },
       "deletedTasks": {
-        "dp_1793485686417_qljj": 1793525780290,
-        "dp_1793485689323_z9lr": 1793525781077,
-        "dp_1793485692656_63ql": 1793525781263,
-        "dp_1793485695496_1fcw": 1793525781568,
-        "dp_1793485699229_fmgf": 1793525781899,
-        "dp_1793485722211_sf3l": 1793525826881,
         "dp_1793677016794_zrpy": 1793695253300,
         "dp_1793677017320_y2oy": 1793695253796,
         "dp_1793677022076_2ujg": 1793695263722,
@@ -975,10 +1092,12 @@
         "dp_1793985299526_isu3": 1794030964238,
         "dp_1793985254496_l4wu": 1794064553020,
         "dp_1793985275670_bjfb": 1794064598573,
-        "dp_1794123529021_dmf5": 1794123536202
+        "dp_1794123529021_dmf5": 1794123536202,
+        "dp_1794153890776_lz2g": 1794218032985,
+        "dp_1794155096447_9l1b": 1794229321098
       },
       "activeTimer": null,
-      "activeTimerChangedAt": 1794123529566
+      "activeTimerChangedAt": 1794230317865
     },
     "discordRpc": {
       "enabled": true,
@@ -1103,7 +1222,7 @@
       "isDone": false,
       "downloaded": true,
       "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[07.11] [Verbal] [A] Test EBRW - Set A - Buổi 6.pdf",
-      "detectedAt": "14:49:27"
+      "detectedAt": "20:51:18"
     },
     {
       "id": "local_85ad8315cf9c",
@@ -1118,7 +1237,7 @@
       "isDone": false,
       "downloaded": true,
       "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[07.11] [Verbal] [A] Test EBRW - Set B - Buổi 6.pdf",
-      "detectedAt": "14:49:27"
+      "detectedAt": "20:51:18"
     },
     {
       "id": "local_651f7cea0f38",
@@ -1287,18 +1406,18 @@
     },
     {
       "id": "local_389b7876594c",
-      "filename": "[31.10] [Verbal] [A] Test EBRW - Set B - Buổi 5.pdf",
-      "title": "[A] Test EBRW - Set B - Buổi 5",
+      "filename": "[17.10] [Verbal] final_Test EBRW - Set B - Buổi 3 - Test Paper.pdf",
+      "title": "[A] Test EBRW - Set B - Buổi 6",
       "url": "",
       "subject": "VERBAL",
       "recommendedSubject": "VERBAL",
-      "deadlineTag": "[31.10]",
-      "deadlineDate": "20:00:00, 31/10/2026",
+      "deadlineTag": "[07.11]",
+      "deadlineDate": "19:30:00, 7/11/2026",
       "customDeadline": null,
       "isDone": false,
       "downloaded": true,
-      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[31.10] [Verbal] [A] Test EBRW - Set B - Buổi 5.pdf",
-      "detectedAt": "14:49:27"
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] final_Test EBRW - Set B - Buổi 3 - Test Paper.pdf",
+      "detectedAt": "20:47:38"
     },
     {
       "id": "local_b1976edbe08a",
@@ -2274,6 +2393,316 @@
       "downloaded": true,
       "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[29.10] [Math] Lesson 4 HW. Data Analysis (4).pdf",
       "detectedAt": "12:00:22"
+    },
+    {
+      "id": "3402b75a7652b0d5ca8abf357125abd7",
+      "filename": "[13.11] [Verbal] [A] Test EBRW - Set A - Buổi 7.pdf",
+      "title": "[A] Test EBRW - Set A - Buổi 7",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/55/f1/2391799477/noop/03_09_6aaccd-f40d-fbab-cd86-adb75cb_1753784988875.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[13.11]",
+      "deadlineDate": "20:00:00, 13/11/2026",
+      "customDeadline": null,
+      "detectedAt": "13:32:10",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[13.11] [Verbal] [A] Test EBRW - Set A - Buổi 7.pdf",
+      "todoId": 1556109327
+    },
+    {
+      "id": "ae91d69b3dead2ab10371c65cbf548a8",
+      "filename": "[14.11] [Verbal] The Critical Reader _ Set 11.pdf",
+      "title": "The Critical Reader | Set 11",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/c1/88/3071734954/noop/03_09_476b8d4dd77649b18ae100253c583214.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[14.11]",
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "customDeadline": null,
+      "detectedAt": "13:32:15",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[14.11] [Verbal] The Critical Reader _ Set 11.pdf"
+    },
+    {
+      "id": "fd062fac0ad656fb6a39897ba67784ff",
+      "filename": "[14.11] [Verbal] The Critical Reader v2 _ Set 13.pdf",
+      "title": "The Critical Reader v2 | Set 13",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/a7/6e/3146718339/noop/03_09_4641344beb4f47b686537e6f5ef40213.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[14.11]",
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "customDeadline": null,
+      "detectedAt": "13:32:22",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[14.11] [Verbal] The Critical Reader v2 _ Set 13.pdf"
+    },
+    {
+      "id": "dd348bac04f5d5c704af5319d7ee6a06",
+      "filename": "[14.11] [Verbal] [A] Test EBRW - Set B - Buổi 7.pdf",
+      "title": "[A] Test EBRW - Set B - Buổi 7",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/48/8b/2927475159/noop/03_09_89511e70555e4d7a8f3917ef47810dc1.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[14.11]",
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "customDeadline": null,
+      "detectedAt": "13:32:27",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[14.11] [Verbal] [A] Test EBRW - Set B - Buổi 7.pdf"
+    },
+    {
+      "id": "20cd816b6b99eb6ca623f98ba1d288f5",
+      "filename": "[14.11] [Verbal] [A] Test EBRW - Set C - Buổi 7.pdf",
+      "title": "[A] Test EBRW - Set C - Buổi 7",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/e7/97/3072220087/noop/03_09_ca59536ce140408fa4399b3dbd5a4f66.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[14.11]",
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "customDeadline": null,
+      "detectedAt": "13:32:33",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[14.11] [Verbal] [A] Test EBRW - Set C - Buổi 7.pdf",
+      "todoId": 1556109443
+    },
+    {
+      "id": "local_f48393e1c0b6",
+      "filename": "[14.11] [Verbal] final_[A] Test EBRW - Set B - Buổi 7 - Test Paper.pdf",
+      "title": "[A] Test EBRW - Set B - buổi 3",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "20:00:00, 17/10/2026",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[14.11] [Verbal] final_[A] Test EBRW - Set B - Buổi 7 - Test Paper.pdf",
+      "detectedAt": "13:32:34"
+    },
+    {
+      "id": "48a79459f4623a063897127adac7be1b",
+      "filename": "Chưa rõ  [Verbal] Words in Context 14.pdf",
+      "title": "Words in Context 14",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/ec/fb/3014222723/noop/03_09_b2d1ac453fc14846a7cc11c151ac15a0.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "Chưa rõ hạn",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "detectedAt": "13:32:39",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] Words in Context 14.pdf"
+    },
+    {
+      "id": "ca6539cd5d705a9573ae82c74f73a2db",
+      "filename": "Chưa rõ  [Verbal] Words in Context 13.pdf",
+      "title": "Words in Context 13",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/0c/fb/3014245324/noop/03_09_7f3672a941f7402cb1fa137914b83e73.pdf",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "Chưa rõ hạn",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "detectedAt": "13:32:44",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] Words in Context 13.pdf"
+    },
+    {
+      "id": "9674e045e4161cb6a808286769def7e3",
+      "filename": "[21.10] [Math] Lesson 12. Exponential Function (No.3).pdf",
+      "title": "Lesson 12. Exponential Functions (No.3)",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/58/5d/2852229153/noop/03_09_c9c454d906e94d04a23fcbc65de2ad22.pdf",
+      "pageUrl": "https://b1s-cdn.eeo.cn/client/lms/desktop/answersheet/join?activityId=1147037223&answerSheetJoinOpenFrom=1&courseId=307666661&isImSubWindow=true&lmsOpenFrom=4&role=student&schoolId=69201116",
+      "todoId": 1503124108,
+      "activityId": 1173007742,
+      "courseId": 312895237,
+      "subject": "MATH",
+      "recommendedSubject": "MATH",
+      "deadlineTag": "[21.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "detectedAt": "20:23:07",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 12. Exponential Function (No.3).pdf"
+    },
+    {
+      "id": "f746ad21dee49e865a631bd3d5d18ec2",
+      "filename": "[21.10] [Math] Lesson 12. Exponential Function (No.2).pdf",
+      "title": "Lesson 12. Exponential Functions (No.2)",
+      "url": "https://b1s-cdn.eeo.cn/upload/trans/main01/8c/87/2852354405/noop/03_09_d886716ad6e14c27bc2c6a2f1e942077.pdf",
+      "pageUrl": "https://b1s-cdn.eeo.cn/client/lms/desktop/answersheet/join?activityId=1147037222&answerSheetJoinOpenFrom=1&courseId=307666661&isImSubWindow=true&lmsOpenFrom=4&role=student&schoolId=69201116",
+      "todoId": 1502957123,
+      "activityId": 1173007741,
+      "courseId": 312895237,
+      "subject": "MATH",
+      "recommendedSubject": "MATH",
+      "deadlineTag": "[21.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "detectedAt": "20:24:18",
+      "downloaded": true,
+      "isDone": false,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\MATH\\[21.10] [Math] Lesson 12. Exponential Function (No.2).pdf"
+    },
+    {
+      "id": "local_d4229c7db6f9",
+      "filename": "Chưa rõ  [Verbal] final_Advanced-writing-1_v1.1.pdf",
+      "title": "Advanced Writing 1 (v1.1)",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] final_Advanced-writing-1_v1.1.pdf",
+      "detectedAt": "20:47:37"
+    },
+    {
+      "id": "local_4fed1bce7a65",
+      "filename": "Chưa rõ  [Verbal] Standard English Convention - Set A.pdf",
+      "title": "Standard English Convention - Set A",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] Standard English Convention - Set A.pdf",
+      "detectedAt": "20:47:37"
+    },
+    {
+      "id": "local_39be71c0a08f",
+      "filename": "Chưa rõ  [Verbal] Standard English Convention - Set B.pdf",
+      "title": "Standard English Convention - Set B",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] Standard English Convention - Set B.pdf",
+      "detectedAt": "20:47:37"
+    },
+    {
+      "id": "local_cde79a0cb0ea",
+      "filename": "Chưa rõ  [Verbal] [A] Test EBRW - Set A - Buổi 1 (Review).pdf",
+      "title": "[A] Test EBRW - Set A - Buổi 1 (Review)",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set A - Buổi 1 (Review).pdf",
+      "detectedAt": "20:47:37"
+    },
+    {
+      "id": "local_99e82e7fe1de",
+      "filename": "Chưa rõ  [Verbal] [A] Test EBRW - Set B - Buổi 1 (Review).pdf",
+      "title": "[A] Test EBRW - Set B - Buổi 1 (Review)",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set B - Buổi 1 (Review).pdf",
+      "detectedAt": "20:47:37"
+    },
+    {
+      "id": "local_0d0c4fc88383",
+      "filename": "Chưa rõ  [Verbal] [A] Test EBRW - Set C - Buổi 1 (Review).pdf",
+      "title": "[A] Test EBRW - Set C - Buổi 1 (Review)",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\Chưa rõ  [Verbal] [A] Test EBRW - Set C - Buổi 1 (Review).pdf",
+      "detectedAt": "20:47:37"
+    },
+    {
+      "id": "local_a89bf2be133b",
+      "filename": "[14.11] [Verbal] aanhlle-tongon-rw-m2h-explanations.pdf",
+      "title": "Tổng ôn RW M2H - Explanations (Phiếu trên lớp)",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[14.11]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[14.11] [Verbal] aanhlle-tongon-rw-m2h-explanations.pdf",
+      "detectedAt": "20:47:37"
+    },
+    {
+      "id": "local_c34bb816c3ba",
+      "filename": "[14.11] [Verbal] aanhlle-tongon-rw-m2h-practice.pdf",
+      "title": "Tổng ôn RW M2H - Practice (Phiếu trên lớp)",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[14.11]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[14.11] [Verbal] aanhlle-tongon-rw-m2h-practice.pdf",
+      "detectedAt": "20:47:37"
+    },
+    {
+      "id": "local_fcaf90c448c1",
+      "filename": "[14.11] [Verbal] The Critical Reader v2 _ Set 12.pdf",
+      "title": "The Critical Reader v2 | Set 12",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[14.11]",
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[14.11] [Verbal] The Critical Reader v2 _ Set 12.pdf",
+      "detectedAt": "20:47:37"
+    },
+    {
+      "id": "local_9a444a0d3361",
+      "filename": "[17.10] [Verbal] final_Text Structure and Purpose - Test Paper.pdf",
+      "title": "Text Structure and Purpose - Test Paper",
+      "url": "",
+      "subject": "VERBAL",
+      "recommendedSubject": "VERBAL",
+      "deadlineTag": "[17.10]",
+      "deadlineDate": "",
+      "customDeadline": null,
+      "isDone": false,
+      "downloaded": true,
+      "localPath": "C:\\Users\\Administrator\\.gemini\\antigravity-ide\\scratch\\classin-pdf-downloader\\data\\10SAT\\VERBAL\\[17.10] [Verbal] final_Text Structure and Purpose - Test Paper.pdf",
+      "detectedAt": "20:47:37"
     }
   ],
   "todos": [
@@ -3133,7 +3562,7 @@
       "endTime": 1793278800,
       "deadlineDate": "20:00:00, 29/10/2026",
       "deadlineTag": "[29.10]",
-      "isCompleted": true
+      "isCompleted": false
     },
     {
       "id": 1526215648,
@@ -3298,7 +3727,7 @@
       "endTime": 1792242000,
       "deadlineDate": "20:00:00, 17/10/2026",
       "deadlineTag": "[17.10]",
-      "isCompleted": true
+      "isCompleted": false
     },
     {
       "id": 1502955870,
@@ -3342,7 +3771,7 @@
       "endTime": 1792242000,
       "deadlineDate": "20:00:00, 17/10/2026",
       "deadlineTag": "[17.10]",
-      "isCompleted": true
+      "isCompleted": false
     },
     {
       "id": 1502929838,
@@ -3354,6 +3783,94 @@
       "deadlineDate": "17:00:00, 19/10/2026",
       "deadlineTag": "[19.10]",
       "isCompleted": true
+    },
+    {
+      "id": 1556109327,
+      "title": "[A] Test EBRW - Set A - Buổi 7",
+      "courseId": 312895237,
+      "activityId": 1168976663,
+      "timeLimit": 0,
+      "endTime": 1794574800,
+      "deadlineDate": "20:00:00, 13/11/2026",
+      "deadlineTag": "[13.11]",
+      "isCompleted": false
+    },
+    {
+      "id": 1556282600,
+      "title": "The Critical Reader | Set 11",
+      "courseId": 312895237,
+      "activityId": 1168976662,
+      "timeLimit": 0,
+      "endTime": 1794661200,
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "deadlineTag": "[14.11]",
+      "isCompleted": false
+    },
+    {
+      "id": 1556254740,
+      "title": "The Critical Reader v2 | Set 13",
+      "courseId": 312895237,
+      "activityId": 1180916784,
+      "timeLimit": 0,
+      "endTime": 1794661200,
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "deadlineTag": "[14.11]",
+      "isCompleted": false
+    },
+    {
+      "id": 1556224056,
+      "title": "[A] Test EBRW - Set B - Buổi 7",
+      "courseId": 312895237,
+      "activityId": 1168976664,
+      "timeLimit": 0,
+      "endTime": 1794661200,
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "deadlineTag": "[14.11]",
+      "isCompleted": false
+    },
+    {
+      "id": 1556109443,
+      "title": "[A] Test EBRW - Set C - Buổi 7",
+      "courseId": 312895237,
+      "activityId": 1168976666,
+      "timeLimit": 0,
+      "endTime": 1794661200,
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "deadlineTag": "[14.11]",
+      "isCompleted": false
+    },
+    {
+      "id": 1556095082,
+      "title": "The Critical Reader v2 | Set 12",
+      "courseId": 312895237,
+      "activityId": 1180916551,
+      "timeLimit": 65,
+      "endTime": 1794661200,
+      "deadlineDate": "20:00:00, 14/11/2026",
+      "deadlineTag": "[14.11]",
+      "isCompleted": false
+    },
+    {
+      "id": 1556281627,
+      "title": "Words in Context 14",
+      "courseId": 312895237,
+      "activityId": 1168976739,
+      "timeLimit": 0,
+      "endTime": 0,
+      "deadlineDate": "",
+      "deadlineTag": "",
+      "isCompleted": false
+    },
+    {
+      "id": 1556252142,
+      "title": "Words in Context 13",
+      "courseId": 312895237,
+      "activityId": 1168976738,
+      "timeLimit": 0,
+      "endTime": 0,
+      "deadlineDate": "",
+      "deadlineTag": "",
+      "isCompleted": false
     }
   ]
 }

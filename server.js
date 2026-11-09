@@ -671,6 +671,9 @@ function extractSetNumbers(str = '') {
   const wordsInContextMatch = norm.match(/words\s*in\s*context\s*(\d+)/);
   if (wordsInContextMatch) res.wic = wordsInContextMatch[1];
 
+  const buoiMatch = str.toLowerCase().match(/bu[ổo]i\s*(\d+)/i);
+  if (buoiMatch) res.buoi = buoiMatch[1];
+
   return res;
 }
 
@@ -701,6 +704,7 @@ function matchTodo(title = '', filename = '', excludeIds = null) {
     if (fileNumbers.no && todoNumbers.no && fileNumbers.no !== todoNumbers.no) continue;
     if (fileNumbers.set && todoNumbers.set && fileNumbers.set !== todoNumbers.set) continue;
     if (fileNumbers.wic && todoNumbers.wic && fileNumbers.wic !== todoNumbers.wic) continue;
+    if (fileNumbers.buoi && todoNumbers.buoi && fileNumbers.buoi !== todoNumbers.buoi) continue;
 
     // Check exact title equivalence
     const normTodo = normalizeTitle(todo.title);
