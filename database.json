@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-09T14:17:43.433Z",
+  "updatedAt": "2026-11-09T16:31:33.698Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -56,13 +56,13 @@
           "category": "Mindset"
         },
         {
-          "id": "h_1794204093786",
-          "title": "Phase 1 : Hardcore môn ở trường",
+          "id": "h_1794200503213",
+          "title": "Phase 1 : 200 câu verbal / 150 câu math",
           "category": "Study"
         },
         {
-          "id": "h_1794200503213",
-          "title": "Phase 2 : 200 câu verbal / 150 câu math",
+          "id": "h_1794204093786",
+          "title": "Phase 2 : Hardcore môn ở trường",
           "category": "Study"
         },
         {
@@ -73,11 +73,6 @@
         {
           "id": "h_1794115281246",
           "title": "Hydrate 3l",
-          "category": "Discipline"
-        },
-        {
-          "id": "h_1794204092443",
-          "title": "Thói quen mới",
           "category": "Discipline"
         }
       ],
@@ -112,15 +107,18 @@
           "h_5",
           "h_3",
           "h_1794204093786",
-          "h_1792926643200"
+          "h_1792926643200",
+          "h_6",
+          "h_1794115281246"
         ]
       },
       "deletedHabits": {
         "h_4": 1793269141733,
         "h_1792927602231": 1793269145744,
-        "h_1792926550682": 1793269148349
+        "h_1792926550682": 1793269148349,
+        "h_1794204092443": 1794239940490
       },
-      "changedAt": 1794228245547
+      "changedAt": 1794239960634
     },
     "dailyPlanner": {
       "tasks": [
@@ -1005,10 +1003,55 @@
           "date": "2026-11-09",
           "deadline": "",
           "completed": false,
-          "status": "incomplete",
+          "status": "partial",
           "spentSeconds": 0,
           "createdAt": "2026-11-09T14:12:46.337Z",
-          "updatedAt": 1794233566337
+          "updatedAt": 1794239557913,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1794239639856_i0jb",
+          "title": "Làm bài tập hóa",
+          "section": "afternoon",
+          "date": "2026-11-14",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-09T15:53:59.856Z",
+          "updatedAt": 1794239639856
+        }
+      ],
+      "goals": [
+        {
+          "id": "goal_day_1",
+          "type": "day",
+          "scopeKey": "2026-11-09",
+          "text": "Solve 10 SAT Math Questions",
+          "priority": "high",
+          "completed": false,
+          "createdAt": "2026-11-09T16:00:00.000Z",
+          "updatedAt": 1794241380000
+        },
+        {
+          "id": "goal_week_1",
+          "type": "week",
+          "scopeKey": "2026-11-09",
+          "text": "Complete 3 Verbal Reading Sets",
+          "priority": "medium",
+          "completed": false,
+          "createdAt": "2026-11-09T16:00:00.000Z",
+          "updatedAt": 1794241381000
+        },
+        {
+          "id": "goal_month_1",
+          "type": "month",
+          "scopeKey": "2026-11",
+          "text": "Master Math Module 2 Advanced",
+          "priority": "low",
+          "completed": false,
+          "createdAt": "2026-11-09T16:00:00.000Z",
+          "updatedAt": 1794241382000
         }
       ],
       "daysHistory": {
@@ -1107,6 +1150,38 @@
         "dp_1794123529021_dmf5": 1794123536202,
         "dp_1794153890776_lz2g": 1794218032985,
         "dp_1794155096447_9l1b": 1794229321098
+      },
+      "deletedGoals": {
+        "goal_1794241136607_ds19": 1794241163720,
+        "goal_1794241138629_s63q": 1794241165746,
+        "goal_1794241140647_k1u3": 1794241167776,
+        "goal_1794241218130_c9r1": 1794241341416,
+        "goal_1794241218159_tfpm": 1794241343472,
+        "goal_1794241218326_njxz": 1794241345492,
+        "goal_1794241218358_vg66": 1794241347523,
+        "goal_1794241218806_avpl": 1794241349555,
+        "goal_1794241218848_a9hj": 1794241351589,
+        "goal_1794241218989_8ld4": 1794241353622,
+        "goal_1794241219028_dcou": 1794241355650,
+        "goal_1794241219460_ap0v": 1794241357685,
+        "goal_1794241219497_4qhj": 1794241359722,
+        "goal_1794241219644_bl18": 1794241361758,
+        "goal_1794241219679_x38v": 1794241363784,
+        "goal_1794241239327_row4": 1794241365814,
+        "goal_1794241239356_o7ns": 1794241367844,
+        "goal_1794241239511_xs0c": 1794241369881,
+        "goal_1794241239544_ys6q": 1794241371908,
+        "goal_1794241240425_maw4": 1794241872773,
+        "goal_1794241240455_i7rh": 1794241874809,
+        "goal_1794241240603_kyz3": 1794241876848,
+        "goal_1794241240632_o75q": 1794241878899,
+        "goal_1794241241498_j7rq": 1794241880925,
+        "goal_1794241241530_a7bn": 1794241882943,
+        "goal_1794241241670_xvsn": 1794241884983,
+        "goal_1794241241700_3r60": 1794241887014,
+        "goal_1794241379774_nrvt": 1794241889070,
+        "goal_1794241380891_zldl": 1794241891098,
+        "goal_1794241382004_rbyd": 1794241893147
       },
       "activeTimer": null,
       "activeTimerChangedAt": 1794230317865

@@ -2858,6 +2858,361 @@
       color: #9B9A97;
     }
 
+    /* ========================================================
+       NOTION-STYLE GOAL TABLE (Day | Week | Month)
+       ======================================================== */
+    .notion-goals-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      margin-bottom: 22px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      transition: all 0.15s ease;
+    }
+    .notion-goals-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 14px;
+      background: #FAFAFA;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .notion-goals-header-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .notion-goals-main-title {
+      font-size: 13.5px;
+      font-weight: 650;
+      color: #37352F;
+      letter-spacing: -0.01em;
+    }
+    .notion-goals-tip {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .notion-goals-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      min-height: 150px;
+    }
+    .notion-goal-col {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      min-width: 0;
+    }
+    .notion-goal-col:last-child {
+      border-right: none;
+    }
+    .notion-goal-col-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #FAF9F6;
+      border-bottom: 1px solid var(--border-subtle);
+      user-select: none;
+    }
+    .notion-col-title-group {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+    .notion-col-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #37352F;
+    }
+    .notion-scope-pill {
+      font-size: 11px;
+      color: #6B7280;
+      background: rgba(55, 53, 47, 0.06);
+      padding: 1px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+    }
+    .btn-goal-add-icon {
+      background: transparent;
+      border: none;
+      color: #9CA3AF;
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all 0.12s ease;
+    }
+    .btn-goal-add-icon:hover {
+      color: #37352F;
+      background: rgba(55, 53, 47, 0.08);
+    }
+    .notion-goal-list {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 4px 0;
+      min-height: 60px;
+    }
+    .notion-goal-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(55, 53, 47, 0.05);
+      transition: background 0.12s ease;
+      cursor: default;
+      position: relative;
+    }
+    .notion-goal-item:hover {
+      background: rgba(55, 53, 47, 0.035);
+    }
+    .notion-goal-item:last-child {
+      border-bottom: none;
+    }
+    .notion-goal-handle {
+      color: #9CA3AF;
+      font-size: 11px;
+      letter-spacing: -1.5px;
+      opacity: 0.2;
+      user-select: none;
+      cursor: grab;
+      flex-shrink: 0;
+      transition: opacity 0.15s ease;
+    }
+    .notion-goal-item:hover .notion-goal-handle {
+      opacity: 0.8;
+    }
+    .notion-goal-checkbox {
+      width: 15px;
+      height: 15px;
+      border: 1.5px solid #D1D5DB;
+      border-radius: 3.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: #FFFFFF;
+      transition: all 0.12s ease;
+      flex-shrink: 0;
+      padding: 0;
+    }
+    .notion-goal-checkbox:hover {
+      border-color: #9CA3AF;
+    }
+    .notion-goal-checkbox.checked {
+      background: #10B981;
+      border-color: #10B981;
+    }
+    .notion-goal-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6.5px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 650;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      user-select: none;
+      flex-shrink: 0;
+      transition: opacity 0.15s ease, transform 0.1s ease;
+    }
+    .notion-goal-badge:hover {
+      opacity: 0.85;
+      transform: translateY(-0.5px);
+    }
+    .badge-high {
+      background: #FFE2DD;
+      color: #C4554D;
+      border: 1px solid rgba(196, 85, 77, 0.2);
+    }
+    .badge-medium {
+      background: #FDECC8;
+      color: #D9730D;
+      border: 1px solid rgba(217, 115, 13, 0.2);
+    }
+    .badge-low {
+      background: #E0F2FE;
+      color: #0284C7;
+      border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+    .badge-none {
+      background: #F3F4F6;
+      color: #6B7280;
+      border: 1px solid rgba(107, 114, 128, 0.2);
+    }
+    .notion-goal-text {
+      flex: 1;
+      font-size: 13.5px;
+      color: #37352F;
+      line-height: 1.4;
+      word-break: break-word;
+      outline: none;
+      cursor: text;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    .notion-goal-text:focus {
+      background: #FFFFFF;
+      box-shadow: 0 0 0 1.5px var(--notion-blue);
+    }
+    .notion-goal-text.completed {
+      text-decoration: line-through;
+      color: #9B9A97;
+    }
+    .notion-goal-delete-btn {
+      opacity: 0;
+      border: none;
+      background: transparent;
+      color: #9CA3AF;
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+      line-height: 1;
+      transition: all 0.12s ease;
+      flex-shrink: 0;
+    }
+    .notion-goal-item:hover .notion-goal-delete-btn {
+      opacity: 1;
+    }
+    .notion-goal-delete-btn:hover {
+      color: #EF4444;
+      background: #FEE2E2;
+    }
+    .notion-goal-add-trigger {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      color: #9CA3AF;
+      font-size: 12.5px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.12s ease;
+      margin-top: auto;
+      border-top: 1px solid rgba(55, 53, 47, 0.04);
+    }
+    .notion-goal-add-trigger:hover {
+      color: #37352F;
+      background: rgba(55, 53, 47, 0.04);
+    }
+    .notion-goal-input-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: #FFFFFF;
+      border-top: 1px solid rgba(55, 53, 47, 0.08);
+      margin-top: auto;
+    }
+    .notion-goal-input {
+      flex: 1;
+      font-family: inherit;
+      font-size: 13px;
+      color: #37352F;
+      border: 1px solid var(--notion-blue);
+      border-radius: 4px;
+      padding: 4px 8px;
+      outline: none;
+      background: #FFFFFF;
+      box-shadow: 0 0 0 2px rgba(35, 131, 226, 0.12);
+    }
+    .notion-goal-empty {
+      padding: 16px 12px;
+      text-align: center;
+      font-size: 12px;
+      color: #9CA3AF;
+      font-style: italic;
+    }
+    .planner-timetable-heading {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      font-weight: 650;
+      color: #37352F;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    /* Notion floating context menu */
+    .notion-priority-menu {
+      position: fixed;
+      z-index: 999999;
+      background: #FFFFFF;
+      border: 1px solid rgba(55, 53, 47, 0.14);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(15, 15, 15, 0.14), 0 2px 6px rgba(15, 15, 15, 0.06);
+      width: 210px;
+      padding: 6px 0;
+      font-family: inherit;
+      animation: notionMenuPop 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes notionMenuPop {
+      0% { opacity: 0; transform: scale(0.96) translateY(-4px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .notion-menu-title {
+      padding: 6px 12px 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #9CA3AF;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      user-select: none;
+    }
+    .notion-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #37352F;
+      transition: background 0.1s ease;
+      user-select: none;
+    }
+    .notion-menu-item:hover {
+      background: rgba(55, 53, 47, 0.06);
+    }
+    .notion-menu-label {
+      flex: 1;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #37352F;
+    }
+    .notion-menu-divider {
+      height: 1px;
+      background: rgba(55, 53, 47, 0.08);
+      margin: 4px 0;
+    }
+    .notion-menu-item.danger {
+      color: #DC2626;
+    }
+    .notion-menu-item.danger:hover {
+      background: #FEE2E2;
+    }
+    @media (max-width: 768px) {
+      .notion-goals-grid {
+        grid-template-columns: 1fr;
+      }
+      .notion-goal-col {
+        border-right: none;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .notion-goal-col:last-child {
+        border-bottom: none;
+      }
+    }
+
     .planner-task-text.failed {
       text-decoration: line-through;
       color: #DC2626;
@@ -5017,6 +5372,91 @@
         </div>
       </div>
 
+      <!-- GOAL TABLE: Day | Week | Month (Notion Style Grid) -->
+      <div class="notion-goals-card" id="notionGoalsCard">
+        <div class="notion-goals-header-bar">
+          <div class="notion-goals-header-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #6B7280;">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="6"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+            <span class="notion-goals-main-title">Goals</span>
+          </div>
+          <span class="notion-goals-tip">Right-click a goal to set priority</span>
+        </div>
+
+        <div class="notion-goals-grid">
+          <!-- DAY COLUMN -->
+          <div class="notion-goal-col" id="goalCol_day">
+            <div class="notion-goal-col-header">
+              <div class="notion-col-title-group">
+                <span class="notion-col-title">Day</span>
+                <span class="notion-scope-pill" id="goalScopePill_day">Today</span>
+              </div>
+              <button type="button" class="btn-goal-add-icon" onclick="showInlineGoalInput('day')" title="Add day goal">+</button>
+            </div>
+            <div class="notion-goal-list" id="goalList_day"></div>
+            <div class="notion-goal-add-trigger" id="goalAddTrigger_day" onclick="showInlineGoalInput('day')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>New</span>
+            </div>
+            <div class="notion-goal-input-box" id="goalInputBox_day" style="display: none;">
+              <span class="notion-goal-badge badge-medium" id="newGoalBadge_day" onclick="toggleNewGoalPriorityMenu(event, 'day')">MEDIUM</span>
+              <input type="text" id="newGoalInput_day" class="notion-goal-input" placeholder="New day goal..." onkeydown="handleNewGoalKeyDown(event, 'day')" onblur="handleNewGoalBlur('day')" />
+            </div>
+          </div>
+
+          <!-- WEEK COLUMN -->
+          <div class="notion-goal-col" id="goalCol_week">
+            <div class="notion-goal-col-header">
+              <div class="notion-col-title-group">
+                <span class="notion-col-title">Week</span>
+                <span class="notion-scope-pill" id="goalScopePill_week">This week</span>
+              </div>
+              <button type="button" class="btn-goal-add-icon" onclick="showInlineGoalInput('week')" title="Add week goal">+</button>
+            </div>
+            <div class="notion-goal-list" id="goalList_week"></div>
+            <div class="notion-goal-add-trigger" id="goalAddTrigger_week" onclick="showInlineGoalInput('week')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>New</span>
+            </div>
+            <div class="notion-goal-input-box" id="goalInputBox_week" style="display: none;">
+              <span class="notion-goal-badge badge-medium" id="newGoalBadge_week" onclick="toggleNewGoalPriorityMenu(event, 'week')">MEDIUM</span>
+              <input type="text" id="newGoalInput_week" class="notion-goal-input" placeholder="New week goal..." onkeydown="handleNewGoalKeyDown(event, 'week')" onblur="handleNewGoalBlur('week')" />
+            </div>
+          </div>
+
+          <!-- MONTH COLUMN -->
+          <div class="notion-goal-col" id="goalCol_month">
+            <div class="notion-goal-col-header">
+              <div class="notion-col-title-group">
+                <span class="notion-col-title">Month</span>
+                <span class="notion-scope-pill" id="goalScopePill_month">This month</span>
+              </div>
+              <button type="button" class="btn-goal-add-icon" onclick="showInlineGoalInput('month')" title="Add month goal">+</button>
+            </div>
+            <div class="notion-goal-list" id="goalList_month"></div>
+            <div class="notion-goal-add-trigger" id="goalAddTrigger_month" onclick="showInlineGoalInput('month')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>New</span>
+            </div>
+            <div class="notion-goal-input-box" id="goalInputBox_month" style="display: none;">
+              <span class="notion-goal-badge badge-medium" id="newGoalBadge_month" onclick="toggleNewGoalPriorityMenu(event, 'month')">MEDIUM</span>
+              <input type="text" id="newGoalInput_month" class="notion-goal-input" placeholder="New month goal..." onkeydown="handleNewGoalKeyDown(event, 'month')" onblur="handleNewGoalBlur('month')" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time table Header (Matching user's Notion screenshot: Time table) -->
+      <div class="planner-timetable-heading">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="color: #6B7280;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <span>Time table</span>
+      </div>
+
       <!-- Sessions (Morning, Afternoon, Evening) -->
       <div class="planner-sessions-container">
 
@@ -5580,10 +6020,12 @@
       const dropdown = document.getElementById('pageMenuDropdown');
       if (dropdown) dropdown.classList.remove('show');
 
-      // Trigger loads
+      // Trigger loads & instant render
       if (pageId === 'habits') {
+        renderHabitsPage();
         loadHabits();
       } else if (pageId === 'planner') {
+        renderDailyPlannerPage();
         loadDailyPlanner();
       }
     }
@@ -5671,7 +6113,11 @@
         const raw = localStorage.getItem(LOCAL_PLANNER_KEY);
         if (!raw) return null;
         const parsed = JSON.parse(raw);
-        if (parsed && Array.isArray(parsed.tasks)) return parsed;
+        if (parsed && Array.isArray(parsed.tasks)) {
+          if (!Array.isArray(parsed.goals)) parsed.goals = [];
+          if (!parsed.deletedGoals) parsed.deletedGoals = {};
+          return parsed;
+        }
       } catch (e) {
         console.warn('LocalStorage load planner error:', e);
       }
@@ -5711,8 +6157,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             tasks: dataToSync.tasks,
+            goals: dataToSync.goals || [],
             daysHistory: dataToSync.daysHistory,
             deletedTasks: dataToSync.deletedTasks,
+            deletedGoals: dataToSync.deletedGoals || {},
             activeTimer: dataToSync.activeTimer,
             activeTimerChangedAt: dataToSync.activeTimerChangedAt,
             habits: habitsData
@@ -5735,8 +6183,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             tasks: plannerData?.tasks || [],
+            goals: plannerData?.goals || [],
             daysHistory: plannerData?.daysHistory || {},
             deletedTasks: plannerData?.deletedTasks || {},
+            deletedGoals: plannerData?.deletedGoals || {},
             activeTimer: plannerData?.activeTimer || null,
             activeTimerChangedAt: plannerData?.activeTimerChangedAt || 0,
             habits: habitsToSync
@@ -5891,12 +6341,51 @@
         return tUp > delTime;
       });
 
+      // 6. Merge deletedGoals and goals
+      const mergedDeletedGoals = { ...(server.deletedGoals || {}), ...(local.deletedGoals || {}) };
+      const goalMap = new Map();
+      (server.goals || []).forEach(g => {
+        if (g && g.id) goalMap.set(String(g.id), { ...g });
+      });
+      (local.goals || []).forEach(localGoal => {
+        if (!localGoal || !localGoal.id) return;
+        const idStr = String(localGoal.id);
+        const delTime = mergedDeletedGoals[idStr];
+        const localUpdated = localGoal.updatedAt || (localGoal.createdAt ? new Date(localGoal.createdAt).getTime() : 0);
+
+        if (delTime && delTime >= localUpdated) {
+          goalMap.delete(idStr);
+          return;
+        }
+
+        if (!goalMap.has(idStr)) {
+          goalMap.set(idStr, { ...localGoal });
+          needsPushToServer = true;
+        } else {
+          const serverGoal = goalMap.get(idStr);
+          const serverUpdated = serverGoal.updatedAt || (serverGoal.createdAt ? new Date(serverGoal.createdAt).getTime() : 0);
+          if (localUpdated > serverUpdated) {
+            goalMap.set(idStr, { ...serverGoal, ...localGoal });
+            needsPushToServer = true;
+          }
+        }
+      });
+
+      const finalGoals = Array.from(goalMap.values()).filter(g => {
+        const delTime = mergedDeletedGoals[g.id];
+        if (!delTime) return true;
+        const gUp = g.updatedAt || (g.createdAt ? new Date(g.createdAt).getTime() : 0);
+        return gUp > delTime;
+      });
+
       plannerData = {
         tasks: finalTasks,
+        goals: finalGoals,
         daysHistory: mergedHistory,
         activeTimer: finalActiveTimer,
         activeTimerChangedAt: Math.max(localTimerChangedAt, serverTimerChangedAt),
-        deletedTasks: mergedDeleted
+        deletedTasks: mergedDeleted,
+        deletedGoals: mergedDeletedGoals
       };
 
       savePlannerToLocal();
@@ -6782,7 +7271,9 @@
     /* ========================================================
        DAILY PLANNER & YPT FOCUS TIMER CONTROLLER
        ======================================================== */
-    let plannerData = loadPlannerFromLocal() || { tasks: [], daysHistory: {}, activeTimer: null };
+    let plannerData = loadPlannerFromLocal() || { tasks: [], goals: [], deletedGoals: {}, daysHistory: {}, activeTimer: null };
+    if (!Array.isArray(plannerData.goals)) plannerData.goals = [];
+    if (!plannerData.deletedGoals) plannerData.deletedGoals = {};
     let currentPlannerDate = getLocalDateStr();
     let currentPopoverTaskId = null;
     let activeDraftSection = null;
@@ -6976,8 +7467,9 @@
           const isRunningNow = !!freshData.activeTimer;
           const taskChanged = plannerData.activeTimer?.taskId !== freshData.activeTimer?.taskId;
 
-          // Check if tasks list, statuses, or study history changed
+          // Check if tasks list, goals, or study history changed
           const prevTasksJson = JSON.stringify(plannerData.tasks || []);
+          const prevGoalsJson = JSON.stringify(plannerData.goals || []);
           const prevHistoryJson = JSON.stringify(plannerData.daysHistory || {});
 
           // Reconcile conflict-free with local-first source of truth
@@ -6989,15 +7481,13 @@
             activeEl.classList?.contains('inline-task-title-input') ||
             activeEl.classList?.contains('inline-deadline-input') ||
             activeEl.classList?.contains('planner-draft-input') ||
+            activeEl.classList?.contains('notion-goal-input') ||
+            activeEl.classList?.contains('notion-goal-text') ||
             activeEl.closest?.('.planner-draft-item')
           );
 
           if (!isUserTyping) {
-            const nowTasksJson = JSON.stringify(plannerData.tasks || []);
-            const nowHistoryJson = JSON.stringify(plannerData.daysHistory || {});
-            if (wasRunning !== isRunningNow || taskChanged || prevTasksJson !== nowTasksJson || prevHistoryJson !== nowHistoryJson) {
-              renderDailyPlannerPage();
-            }
+            renderDailyPlannerPage();
           }
           updateYptLiveTimers();
           if (notify) toast('Đã cập nhật Daily Planner');
@@ -7091,7 +7581,404 @@
       });
     }
 
+    /* ========================================================
+       NOTION-STYLE GOAL TABLE LOGIC & PRIORITY SYSTEM
+       ======================================================== */
+    function getWeekScopeKey(dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+      const day = dt.getUTCDay();
+      const diff = day === 0 ? -6 : 1 - day;
+      const mon = new Date(dt.getTime() + diff * 86400000);
+      const sun = new Date(mon.getTime() + 6 * 86400000);
+      const monKey = mon.getUTCFullYear() + '-' + String(mon.getUTCMonth() + 1).padStart(2, '0') + '-' + String(mon.getUTCDate()).padStart(2, '0');
+      const label = String(mon.getUTCDate()).padStart(2, '0') + '/' + String(mon.getUTCMonth() + 1).padStart(2, '0') + ' - ' + String(sun.getUTCDate()).padStart(2, '0') + '/' + String(sun.getUTCMonth() + 1).padStart(2, '0');
+      return { weekKey: monKey, label: label };
+    }
+
+    function getMonthScopeKey(dateStr) {
+      return dateStr.slice(0, 7);
+    }
+
+    function getMonthDisplayLabel(dateStr) {
+      const [yyyy, mm] = dateStr.split('-');
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const mIdx = parseInt(mm, 10) - 1;
+      return (monthNames[mIdx] || 'Tháng ' + mm) + ' ' + yyyy;
+    }
+
+    let activeMenuGoalId = null;
+    let activeNewGoalColType = null;
+    const newGoalSelectedPriority = {
+      day: 'medium',
+      week: 'medium',
+      month: 'medium'
+    };
+
+    function renderGoalTable() {
+      if (!plannerData) return;
+      if (!Array.isArray(plannerData.goals)) plannerData.goals = [];
+
+      const dayScopeKey = currentPlannerDate;
+      const weekInfo = getWeekScopeKey(currentPlannerDate);
+      const weekScopeKey = weekInfo.weekKey;
+      const monthScopeKey = getMonthScopeKey(currentPlannerDate);
+      const monthLabel = getMonthDisplayLabel(currentPlannerDate);
+
+      const todayStr = getLocalDateStr();
+      const dayPill = document.getElementById('goalScopePill_day');
+      if (dayPill) {
+        if (dayScopeKey === todayStr) {
+          dayPill.innerText = 'Today';
+        } else {
+          const [y, m, d] = dayScopeKey.split('-');
+          dayPill.innerText = d + '/' + m;
+        }
+      }
+
+      const weekPill = document.getElementById('goalScopePill_week');
+      if (weekPill) weekPill.innerText = weekInfo.label;
+
+      const monthPill = document.getElementById('goalScopePill_month');
+      if (monthPill) monthPill.innerText = monthLabel;
+
+      const dayGoals = plannerData.goals.filter(g => g.type === 'day' && g.scopeKey === dayScopeKey);
+      const weekGoals = plannerData.goals.filter(g => g.type === 'week' && g.scopeKey === weekScopeKey);
+      const monthGoals = plannerData.goals.filter(g => g.type === 'month' && g.scopeKey === monthScopeKey);
+
+      renderGoalColumnList('day', dayGoals);
+      renderGoalColumnList('week', weekGoals);
+      renderGoalColumnList('month', monthGoals);
+    }
+
+    function renderGoalColumnList(type, goals) {
+      const listEl = document.getElementById('goalList_' + type);
+      if (!listEl) return;
+
+      if (goals.length === 0) {
+        listEl.innerHTML = '<div class="notion-goal-empty">No ' + type + ' goals yet</div>';
+        return;
+      }
+
+      listEl.innerHTML = goals.map(g => {
+        const priority = (g.priority || 'medium').toLowerCase();
+        const badgeText = priority.toUpperCase();
+        const isCompleted = !!g.completed;
+
+        return '<div class="notion-goal-item" data-goal-id="' + g.id + '" oncontextmenu="handleGoalContextMenu(event, \'' + g.id + '\'); return false;">' +
+          '<span class="notion-goal-handle" title="Drag">⋮⋮</span>' +
+          '<button type="button" class="notion-goal-checkbox ' + (isCompleted ? 'checked' : '') + '" onclick="toggleGoalItem(\'' + g.id + '\')" title="' + (isCompleted ? 'Mark incomplete' : 'Mark completed') + '">' +
+            (isCompleted ? '<svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5L4.8 9L9.5 3.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') +
+          '</button>' +
+          '<span class="notion-goal-badge badge-' + priority + '" onclick="openGoalPriorityMenuForElement(event, \'' + g.id + '\')" title="Click or right-click to change priority">' + badgeText + '</span>' +
+          '<span class="notion-goal-text ' + (isCompleted ? 'completed' : '') + '" contenteditable="true" spellcheck="false" onblur="handleGoalTextEditBlur(\'' + g.id + '\', this)" onkeydown="handleGoalTextEditKeyDown(event, \'' + g.id + '\', this)">' + escapeHtml(g.text) + '</span>' +
+          '<button type="button" class="notion-goal-delete-btn" onclick="deleteGoalItem(\'' + g.id + '\')" title="Delete goal">✕</button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function showInlineGoalInput(type) {
+      const triggerEl = document.getElementById('goalAddTrigger_' + type);
+      const inputBox = document.getElementById('goalInputBox_' + type);
+      const inputEl = document.getElementById('newGoalInput_' + type);
+      const badgeEl = document.getElementById('newGoalBadge_' + type);
+
+      if (triggerEl) triggerEl.style.display = 'none';
+      if (inputBox) inputBox.style.display = 'flex';
+
+      const curPriority = newGoalSelectedPriority[type] || 'medium';
+      if (badgeEl) {
+        badgeEl.className = 'notion-goal-badge badge-' + curPriority;
+        badgeEl.innerText = curPriority.toUpperCase();
+      }
+
+      if (inputEl) {
+        inputEl.value = '';
+        inputEl.focus();
+      }
+    }
+
+    function hideInlineGoalInput(type) {
+      const triggerEl = document.getElementById('goalAddTrigger_' + type);
+      const inputBox = document.getElementById('goalInputBox_' + type);
+      if (triggerEl) triggerEl.style.display = 'flex';
+      if (inputBox) inputBox.style.display = 'none';
+    }
+
+    function handleNewGoalBlur(type) {
+      setTimeout(() => {
+        const inputEl = document.getElementById('newGoalInput_' + type);
+        if (inputEl && inputEl.value.trim()) {
+          saveNewGoal(type);
+        } else {
+          hideInlineGoalInput(type);
+        }
+      }, 160);
+    }
+
+    function handleNewGoalKeyDown(event, type) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        saveNewGoal(type);
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        hideInlineGoalInput(type);
+      }
+    }
+
+    let isSavingGoal = false;
+    async function saveNewGoal(type) {
+      if (isSavingGoal) return;
+      const inputEl = document.getElementById('newGoalInput_' + type);
+      if (!inputEl) return;
+      const text = inputEl.value.trim();
+      inputEl.value = '';
+      if (!text) {
+        hideInlineGoalInput(type);
+        return;
+      }
+
+      isSavingGoal = true;
+      try {
+        let scopeKey = currentPlannerDate;
+        if (type === 'week') {
+          scopeKey = getWeekScopeKey(currentPlannerDate).weekKey;
+        } else if (type === 'month') {
+          scopeKey = getMonthScopeKey(currentPlannerDate);
+        }
+
+        const priority = newGoalSelectedPriority[type] || 'medium';
+        const newGoal = {
+          id: 'goal_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          type: type,
+          scopeKey: scopeKey,
+          text: text,
+          priority: priority,
+          completed: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: Date.now()
+        };
+
+        if (!Array.isArray(plannerData.goals)) plannerData.goals = [];
+        plannerData.goals.push(newGoal);
+        savePlannerToLocal();
+        hideInlineGoalInput(type);
+        renderGoalTable();
+
+        await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'add-goal',
+            id: newGoal.id,
+            type: newGoal.type,
+            scopeKey: newGoal.scopeKey,
+            text: newGoal.text,
+            priority: newGoal.priority,
+            createdAt: newGoal.createdAt,
+            updatedAt: newGoal.updatedAt
+          })
+        });
+      } catch (e) {
+        console.warn('Save goal to server error:', e);
+      } finally {
+        isSavingGoal = false;
+      }
+    }
+
+    async function toggleGoalItem(id) {
+      if (!plannerData || !Array.isArray(plannerData.goals)) return;
+      const g = plannerData.goals.find(item => item.id === id);
+      if (!g) return;
+
+      g.completed = !g.completed;
+      g.updatedAt = Date.now();
+      savePlannerToLocal();
+      renderGoalTable();
+
+      try {
+        await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'toggle-goal', id: id })
+        });
+      } catch (e) {
+        console.warn('Toggle goal error:', e);
+      }
+    }
+
+    async function deleteGoalItem(id) {
+      if (!plannerData || !Array.isArray(plannerData.goals)) return;
+      plannerData.goals = plannerData.goals.filter(item => item.id !== id);
+      if (!plannerData.deletedGoals) plannerData.deletedGoals = {};
+      plannerData.deletedGoals[id] = Date.now();
+      savePlannerToLocal();
+      closePriorityDropdown();
+      renderGoalTable();
+
+      try {
+        await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete-goal', id: id })
+        });
+      } catch (e) {
+        console.warn('Delete goal error:', e);
+      }
+    }
+
+    function handleGoalTextEditBlur(id, el) {
+      if (!plannerData || !Array.isArray(plannerData.goals)) return;
+      const g = plannerData.goals.find(item => item.id === id);
+      if (!g) return;
+      const newText = el.innerText.trim();
+      if (newText && newText !== g.text) {
+        g.text = newText;
+        g.updatedAt = Date.now();
+        savePlannerToLocal();
+        fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'update-goal', id: id, text: newText })
+        }).catch(e => console.warn('Update goal text error:', e));
+      } else if (!newText) {
+        el.innerText = g.text;
+      }
+    }
+
+    function handleGoalTextEditKeyDown(event, id, el) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        el.blur();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        const g = (plannerData.goals || []).find(item => item.id === id);
+        if (g) el.innerText = g.text;
+        el.blur();
+      }
+    }
+
+    function handleGoalContextMenu(event, goalId) {
+      event.preventDefault();
+      event.stopPropagation();
+      activeMenuGoalId = goalId;
+      activeNewGoalColType = null;
+      showPriorityDropdownAt(event.clientX, event.clientY);
+    }
+
+    function openGoalPriorityMenuForElement(event, goalId) {
+      event.preventDefault();
+      event.stopPropagation();
+      activeMenuGoalId = goalId;
+      activeNewGoalColType = null;
+      const rect = event.currentTarget.getBoundingClientRect();
+      showPriorityDropdownAt(rect.left, rect.bottom + 4);
+    }
+
+    function toggleNewGoalPriorityMenu(event, colType) {
+      event.preventDefault();
+      event.stopPropagation();
+      activeMenuGoalId = null;
+      activeNewGoalColType = colType;
+      const rect = event.currentTarget.getBoundingClientRect();
+      showPriorityDropdownAt(rect.left, rect.bottom + 4);
+    }
+
+    function showPriorityDropdownAt(x, y) {
+      const menu = document.getElementById('notionPriorityDropdown');
+      if (!menu) return;
+
+      menu.style.display = 'block';
+
+      const menuWidth = 210;
+      const menuHeight = 200;
+      const winWidth = window.innerWidth;
+      const winHeight = window.innerHeight;
+
+      let left = x;
+      let top = y;
+
+      if (left + menuWidth > winWidth - 10) {
+        left = Math.max(10, winWidth - menuWidth - 10);
+      }
+      if (top + menuHeight > winHeight - 10) {
+        top = Math.max(10, winHeight - menuHeight - 10);
+      }
+
+      menu.style.left = left + 'px';
+      menu.style.top = top + 'px';
+    }
+
+    function closePriorityDropdown() {
+      const menu = document.getElementById('notionPriorityDropdown');
+      if (menu) menu.style.display = 'none';
+      activeMenuGoalId = null;
+      activeNewGoalColType = null;
+    }
+
+    async function handleMenuPrioritySelect(priority) {
+      if (activeNewGoalColType) {
+        newGoalSelectedPriority[activeNewGoalColType] = priority;
+        const badgeEl = document.getElementById('newGoalBadge_' + activeNewGoalColType);
+        if (badgeEl) {
+          badgeEl.className = 'notion-goal-badge badge-' + priority;
+          badgeEl.innerText = priority.toUpperCase();
+        }
+        closePriorityDropdown();
+        return;
+      }
+
+      if (!activeMenuGoalId || !plannerData || !Array.isArray(plannerData.goals)) {
+        closePriorityDropdown();
+        return;
+      }
+
+      const goalId = activeMenuGoalId;
+      const g = plannerData.goals.find(item => item.id === goalId);
+      if (!g) {
+        closePriorityDropdown();
+        return;
+      }
+
+      g.priority = priority;
+      g.updatedAt = Date.now();
+      savePlannerToLocal();
+      closePriorityDropdown();
+      renderGoalTable();
+
+      try {
+        await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'update-goal', id: goalId, priority: priority })
+        });
+      } catch (e) {
+        console.warn('Update goal priority error:', e);
+      }
+    }
+
+    function handleMenuGoalDelete() {
+      if (activeMenuGoalId) {
+        deleteGoalItem(activeMenuGoalId);
+      }
+      closePriorityDropdown();
+    }
+
+    window.addEventListener('click', (e) => {
+      const menu = document.getElementById('notionPriorityDropdown');
+      if (menu && menu.style.display !== 'none' && !menu.contains(e.target)) {
+        closePriorityDropdown();
+      }
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePriorityDropdown();
+    });
+    window.addEventListener('scroll', () => {
+      closePriorityDropdown();
+    }, true);
+
     function renderDailyPlannerPage() {
+      renderGoalTable();
       const tasks = plannerData.tasks || [];
       const todayStr = getLocalDateStr();
 
@@ -10693,6 +11580,7 @@
               const isRunningNow = !!data.dailyPlanner?.activeTimer;
               const taskChanged = plannerData.activeTimer?.taskId !== data.dailyPlanner?.activeTimer?.taskId;
               const prevTasksJson = JSON.stringify(plannerData.tasks || []);
+              const prevGoalsJson = JSON.stringify(plannerData.goals || []);
               const prevHistoryJson = JSON.stringify(plannerData.daysHistory || {});
 
               if (data.dailyPlanner) {
@@ -10704,12 +11592,15 @@
                 activeEl.classList?.contains('inline-task-title-input') ||
                 activeEl.classList?.contains('inline-deadline-input') ||
                 activeEl.classList?.contains('planner-draft-input') ||
+                activeEl.classList?.contains('notion-goal-input') ||
+                activeEl.classList?.contains('notion-goal-text') ||
                 activeEl.closest?.('.planner-draft-item')
               );
               if (!isUserTyping) {
                 const nowTasksJson = JSON.stringify(plannerData.tasks || []);
+                const nowGoalsJson = JSON.stringify(plannerData.goals || []);
                 const nowHistoryJson = JSON.stringify(plannerData.daysHistory || {});
-                if (wasRunning !== isRunningNow || taskChanged || prevTasksJson !== nowTasksJson || prevHistoryJson !== nowHistoryJson) {
+                if (wasRunning !== isRunningNow || taskChanged || prevTasksJson !== nowTasksJson || prevGoalsJson !== nowGoalsJson || prevHistoryJson !== nowHistoryJson) {
                   renderDailyPlannerPage();
                 }
               }
@@ -10825,6 +11716,35 @@
 
   <!-- Global Notion Floating Tooltip Container -->
   <div id="notionTooltip" class="notion-tooltip"></div>
+
+  <!-- NOTION PRIORITY CONTEXT MENU (Right-click or Badge click) -->
+  <div id="notionPriorityDropdown" class="notion-priority-menu" style="display: none;">
+    <div class="notion-menu-title">SELECT PRIORITY</div>
+    <div class="notion-menu-item" onclick="handleMenuPrioritySelect('high')">
+      <span class="notion-goal-badge badge-high">HIGH</span>
+      <span class="notion-menu-label">High Priority</span>
+    </div>
+    <div class="notion-menu-item" onclick="handleMenuPrioritySelect('medium')">
+      <span class="notion-goal-badge badge-medium">MEDIUM</span>
+      <span class="notion-menu-label">Medium Priority</span>
+    </div>
+    <div class="notion-menu-item" onclick="handleMenuPrioritySelect('low')">
+      <span class="notion-goal-badge badge-low">LOW</span>
+      <span class="notion-menu-label">Low Priority</span>
+    </div>
+    <div class="notion-menu-item" onclick="handleMenuPrioritySelect('none')">
+      <span class="notion-goal-badge badge-none">NONE</span>
+      <span class="notion-menu-label">No Priority</span>
+    </div>
+    <div class="notion-menu-divider"></div>
+    <div class="notion-menu-item danger" onclick="handleMenuGoalDelete()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"></polyline>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+      </svg>
+      <span>Delete goal</span>
+    </div>
+  </div>
 
   <!-- Modern Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav" id="mobileBottomNav">

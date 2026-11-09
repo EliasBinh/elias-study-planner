@@ -103,6 +103,8 @@ let appSettings = {
     tasks: [
       { id: 'dp_1', title: '1 câu trắc nghiệm toán cảnh', section: 'evening', completed: true, status: 'completed', date: '2026-10-22', deadline: '', spentSeconds: 0 }
     ],
+    goals: [],
+    deletedGoals: {},
     daysHistory: {},
     activeTimer: null
   },
@@ -248,8 +250,10 @@ function loadDatabase() {
           },
           dailyPlanner: {
             tasks: Array.isArray(data.settings?.dailyPlanner?.tasks) ? data.settings.dailyPlanner.tasks : (appSettings.dailyPlanner?.tasks || []),
+            goals: Array.isArray(data.settings?.dailyPlanner?.goals) ? data.settings.dailyPlanner.goals : (appSettings.dailyPlanner?.goals || []),
             daysHistory: (typeof data.settings?.dailyPlanner?.daysHistory === 'object' && data.settings.dailyPlanner.daysHistory !== null) ? data.settings.dailyPlanner.daysHistory : (appSettings.dailyPlanner?.daysHistory || {}),
             deletedTasks: (typeof data.settings?.dailyPlanner?.deletedTasks === 'object' && data.settings.dailyPlanner.deletedTasks !== null) ? data.settings.dailyPlanner.deletedTasks : {},
+            deletedGoals: (typeof data.settings?.dailyPlanner?.deletedGoals === 'object' && data.settings.dailyPlanner.deletedGoals !== null) ? data.settings.dailyPlanner.deletedGoals : {},
             activeTimer: data.settings?.dailyPlanner?.activeTimer || null,
             activeTimerChangedAt: data.settings?.dailyPlanner?.activeTimerChangedAt || 0
           },
@@ -399,11 +403,18 @@ function broadcastPlannerUpdate() {
     const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
     return taskUpdated > delTime;
   });
+  const filteredGoals = (appSettings.dailyPlanner?.goals || []).filter(item => {
+    const delTime = appSettings.dailyPlanner?.deletedGoals?.[item.id];
+    if (!delTime) return true;
+    const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+    return goalUpdated > delTime;
+  });
   const payload = {
     type: 'PLANNER_UPDATE',
     dailyPlanner: {
       ...appSettings.dailyPlanner,
-      tasks: filteredTasks
+      tasks: filteredTasks,
+      goals: filteredGoals
     },
     habits: appSettings.habits,
     serverTime: getCanonicalNow()
@@ -480,6 +491,56 @@ function mergePlannerTasks(localPlanner, incomingPlanner) {
       // Always take highest cumulative spentSeconds
       if ((inc.spentSeconds || 0) > (existing.spentSeconds || 0)) {
         existing.spentSeconds = inc.spentSeconds;
+        changed = true;
+      }
+    }
+  }
+
+  // 2.5 Merge deletedGoals and incoming goals
+  if (!localPlanner.goals) localPlanner.goals = [];
+  if (!localPlanner.deletedGoals) localPlanner.deletedGoals = {};
+  const incDeletedGoals = incomingPlanner.deletedGoals || {};
+  for (const [delId, delTime] of Object.entries(incDeletedGoals)) {
+    if ((localPlanner.deletedGoals[delId] || 0) < delTime) {
+      localPlanner.deletedGoals[delId] = delTime;
+      changed = true;
+    }
+  }
+  for (const [delId, delTime] of Object.entries(localPlanner.deletedGoals)) {
+    if (now - delTime > SEVEN_DAYS) delete localPlanner.deletedGoals[delId];
+  }
+  const prevGoalCount = localPlanner.goals.length;
+  localPlanner.goals = localPlanner.goals.filter(g => {
+    const delTime = localPlanner.deletedGoals[g.id];
+    if (!delTime) return true;
+    const goalUpdated = g.updatedAt || (g.createdAt ? new Date(g.createdAt).getTime() : 0);
+    return goalUpdated > delTime;
+  });
+  if (localPlanner.goals.length !== prevGoalCount) changed = true;
+
+  const incomingGoals = Array.isArray(incomingPlanner.goals) ? incomingPlanner.goals : [];
+  for (const inc of incomingGoals) {
+    if (!inc || !inc.id) continue;
+    const delTime = localPlanner.deletedGoals[inc.id];
+    const incUpdated = inc.updatedAt || (inc.createdAt ? new Date(inc.createdAt).getTime() : 0);
+    if (delTime && delTime >= incUpdated) continue;
+
+    const existing = localPlanner.goals.find(g => g.id === inc.id);
+    if (!existing) {
+      localPlanner.goals.push({
+        ...inc,
+        updatedAt: incUpdated || Date.now()
+      });
+      changed = true;
+    } else {
+      const existingUpdated = existing.updatedAt || (existing.createdAt ? new Date(existing.createdAt).getTime() : 0);
+      if (incUpdated > existingUpdated) {
+        if (inc.text !== undefined) existing.text = inc.text;
+        if (inc.priority !== undefined) existing.priority = inc.priority;
+        if (inc.type !== undefined) existing.type = inc.type;
+        if (inc.scopeKey !== undefined) existing.scopeKey = inc.scopeKey;
+        if (inc.completed !== undefined) existing.completed = inc.completed;
+        existing.updatedAt = incUpdated;
         changed = true;
       }
     }
@@ -1640,9 +1701,15 @@ const server = http.createServer(async (req, res) => {
       const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
       return taskUpdated > delTime;
     });
+    const filteredGoals = (appSettings.dailyPlanner?.goals || []).filter(item => {
+      const delTime = appSettings.dailyPlanner?.deletedGoals?.[item.id];
+      if (!delTime) return true;
+      const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+      return goalUpdated > delTime;
+    });
     const initPayload = {
       type: 'PLANNER_UPDATE',
-      dailyPlanner: { ...appSettings.dailyPlanner, tasks: filteredTasks },
+      dailyPlanner: { ...appSettings.dailyPlanner, tasks: filteredTasks, goals: filteredGoals },
       habits: appSettings.habits,
       serverTime: getCanonicalNow()
     };
@@ -2848,10 +2915,12 @@ async function runBatchFetchSafe() {
   // 10.2 API: Daily Planner & YPT Focus Timer
   if (parsedUrl.pathname === '/api/daily-todos') {
     if (!appSettings.dailyPlanner) {
-      appSettings.dailyPlanner = { tasks: [], daysHistory: {}, activeTimer: null, deletedTasks: {} };
+      appSettings.dailyPlanner = { tasks: [], goals: [], daysHistory: {}, activeTimer: null, deletedTasks: {}, deletedGoals: {} };
     }
     if (!appSettings.dailyPlanner.daysHistory) appSettings.dailyPlanner.daysHistory = {};
     if (!appSettings.dailyPlanner.deletedTasks) appSettings.dailyPlanner.deletedTasks = {};
+    if (!Array.isArray(appSettings.dailyPlanner.goals)) appSettings.dailyPlanner.goals = [];
+    if (!appSettings.dailyPlanner.deletedGoals) appSettings.dailyPlanner.deletedGoals = {};
 
     if (req.method === 'POST') {
       let body = '';
@@ -3084,6 +3153,42 @@ async function runBatchFetchSafe() {
               newTasks.push(remaining);
             }
             appSettings.dailyPlanner.tasks = newTasks;
+          } else if (action === 'add-goal' && parsed.text && parsed.text.trim()) {
+            if (!Array.isArray(appSettings.dailyPlanner.goals)) appSettings.dailyPlanner.goals = [];
+            const goalId = parsed.id || ('goal_' + getCanonicalNow() + '_' + Math.random().toString(36).slice(2, 6));
+            const existing = appSettings.dailyPlanner.goals.find(item => item.id === goalId);
+            if (!existing) {
+              const newGoal = {
+                id: goalId,
+                type: parsed.type || 'day', // 'day' | 'week' | 'month'
+                scopeKey: parsed.scopeKey || (parsed.type === 'month' ? getVnDateStr().slice(0, 7) : getVnDateStr()),
+                text: parsed.text.trim(),
+                priority: parsed.priority || 'medium', // 'high' | 'medium' | 'low' | 'none'
+                completed: false,
+                createdAt: parsed.createdAt || new Date().toISOString(),
+                updatedAt: parsed.updatedAt || getCanonicalNow()
+              };
+              appSettings.dailyPlanner.goals.push(newGoal);
+            }
+          } else if (action === 'toggle-goal' && id) {
+            const g = (appSettings.dailyPlanner.goals || []).find(item => item.id === id);
+            if (g) {
+              g.completed = !g.completed;
+              g.updatedAt = getCanonicalNow();
+            }
+          } else if (action === 'update-goal' && id) {
+            const g = (appSettings.dailyPlanner.goals || []).find(item => item.id === id);
+            if (g) {
+              if (parsed.text !== undefined) g.text = parsed.text.trim();
+              if (parsed.priority !== undefined) g.priority = parsed.priority;
+              if (parsed.completed !== undefined) g.completed = !!parsed.completed;
+              g.updatedAt = getCanonicalNow();
+            }
+          } else if (action === 'delete-goal' && id) {
+            const now = getCanonicalNow();
+            if (!appSettings.dailyPlanner.deletedGoals) appSettings.dailyPlanner.deletedGoals = {};
+            appSettings.dailyPlanner.deletedGoals[id] = now;
+            appSettings.dailyPlanner.goals = (appSettings.dailyPlanner.goals || []).filter(item => item.id !== id);
           }
 
           syncDiscordPresenceFromActiveTimer(true);
@@ -3097,13 +3202,20 @@ async function runBatchFetchSafe() {
             const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
             return taskUpdated > delTime;
           });
+          const filteredGoals = (appSettings.dailyPlanner.goals || []).filter(item => {
+            const delTime = appSettings.dailyPlanner.deletedGoals?.[item.id];
+            if (!delTime) return true;
+            const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+            return goalUpdated > delTime;
+          });
 
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({
             success: true,
             dailyPlanner: {
               ...appSettings.dailyPlanner,
-              tasks: filteredTasks
+              tasks: filteredTasks,
+              goals: filteredGoals
             },
             serverTime: getCanonicalNow()
           }));
@@ -3121,11 +3233,18 @@ async function runBatchFetchSafe() {
       const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
       return taskUpdated > delTime;
     });
+    const filteredGoals = (appSettings.dailyPlanner.goals || []).filter(item => {
+      const delTime = appSettings.dailyPlanner.deletedGoals?.[item.id];
+      if (!delTime) return true;
+      const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+      return goalUpdated > delTime;
+    });
 
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     return res.end(JSON.stringify({
       ...appSettings.dailyPlanner,
       tasks: filteredTasks,
+      goals: filteredGoals,
       serverTime: getCanonicalNow()
     }));
   }
@@ -3139,11 +3258,13 @@ async function runBatchFetchSafe() {
         try {
           const incoming = JSON.parse(body || '{}');
           if (!appSettings.dailyPlanner) {
-            appSettings.dailyPlanner = { tasks: [], daysHistory: {}, activeTimer: null, activeTimerChangedAt: 0, deletedTasks: {} };
+            appSettings.dailyPlanner = { tasks: [], goals: [], daysHistory: {}, activeTimer: null, activeTimerChangedAt: 0, deletedTasks: {}, deletedGoals: {} };
           }
           if (!Array.isArray(appSettings.dailyPlanner.tasks)) appSettings.dailyPlanner.tasks = [];
+          if (!Array.isArray(appSettings.dailyPlanner.goals)) appSettings.dailyPlanner.goals = [];
           if (!appSettings.dailyPlanner.daysHistory) appSettings.dailyPlanner.daysHistory = {};
           if (!appSettings.dailyPlanner.deletedTasks) appSettings.dailyPlanner.deletedTasks = {};
+          if (!appSettings.dailyPlanner.deletedGoals) appSettings.dailyPlanner.deletedGoals = {};
 
           const incomingChangedAt = incoming.activeTimerChangedAt || 0;
           const localChangedAt = appSettings.dailyPlanner.activeTimerChangedAt || 0;
@@ -3176,13 +3297,20 @@ async function runBatchFetchSafe() {
             const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
             return taskUpdated > delTime;
           });
+          const filteredGoals = (appSettings.dailyPlanner.goals || []).filter(item => {
+            const delTime = appSettings.dailyPlanner.deletedGoals?.[item.id];
+            if (!delTime) return true;
+            const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+            return goalUpdated > delTime;
+          });
 
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({
             success: true,
             dailyPlanner: {
               ...appSettings.dailyPlanner,
-              tasks: filteredTasks
+              tasks: filteredTasks,
+              goals: filteredGoals
             },
             habits: appSettings.habits,
             discordRpc: appSettings.discordRpc,
@@ -3529,7 +3657,9 @@ async function triggerCloudSync() {
     const startReq = Date.now();
     const payload = {
       tasks: appSettings.dailyPlanner?.tasks || [],
+      goals: appSettings.dailyPlanner?.goals || [],
       deletedTasks: appSettings.dailyPlanner?.deletedTasks || {},
+      deletedGoals: appSettings.dailyPlanner?.deletedGoals || {},
       daysHistory: appSettings.dailyPlanner?.daysHistory || {},
       habits: appSettings.habits || {},
       activeTimer: appSettings.dailyPlanner?.activeTimer || null,
