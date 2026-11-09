@@ -1,7 +1,6 @@
 import os
 import re
 import json
-import time
 import shutil
 import urllib.request
 
@@ -18,6 +17,18 @@ os.makedirs(STAGING_DIR, exist_ok=True)
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
+
+def clean_key(name):
+    """Normalize name to detect whether an assignment already exists."""
+    s = name.lower()
+    s = re.sub(r'^(final_|\[202\d\]\s*|\[others\]\s*)', '', s)
+    s = re.sub(r'^\s*\[\d{1,2}[.-]\d{1,2}\]\s*\[verbal\]\s*', '', s)
+    s = re.sub(r'^\s*chưa rõ\s*\[verbal\]\s*', '', s)
+    s = re.sub(r'^\s*\[a\]\s*', '', s)
+    s = re.sub(r'\s*\(review\)', '', s)
+    s = re.sub(r'\.pdf$', '', s)
+    s = re.sub(r'[\s\-_]+', ' ', s).strip()
+    return s
 
 def fetch_gdrive_folder(folder_id):
     url = f"https://drive.google.com/drive/folders/{folder_id}"
@@ -52,8 +63,6 @@ def download_file(file_id, dest_path):
                     req2 = urllib.request.Request(confirm_url, headers=HEADERS)
                     with urllib.request.urlopen(req2, timeout=60) as resp2:
                         content = resp2.read()
-            if not content.startswith(b"%PDF"):
-                print(f"  [Cảnh báo] File {file_id} không đúng định dạng PDF")
             with open(dest_path, "wb") as f:
                 f.write(content)
             return True
@@ -75,15 +84,13 @@ def sync_all():
         if fid and name:
             sessions.append((name, fid))
 
-    print(f"[+] Tìm thấy {len(sessions)} buổi học trên Drive:")
-    for name, fid in sessions:
-        print(f"   - {name} ({fid})")
+    print(f"[+] Tìm thấy {len(sessions)} buổi học trên Drive.")
 
-    existing_repo = set(os.listdir(REPO_VERBAL))
+    existing_files = os.listdir(REPO_VERBAL)
+    existing_keys = {clean_key(f): f for f in existing_files}
     total_added = 0
 
     for s_name, s_fid in sessions:
-        print(f"\n[*] Đang kiểm tra {s_name}...")
         s_items = fetch_gdrive_folder(s_fid)
         s_dir = os.path.join(STAGING_DIR, s_name)
         os.makedirs(s_dir, exist_ok=True)
@@ -98,7 +105,7 @@ def sync_all():
             if not fid or not name:
                 continue
 
-            # Subfolder support (e.g. Phiếu trên lớp)
+            # Subfolder (e.g. Phiếu trên lớp)
             if not name.lower().endswith(".pdf"):
                 sub_items = fetch_gdrive_folder(fid)
                 for sub in sub_items:
@@ -109,57 +116,55 @@ def sync_all():
                     except Exception:
                         pass
                     if sub_fid and sub_name and sub_name.lower().endswith(".pdf"):
+                        ck = clean_key(sub_name)
+                        if ck in existing_keys:
+                            continue
                         dest = os.path.join(s_dir, sub_name)
                         if download_file(sub_fid, dest):
                             target = f"[14.11] [Verbal] {sub_name}"
                             p_repo = os.path.join(REPO_VERBAL, target)
                             p_user = os.path.join(USER_DOWNLOADS, target)
-                            if not os.path.exists(p_repo):
-                                shutil.copy2(dest, p_repo)
-                                shutil.copy2(dest, p_user)
-                                print(f"  [+ Bổ sung] {target}")
-                                total_added += 1
+                            shutil.copy2(dest, p_repo)
+                            shutil.copy2(dest, p_user)
+                            existing_keys[ck] = target
+                            print(f"  [+ Bổ sung mới] {target}")
+                            total_added += 1
                 continue
 
-            # Regular PDF file
+            # Check if assignment already exists
+            ck = clean_key(name)
+            if ck in existing_keys:
+                # Already exists, skip duplicate!
+                continue
+
+            # Check special case for words in context numbers
+            wic_match = re.search(r'words in context\s*(\d+)', ck)
+            if wic_match:
+                num = wic_match.group(1)
+                if any(f"words in context {num}" in k or f"words in context - {num}" in k for k in existing_keys):
+                    continue
+
             clean_name = name.replace("/", "_").replace("\\", "_")
             dest = os.path.join(s_dir, clean_name)
             if download_file(fid, dest):
-                # Standardize destination name
-                target = None
-                if "Buổi 1" in s_name:
-                    if "Test EBRW" in clean_name:
-                        set_let = re.findall(r'set\s*([a-c])', clean_name, re.I)
-                        letter = set_let[0].upper() if set_let else "A"
-                        target = f"Chưa rõ  [Verbal] [A] Test EBRW - Set {letter} - Buổi 1 (Review).pdf"
-                    else:
-                        target = f"Chưa rõ  [Verbal] {clean_name}"
-                elif "Text Structure" in clean_name:
-                    target = f"[17.10] [Verbal] {clean_name}"
-                elif "Set 12" in clean_name:
-                    target = f"[14.11] [Verbal] The Critical Reader v2 _ Set 12.pdf"
-                else:
-                    target = clean_name
-
+                target = f"Chưa rõ  [Verbal] {clean_name}"
                 p_repo = os.path.join(REPO_VERBAL, target)
                 p_user = os.path.join(USER_DOWNLOADS, target)
-                if not os.path.exists(p_repo):
-                    shutil.copy2(dest, p_repo)
-                    shutil.copy2(dest, p_user)
-                    print(f"  [+ Bổ sung] {target}")
-                    total_added += 1
+                shutil.copy2(dest, p_repo)
+                shutil.copy2(dest, p_user)
+                existing_keys[ck] = target
+                print(f"  [+ Bổ sung mới] {target}")
+                total_added += 1
 
-    print(f"\n==========================================")
-    print(f"[XONG] Đã đồng bộ xong! Thêm mới {total_added} file.")
-    print(f"==========================================")
+    print(f"\n[XONG] Đồng bộ hoàn tất. Số file thêm mới: {total_added}")
 
-    # Notify server to scan
+    # Trigger server scan
     try:
         req = urllib.request.Request("http://127.0.0.1:8899/api/scan", data=b"", headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=5) as resp:
-            print("[Server] Đã kích hoạt quét lại hệ thống tự động: " + resp.read().decode())
-    except Exception as e:
-        print("[Server] Server local chưa bật hoặc đang chạy ngầm.")
+            print("[Server] Đã làm mới hệ thống: " + resp.read().decode())
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     sync_all()
