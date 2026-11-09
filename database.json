@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-09T16:41:30.153Z",
+  "updatedAt": "2026-11-09T16:51:53.078Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -941,7 +941,7 @@
           "status": "completed",
           "spentSeconds": 0,
           "createdAt": "2026-11-08T16:04:54.085Z",
-          "updatedAt": 1794229302654,
+          "updatedAt": 1794242686998,
           "completedAt": "2026-11-09T13:01:42.654Z"
         },
         {
@@ -1052,26 +1052,6 @@
           "completed": false,
           "createdAt": "2026-11-09T16:00:00.000Z",
           "updatedAt": 1794241382000
-        },
-        {
-          "id": "goal_1794241973261_sq52",
-          "type": "day",
-          "scopeKey": "2026-11-09",
-          "text": "hi",
-          "priority": "high",
-          "completed": false,
-          "createdAt": "2026-11-09T16:32:53.261Z",
-          "updatedAt": 1794241983758
-        },
-        {
-          "id": "goal_1794242483777_6plu",
-          "type": "week",
-          "scopeKey": "2026-11-09",
-          "text": "hi",
-          "priority": "high",
-          "completed": false,
-          "createdAt": "2026-11-09T16:41:23.777Z",
-          "updatedAt": 1794242488513
         }
       ],
       "daysHistory": {
@@ -1201,7 +1181,10 @@
         "goal_1794241241700_3r60": 1794241887014,
         "goal_1794241379774_nrvt": 1794241889070,
         "goal_1794241380891_zldl": 1794241891098,
-        "goal_1794241382004_rbyd": 1794241893147
+        "goal_1794241382004_rbyd": 1794241893147,
+        "goal_1794242483777_6plu": 1794242548518,
+        "goal_1794241973261_sq52": 1794242550303,
+        "goal_1794242521859_6upp": 1794242551272
       },
       "activeTimer": null,
       "activeTimerChangedAt": 1794230317865

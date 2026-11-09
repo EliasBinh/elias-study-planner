@@ -3115,31 +3115,16 @@
       color: #EF4444;
       background: #FEE2E2;
     }
-    .notion-goal-add-trigger {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 12px;
-      color: #9CA3AF;
-      font-size: 12.5px;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.12s ease;
-      margin-top: auto;
-      border-top: 1px solid rgba(55, 53, 47, 0.04);
-    }
-    .notion-goal-add-trigger:hover {
-      color: #37352F;
-      background: rgba(55, 53, 47, 0.04);
-    }
     .notion-goal-input-box {
       display: flex;
       align-items: center;
       gap: 8px;
       padding: 6px 10px;
       background: #FFFFFF;
-      border-top: 1px solid rgba(55, 53, 47, 0.08);
-      margin-top: auto;
+      border-bottom: 1px solid rgba(55, 53, 47, 0.08);
+    }
+    .notion-goal-item:hover .goal-drag-handle {
+      opacity: 0.85;
     }
     .notion-goal-input {
       flex: 1;
@@ -5408,14 +5393,13 @@
               </div>
               <button type="button" class="btn-goal-add-icon" onclick="showInlineGoalInput('day')" title="Add day goal">+</button>
             </div>
-            <div class="notion-goal-list" id="goalList_day"></div>
-            <div class="notion-goal-add-trigger" id="goalAddTrigger_day" onclick="showInlineGoalInput('day')">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              <span>New</span>
-            </div>
             <div class="notion-goal-input-box" id="goalInputBox_day" style="display: none;">
               <input type="text" id="newGoalInput_day" class="notion-goal-input" placeholder="New day goal..." onkeydown="handleNewGoalKeyDown(event, 'day')" onblur="handleNewGoalBlur('day')" />
             </div>
+            <div class="notion-goal-list" id="goalList_day"
+                 ondragover="handleGoalListDragOver(event, 'day')"
+                 ondragleave="handleGoalListDragLeave(event, 'day')"
+                 ondrop="handleGoalListDrop(event, 'day')"></div>
           </div>
 
           <!-- WEEK COLUMN -->
@@ -5427,14 +5411,13 @@
               </div>
               <button type="button" class="btn-goal-add-icon" onclick="showInlineGoalInput('week')" title="Add week goal">+</button>
             </div>
-            <div class="notion-goal-list" id="goalList_week"></div>
-            <div class="notion-goal-add-trigger" id="goalAddTrigger_week" onclick="showInlineGoalInput('week')">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              <span>New</span>
-            </div>
             <div class="notion-goal-input-box" id="goalInputBox_week" style="display: none;">
               <input type="text" id="newGoalInput_week" class="notion-goal-input" placeholder="New week goal..." onkeydown="handleNewGoalKeyDown(event, 'week')" onblur="handleNewGoalBlur('week')" />
             </div>
+            <div class="notion-goal-list" id="goalList_week"
+                 ondragover="handleGoalListDragOver(event, 'week')"
+                 ondragleave="handleGoalListDragLeave(event, 'week')"
+                 ondrop="handleGoalListDrop(event, 'week')"></div>
           </div>
 
           <!-- MONTH COLUMN -->
@@ -5446,14 +5429,13 @@
               </div>
               <button type="button" class="btn-goal-add-icon" onclick="showInlineGoalInput('month')" title="Add month goal">+</button>
             </div>
-            <div class="notion-goal-list" id="goalList_month"></div>
-            <div class="notion-goal-add-trigger" id="goalAddTrigger_month" onclick="showInlineGoalInput('month')">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              <span>New</span>
-            </div>
             <div class="notion-goal-input-box" id="goalInputBox_month" style="display: none;">
               <input type="text" id="newGoalInput_month" class="notion-goal-input" placeholder="New month goal..." onkeydown="handleNewGoalKeyDown(event, 'month')" onblur="handleNewGoalBlur('month')" />
             </div>
+            <div class="notion-goal-list" id="goalList_month"
+                 ondragover="handleGoalListDragOver(event, 'month')"
+                 ondragleave="handleGoalListDragLeave(event, 'month')"
+                 ondrop="handleGoalListDrop(event, 'month')"></div>
           </div>
         </div>
       </div>
@@ -7665,8 +7647,20 @@
         const priority = (g.priority || 'none').toLowerCase();
         const isCompleted = !!g.completed;
 
-        return '<div class="notion-goal-item priority-' + priority + '" data-goal-id="' + g.id + '" oncontextmenu="handleGoalContextMenu(event, \'' + g.id + '\'); return false;" title="Right-click to set priority">' +
-          '<span class="notion-goal-handle" title="Drag">⋮⋮</span>' +
+        return '<div class="notion-goal-item priority-' + priority + '" id="goal_' + g.id + '" data-goal-id="' + g.id + '" data-goal-type="' + type + '" ' +
+          'ondragstart="handleGoalDragStart(event, \'' + g.id + '\', \'' + type + '\')" ' +
+          'ondragover="handleGoalDragOver(event, \'' + g.id + '\')" ' +
+          'ondragleave="handleGoalDragLeave(event, \'' + g.id + '\')" ' +
+          'ondragend="handleGoalDragEnd(event)" ' +
+          'ondrop="handleGoalDrop(event, \'' + g.id + '\', \'' + type + '\')" ' +
+          'oncontextmenu="handleGoalContextMenu(event, \'' + g.id + '\'); return false;" title="Right-click to set priority">' +
+          '<div class="task-drag-handle goal-drag-handle" title="Kéo để di chuyển" onmousedown="enableGoalDrag(event, \'' + g.id + '\')">' +
+            '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">' +
+              '<circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/>' +
+              '<circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/>' +
+              '<circle cx="5" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/>' +
+            '</svg>' +
+          '</div>' +
           '<button type="button" class="notion-goal-checkbox ' + (isCompleted ? 'checked' : '') + '" onclick="toggleGoalItem(\'' + g.id + '\')" title="' + (isCompleted ? 'Mark incomplete' : 'Mark completed') + '">' +
             (isCompleted ? '<svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5L4.8 9L9.5 3.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') +
           '</button>' +
@@ -7676,14 +7670,206 @@
       }).join('');
     }
 
+    /* ========================================================
+       GOAL DRAG & DROP REORDER CONTROLLER (Desktop & Mobile)
+       ======================================================== */
+    let draggedGoalId = null;
+    let draggedGoalType = null;
+
+    function enableGoalDrag(e, goalId) {
+      const goalEl = document.getElementById('goal_' + goalId);
+      if (!goalEl) return;
+      goalEl.setAttribute('draggable', 'true');
+      const onMouseUp = () => {
+        if (!draggedGoalId) goalEl.removeAttribute('draggable');
+        window.removeEventListener('mouseup', onMouseUp);
+      };
+      window.addEventListener('mouseup', onMouseUp);
+    }
+
+    function handleGoalDragStart(e, id, type) {
+      draggedGoalId = id;
+      draggedGoalType = type;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', id);
+      setTimeout(() => {
+        const el = document.getElementById('goal_' + id);
+        if (el) el.classList.add('is-dragging');
+      }, 0);
+    }
+
+    function handleGoalDragOver(e, id) {
+      if (!draggedGoalId || String(draggedGoalId) === String(id)) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const target = e.currentTarget;
+      const rect = target.getBoundingClientRect();
+      const isTop = (e.clientY - rect.top) < (rect.height / 2);
+      if (isTop) {
+        target.classList.add('drag-over-top');
+        target.classList.remove('drag-over-bottom');
+      } else {
+        target.classList.add('drag-over-bottom');
+        target.classList.remove('drag-over-top');
+      }
+    }
+
+    function handleGoalDragLeave(e, id) {
+      e.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
+    }
+
+    function handleGoalDragEnd(e) {
+      document.querySelectorAll('.notion-goal-item').forEach(el => {
+        el.classList.remove('is-dragging', 'drag-over-top', 'drag-over-bottom');
+        el.removeAttribute('draggable');
+      });
+      document.querySelectorAll('.notion-goal-list').forEach(el => {
+        el.classList.remove('drag-over-empty');
+      });
+      draggedGoalId = null;
+      draggedGoalType = null;
+    }
+
+    async function handleGoalDrop(e, targetId, targetType) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!draggedGoalId || String(draggedGoalId) === String(targetId)) return;
+      const target = e.currentTarget;
+      const isTop = target.classList.contains('drag-over-top');
+      target.classList.remove('drag-over-top', 'drag-over-bottom');
+
+      const sourceId = draggedGoalId;
+      draggedGoalId = null;
+      draggedGoalType = null;
+
+      await applyGoalReorder(sourceId, targetId, isTop ? 'before' : 'after', targetType);
+    }
+
+    function handleGoalListDragOver(e, type) {
+      if (!draggedGoalId) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const listEl = document.getElementById('goalList_' + type);
+      if (listEl) listEl.classList.add('drag-over-empty');
+    }
+
+    function handleGoalListDragLeave(e, type) {
+      const listEl = document.getElementById('goalList_' + type);
+      if (listEl) listEl.classList.remove('drag-over-empty');
+    }
+
+    async function handleGoalListDrop(e, type) {
+      e.preventDefault();
+      const listEl = document.getElementById('goalList_' + type);
+      if (listEl) listEl.classList.remove('drag-over-empty');
+      if (!draggedGoalId) return;
+
+      const sourceId = draggedGoalId;
+      draggedGoalId = null;
+      draggedGoalType = null;
+
+      await moveGoalToColumnEnd(sourceId, type);
+    }
+
+    async function applyGoalReorder(sourceId, targetId, position, targetType) {
+      if (!sourceId || !targetId || sourceId === targetId) return;
+      if (!plannerData || !Array.isArray(plannerData.goals)) return;
+
+      const goals = [...plannerData.goals];
+      const sourceIdx = goals.findIndex(g => String(g.id) === String(sourceId));
+      if (sourceIdx < 0) return;
+
+      const [sourceGoal] = goals.splice(sourceIdx, 1);
+
+      if (targetType && sourceGoal.type !== targetType) {
+        sourceGoal.type = targetType;
+        if (targetType === 'day') {
+          sourceGoal.scopeKey = currentPlannerDate;
+        } else if (targetType === 'week') {
+          sourceGoal.scopeKey = getWeekScopeKey(currentPlannerDate).weekKey;
+        } else if (targetType === 'month') {
+          sourceGoal.scopeKey = getMonthScopeKey(currentPlannerDate);
+        }
+      }
+      sourceGoal.updatedAt = Date.now();
+
+      const targetIdx = goals.findIndex(g => String(g.id) === String(targetId));
+      if (targetIdx >= 0) {
+        const insertIdx = (position === 'before') ? targetIdx : targetIdx + 1;
+        goals.splice(insertIdx, 0, sourceGoal);
+      } else {
+        goals.push(sourceGoal);
+      }
+
+      plannerData.goals = goals;
+      savePlannerToLocal();
+      renderGoalTable();
+
+      try {
+        await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'reorder-goals',
+            orderedIds: goals.map(g => g.id),
+            movedGoalId: sourceGoal.id,
+            newType: sourceGoal.type,
+            newScopeKey: sourceGoal.scopeKey
+          })
+        });
+      } catch (e) {
+        console.warn('Reorder goals error:', e);
+      }
+    }
+
+    async function moveGoalToColumnEnd(sourceId, targetType) {
+      if (!sourceId || !plannerData || !Array.isArray(plannerData.goals)) return;
+      const goals = [...plannerData.goals];
+      const sourceIdx = goals.findIndex(g => String(g.id) === String(sourceId));
+      if (sourceIdx < 0) return;
+
+      const [sourceGoal] = goals.splice(sourceIdx, 1);
+      if (targetType && sourceGoal.type !== targetType) {
+        sourceGoal.type = targetType;
+        if (targetType === 'day') {
+          sourceGoal.scopeKey = currentPlannerDate;
+        } else if (targetType === 'week') {
+          sourceGoal.scopeKey = getWeekScopeKey(currentPlannerDate).weekKey;
+        } else if (targetType === 'month') {
+          sourceGoal.scopeKey = getMonthScopeKey(currentPlannerDate);
+        }
+      }
+      sourceGoal.updatedAt = Date.now();
+      goals.push(sourceGoal);
+
+      plannerData.goals = goals;
+      savePlannerToLocal();
+      renderGoalTable();
+
+      try {
+        await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'reorder-goals',
+            orderedIds: goals.map(g => g.id),
+            movedGoalId: sourceGoal.id,
+            newType: sourceGoal.type,
+            newScopeKey: sourceGoal.scopeKey
+          })
+        });
+      } catch (e) {
+        console.warn('Move goal to column end error:', e);
+      }
+    }
+
     function showInlineGoalInput(type) {
-      const triggerEl = document.getElementById('goalAddTrigger_' + type);
       const inputBox = document.getElementById('goalInputBox_' + type);
       const inputEl = document.getElementById('newGoalInput_' + type);
 
-      if (triggerEl) triggerEl.style.display = 'none';
-      if (inputBox) inputBox.style.display = 'flex';
-
+      if (inputBox) {
+        inputBox.style.display = 'flex';
+      }
       if (inputEl) {
         inputEl.value = '';
         inputEl.focus();
@@ -7691,9 +7877,7 @@
     }
 
     function hideInlineGoalInput(type) {
-      const triggerEl = document.getElementById('goalAddTrigger_' + type);
       const inputBox = document.getElementById('goalInputBox_' + type);
-      if (triggerEl) triggerEl.style.display = 'flex';
       if (inputBox) inputBox.style.display = 'none';
     }
 

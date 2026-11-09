@@ -3189,6 +3189,28 @@ async function runBatchFetchSafe() {
             if (!appSettings.dailyPlanner.deletedGoals) appSettings.dailyPlanner.deletedGoals = {};
             appSettings.dailyPlanner.deletedGoals[id] = now;
             appSettings.dailyPlanner.goals = (appSettings.dailyPlanner.goals || []).filter(item => item.id !== id);
+          } else if (action === 'reorder-goals' && Array.isArray(parsed.orderedIds)) {
+            const idMap = new Map((appSettings.dailyPlanner.goals || []).map(g => [String(g.id), g]));
+            if (parsed.movedGoalId && parsed.newType) {
+              const moved = idMap.get(String(parsed.movedGoalId));
+              if (moved) {
+                moved.type = parsed.newType;
+                if (parsed.newScopeKey) moved.scopeKey = parsed.newScopeKey;
+                moved.updatedAt = getCanonicalNow();
+              }
+            }
+            const newGoals = [];
+            for (const oId of parsed.orderedIds) {
+              const item = idMap.get(String(oId));
+              if (item) {
+                newGoals.push(item);
+                idMap.delete(String(oId));
+              }
+            }
+            for (const remaining of idMap.values()) {
+              newGoals.push(remaining);
+            }
+            appSettings.dailyPlanner.goals = newGoals;
           }
 
           syncDiscordPresenceFromActiveTimer(true);
