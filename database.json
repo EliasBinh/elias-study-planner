@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-21T06:32:57.324Z",
+  "updatedAt": "2026-11-21T06:50:22.255Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -1544,9 +1544,10 @@
           "deadline": "",
           "completed": false,
           "status": "incomplete",
-          "spentSeconds": 0,
+          "spentSeconds": 55,
           "createdAt": "2026-11-20T16:52:28.559Z",
-          "updatedAt": 1795193548559
+          "updatedAt": 1795243808810,
+          "completedAt": null
         },
         {
           "id": "dp_1795193560714_il2u",
@@ -1554,12 +1555,12 @@
           "section": "morning",
           "date": "2026-11-21",
           "deadline": "",
-          "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 0,
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 684,
           "createdAt": "2026-11-20T16:52:40.714Z",
-          "updatedAt": 1795193563424,
-          "completedAt": null
+          "updatedAt": 1795243746249,
+          "completedAt": "2026-11-21T06:49:05.249Z"
         },
         {
           "id": "dp_1795193580769_21pu",
@@ -1576,14 +1577,15 @@
         {
           "id": "dp_1795193593083_3pq0",
           "title": "All reading syllabus",
-          "section": "afternoon",
+          "section": "evening",
           "date": "2026-11-21",
           "deadline": "",
           "completed": false,
           "status": "incomplete",
           "spentSeconds": 0,
           "createdAt": "2026-11-20T16:53:13.084Z",
-          "updatedAt": 1795193593084
+          "updatedAt": 1795243156789,
+          "completedAt": null
         },
         {
           "id": "dp_1795193812643_vwul",
@@ -1996,6 +1998,10 @@
         "2026-11-20": {
           "totalSeconds": 31781,
           "maxFocusSeconds": 14827
+        },
+        "2026-11-21": {
+          "totalSeconds": 739,
+          "maxFocusSeconds": 683
         }
       },
       "deletedTasks": {
@@ -2025,8 +2031,14 @@
         "goal_1795145263201_gsc2": 1795152705893,
         "goal_1795152759933_czx0": 1795193502281
       },
-      "activeTimer": null,
-      "activeTimerChangedAt": 1795192085068
+      "activeTimer": {
+        "taskId": "dp_1795193548559_8h19",
+        "taskTitle": "Làm full test CB",
+        "startedAt": 1795243808810,
+        "sessionStartedAt": 1795243750829,
+        "date": "2026-11-21"
+      },
+      "activeTimerChangedAt": 1795243808810
     },
     "discordRpc": {
       "enabled": true,

@@ -3634,7 +3634,7 @@ async function runBatchFetchSafe() {
   }
 
   // PWA App Icons & Static Images
-  if (parsedUrl.pathname === '/app_icon.png' || parsedUrl.pathname === '/app_icon_192.png' || parsedUrl.pathname === '/stewie.png') {
+  if (parsedUrl.pathname === '/app_icon.png' || parsedUrl.pathname === '/app_icon_192.png' || parsedUrl.pathname === '/elias_avatar.png' || parsedUrl.pathname === '/stewie.png') {
     const iconName = parsedUrl.pathname.replace('/', '');
     const iconPath = path.join(__dirname, iconName);
     if (fs.existsSync(iconPath)) {
@@ -3644,7 +3644,7 @@ async function runBatchFetchSafe() {
   }
 
   if (parsedUrl.pathname === '/favicon.ico' || parsedUrl.pathname === '/stewie.ico') {
-    const icoPath = path.join(__dirname, 'stewie.ico');
+    const icoPath = fs.existsSync(path.join(__dirname, 'favicon.ico')) ? path.join(__dirname, 'favicon.ico') : path.join(__dirname, 'stewie.ico');
     if (fs.existsSync(icoPath)) {
       res.writeHead(200, { 'Content-Type': 'image/x-icon', 'Cache-Control': 'public, max-age=604800' });
       return res.end(fs.readFileSync(icoPath));

@@ -11,6 +11,8 @@ scribd-web/test_out/
 scribd-web/*.png
 .github/
 *.png
+!app_icon*.png
+!elias_avatar*.png
 *.pdf
 !data/10SAT/**/*.pdf
 gdrive_downloads/
