@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 8899;
 const CDP_PORT = 9222;
 const IS_CLOUD_INSTANCE = !!process.env.RENDER;
-const CLOUD_SYNC_URL = process.env.CLOUD_SYNC_URL || 'https://elias-study-planner.onrender.com';
+const CLOUD_SYNC_URL = process.env.CLOUD_SYNC_URL || 'https://elias-study-planner-0dv6.onrender.com';
 
 let cloudTimeOffset = 0; // Canonical CloudTime - Local LaptopTime
 
