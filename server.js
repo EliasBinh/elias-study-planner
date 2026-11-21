@@ -3633,6 +3633,24 @@ async function runBatchFetchSafe() {
     }
   }
 
+  // PWA App Icons & Static Images
+  if (parsedUrl.pathname === '/app_icon.png' || parsedUrl.pathname === '/app_icon_192.png' || parsedUrl.pathname === '/stewie.png') {
+    const iconName = parsedUrl.pathname.replace('/', '');
+    const iconPath = path.join(__dirname, iconName);
+    if (fs.existsSync(iconPath)) {
+      res.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=604800' });
+      return res.end(fs.readFileSync(iconPath));
+    }
+  }
+
+  if (parsedUrl.pathname === '/favicon.ico' || parsedUrl.pathname === '/stewie.ico') {
+    const icoPath = path.join(__dirname, 'stewie.ico');
+    if (fs.existsSync(icoPath)) {
+      res.writeHead(200, { 'Content-Type': 'image/x-icon', 'Cache-Control': 'public, max-age=604800' });
+      return res.end(fs.readFileSync(icoPath));
+    }
+  }
+
   // PWA Manifest
   if (parsedUrl.pathname === '/manifest.json') {
     const manifestPath = path.join(__dirname, 'manifest.json');

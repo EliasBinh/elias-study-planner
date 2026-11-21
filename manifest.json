@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "YPT",
-  "short_name": "YPT",
-  "description": "Daily Planner & Habit Tracker Workspace",
+  "name": "Elias Study Planner",
+  "short_name": "Elias",
+  "description": "Daily Planner & SAT 1600 Workspace",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -14,13 +14,25 @@
       "src": "/app_icon_192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/app_icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/app_icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/app_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
