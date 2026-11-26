@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-21T06:50:22.255Z",
+  "updatedAt": "2026-11-26T13:59:10.889Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -57,11 +57,6 @@
           "id": "h_1792926643200",
           "title": "Stare wall 20min",
           "category": "Mindset"
-        },
-        {
-          "id": "h_1794200503213",
-          "title": "Phase 1 : 1B Verbal / 5 file Math",
-          "category": "Study"
         },
         {
           "id": "h_1794204093786",
@@ -127,12 +122,16 @@
           "h_1794115281246",
           "h_6",
           "h_1794204093786"
+        ],
+        "2026-11-26": [
+          "h_1",
+          "h_5"
         ]
       },
       "deletedHabits": {
-        "h_1794204092443": 1794239940490
+        "h_1794200503213": 1795700097371
       },
-      "changedAt": 1795173790111
+      "changedAt": 1795700097372
     },
     "dailyPlanner": {
       "tasks": [
@@ -1539,15 +1538,15 @@
         {
           "id": "dp_1795193548559_8h19",
           "title": "Làm full test CB",
-          "section": "morning",
+          "section": "afternoon",
           "date": "2026-11-21",
           "deadline": "",
-          "completed": false,
-          "status": "incomplete",
-          "spentSeconds": 55,
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 10312,
           "createdAt": "2026-11-20T16:52:28.559Z",
-          "updatedAt": 1795243808810,
-          "completedAt": null
+          "updatedAt": 1795257132635,
+          "completedAt": "2026-11-21T09:41:11.111Z"
         },
         {
           "id": "dp_1795193560714_il2u",
@@ -1565,14 +1564,15 @@
         {
           "id": "dp_1795193580769_21pu",
           "title": "All writing syllabus",
-          "section": "afternoon",
+          "section": "evening",
           "date": "2026-11-21",
-          "deadline": "",
+          "deadline": "19:00",
           "completed": false,
-          "status": "incomplete",
+          "status": "failed",
           "spentSeconds": 0,
           "createdAt": "2026-11-20T16:53:00.769Z",
-          "updatedAt": 1795193580769
+          "updatedAt": 1795277550079,
+          "completedAt": null
         },
         {
           "id": "dp_1795193593083_3pq0",
@@ -1581,10 +1581,10 @@
           "date": "2026-11-21",
           "deadline": "",
           "completed": false,
-          "status": "incomplete",
+          "status": "failed",
           "spentSeconds": 0,
           "createdAt": "2026-11-20T16:53:13.084Z",
-          "updatedAt": 1795243156789,
+          "updatedAt": 1795277551528,
           "completedAt": null
         },
         {
@@ -1594,22 +1594,448 @@
           "date": "2026-11-21",
           "deadline": "",
           "completed": false,
-          "status": "incomplete",
+          "status": "failed",
           "spentSeconds": 0,
           "createdAt": "2026-11-20T16:56:52.643Z",
-          "updatedAt": 1795193812643
+          "updatedAt": 1795277553045,
+          "completedAt": null
         },
         {
           "id": "dp_1795194513463_tm6c",
           "title": "Coi tips của threads",
-          "section": "morning",
+          "section": "afternoon",
           "date": "2026-11-21",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 1504,
+          "createdAt": "2026-11-20T17:08:33.463Z",
+          "updatedAt": 1795257136911,
+          "completedAt": "2026-11-21T10:19:15.772Z"
+        },
+        {
+          "id": "dp_1795321806149_2vhl",
+          "title": "Writing syllabus",
+          "section": "morning",
+          "date": "2026-11-22",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 19127,
+          "createdAt": "2026-11-22T04:30:06.149Z",
+          "updatedAt": 1795342785710,
+          "completedAt": "2026-11-22T10:19:45.710Z"
+        },
+        {
+          "id": "dp_1795321822265_j428",
+          "title": "Reading syllabus",
+          "section": "evening",
+          "date": "2026-11-22",
           "deadline": "",
           "completed": false,
           "status": "incomplete",
           "spentSeconds": 0,
-          "createdAt": "2026-11-20T17:08:33.463Z",
-          "updatedAt": 1795194513463
+          "createdAt": "2026-11-22T04:30:22.265Z",
+          "updatedAt": 1795351470221,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795321827219_3tnz",
+          "title": "Math desmos trainer",
+          "section": "afternoon",
+          "date": "2026-11-22",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 5196,
+          "createdAt": "2026-11-22T04:30:27.219Z",
+          "updatedAt": 1795351473024,
+          "completedAt": "2026-11-22T12:44:33.024Z"
+        },
+        {
+          "id": "dp_1795418670132_b40d",
+          "title": "2 câu explain khó cho desmos",
+          "section": "afternoon",
+          "date": "2026-11-23",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-23T07:24:30.132Z",
+          "updatedAt": 1795418689261,
+          "completedAt": "2026-11-23T07:24:49.261Z"
+        },
+        {
+          "id": "dp_1795418758730_lksv",
+          "title": "Algebra 1",
+          "section": "afternoon",
+          "date": "2026-11-23",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 6636,
+          "createdAt": "2026-11-23T07:25:58.730Z",
+          "updatedAt": 1795425607971,
+          "completedAt": "2026-11-23T09:20:07.971Z"
+        },
+        {
+          "id": "dp_1795425594007_1hdj",
+          "title": "algebra 2",
+          "section": "afternoon",
+          "date": "2026-11-23",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 1970,
+          "createdAt": "2026-11-23T09:19:54.007Z",
+          "updatedAt": 1795433409274,
+          "completedAt": "2026-11-23T11:30:09.274Z"
+        },
+        {
+          "id": "dp_1795425969684_67iw",
+          "title": "algebra 3",
+          "section": "afternoon",
+          "date": "2026-11-23",
+          "deadline": "",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-23T09:26:09.684Z",
+          "updatedAt": 1795493610526,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795425972388_qlje",
+          "title": "advance math 1",
+          "section": "afternoon",
+          "date": "2026-11-23",
+          "deadline": "",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-23T09:26:12.388Z",
+          "updatedAt": 1795493605358,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795425976331_04rz",
+          "title": "advance math 2",
+          "section": "afternoon",
+          "date": "2026-11-23",
+          "deadline": "",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-23T09:26:16.331Z",
+          "updatedAt": 1795493606803,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795425980252_jeya",
+          "title": "advance math 3",
+          "section": "afternoon",
+          "date": "2026-11-23",
+          "deadline": "",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-23T09:26:20.252Z",
+          "updatedAt": 1795493609118,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795425982370_mkf0",
+          "title": "geo 1",
+          "section": "afternoon",
+          "date": "2026-11-23",
+          "deadline": "",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-23T09:26:22.371Z",
+          "updatedAt": 1795493611828,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795433435717_oiso",
+          "title": "Gym",
+          "section": "evening",
+          "date": "2026-11-23",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 7792,
+          "createdAt": "2026-11-23T11:30:35.717Z",
+          "updatedAt": 1795441233465
+        },
+        {
+          "id": "dp_1795493981610_u9n7",
+          "title": "1 module algebra",
+          "section": "morning",
+          "date": "2026-11-24",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 3233,
+          "createdAt": "2026-11-24T04:19:41.610Z",
+          "updatedAt": 1795497688973,
+          "completedAt": "2026-11-24T05:21:01.717Z"
+        },
+        {
+          "id": "dp_1795493996359_tlhj",
+          "title": "adv 2",
+          "section": "afternoon",
+          "date": "2026-11-24",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-24T04:19:56.359Z",
+          "updatedAt": 1795493996359
+        },
+        {
+          "id": "dp_1795493996598_9cvl",
+          "title": "adv 1",
+          "section": "afternoon",
+          "date": "2026-11-24",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 15657,
+          "createdAt": "2026-11-24T04:19:56.598Z",
+          "updatedAt": 1795589024790,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795493998701_65q4",
+          "title": "adv 3",
+          "section": "afternoon",
+          "date": "2026-11-24",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-24T04:19:58.701Z",
+          "updatedAt": 1795493998701
+        },
+        {
+          "id": "dp_1795494005483_8bte",
+          "title": "geo 1",
+          "section": "afternoon",
+          "date": "2026-11-24",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-24T04:20:05.483Z",
+          "updatedAt": 1795494005483
+        },
+        {
+          "id": "dp_1795498900495_ahrm",
+          "title": "math syllabus",
+          "section": "afternoon",
+          "date": "2026-11-24",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 17875,
+          "createdAt": "2026-11-24T05:41:40.495Z",
+          "updatedAt": 1795524942401,
+          "completedAt": "2026-11-24T12:55:36.803Z"
+        },
+        {
+          "id": "dp_1795589046805_spmv",
+          "title": "30 câu adv",
+          "section": "afternoon",
+          "date": "2026-11-25",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 9570,
+          "createdAt": "2026-11-25T06:44:06.805Z",
+          "updatedAt": 1795599306331,
+          "completedAt": "2026-11-25T09:35:06.331Z"
+        },
+        {
+          "id": "dp_1795589048521_dkbb",
+          "title": "30 câu Geo",
+          "section": "afternoon",
+          "date": "2026-11-25",
+          "deadline": "",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 2686,
+          "createdAt": "2026-11-25T06:44:08.521Z",
+          "updatedAt": 1795660003489,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795589099244_1hwr",
+          "title": "30 câu problem solving",
+          "section": "afternoon",
+          "date": "2026-11-25",
+          "deadline": "16:00",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-25T06:44:59.244Z",
+          "updatedAt": 1795660004945,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795589303485_s2xx",
+          "title": "43 câu grammar",
+          "section": "evening",
+          "date": "2026-11-25",
+          "deadline": "",
+          "completed": false,
+          "status": "failed",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-25T06:48:23.485Z",
+          "updatedAt": 1795660026851,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795589339834_kyeb",
+          "title": "40 câu transition",
+          "section": "evening",
+          "date": "2026-11-25",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-25T06:48:59.834Z",
+          "updatedAt": 1795660095958,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795589354469_1nwf",
+          "title": "65 câu synthesis",
+          "section": "evening",
+          "date": "2026-11-25",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-25T06:49:14.469Z",
+          "updatedAt": 1795660095981,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795660010270_osci",
+          "title": "30 câu problem solving",
+          "section": "afternoon",
+          "date": "2026-11-26",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 4410,
+          "createdAt": "2026-11-26T02:26:50.270Z",
+          "updatedAt": 1795684207293,
+          "completedAt": "2026-11-26T09:09:40.927Z"
+        },
+        {
+          "id": "dp_1795660032576_s6fd",
+          "title": "43 câu grammar",
+          "section": "evening",
+          "date": "2026-11-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-26T02:27:12.576Z",
+          "updatedAt": 1795660230350,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795660099478_cjzo",
+          "title": "65 câu synthesis",
+          "section": "evening",
+          "date": "2026-11-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-26T02:28:19.478Z",
+          "updatedAt": 1795660227413,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795660113912_5fp4",
+          "title": "40 câu transition",
+          "section": "evening",
+          "date": "2026-11-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-26T02:28:33.912Z",
+          "updatedAt": 1795660228753,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795660196119_1b2v",
+          "title": "25 câu main idea",
+          "section": "afternoon",
+          "date": "2026-11-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-26T02:29:56.120Z",
+          "updatedAt": 1795686735481,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795660218950_ln55",
+          "title": "30 câu details",
+          "section": "afternoon",
+          "date": "2026-11-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-26T02:30:18.950Z",
+          "updatedAt": 1795660221503,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795660251016_49st",
+          "title": "25 câu text structure",
+          "section": "afternoon",
+          "date": "2026-11-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-26T02:30:51.016Z",
+          "updatedAt": 1795660251016
+        },
+        {
+          "id": "dp_1795660261091_ygkg",
+          "title": "25 câu inference",
+          "section": "afternoon",
+          "date": "2026-11-26",
+          "deadline": "",
+          "completed": false,
+          "status": "incomplete",
+          "spentSeconds": 0,
+          "createdAt": "2026-11-26T02:31:01.091Z",
+          "updatedAt": 1795686738769,
+          "completedAt": null
+        },
+        {
+          "id": "dp_1795669203580_en8w",
+          "title": "30 câu Geo",
+          "section": "morning",
+          "date": "2026-11-26",
+          "deadline": "",
+          "completed": true,
+          "status": "completed",
+          "spentSeconds": 7815,
+          "createdAt": "2026-11-26T05:00:03.580Z",
+          "updatedAt": 1795677281625,
+          "completedAt": "2026-11-26T07:14:41.625Z"
         }
       ],
       "goals": [
@@ -1769,9 +2195,9 @@
           "scopeKey": "2026-11-21",
           "text": "Làm full test practice CB để bt điểm yếu",
           "priority": "high",
-          "completed": false,
+          "completed": true,
           "createdAt": "2026-11-16T09:44:20.426Z",
-          "updatedAt": 1795193553263
+          "updatedAt": 1795257131983
         },
         {
           "id": "goal_1794897778670_tvvy",
@@ -1849,9 +2275,9 @@
           "scopeKey": "2026-11-16",
           "text": "1 Test để nắm rõ điểm yếu",
           "priority": "high",
-          "completed": false,
+          "completed": true,
           "createdAt": "2026-11-20T17:05:45.291Z",
-          "updatedAt": 1795194355078
+          "updatedAt": 1795321514394
         },
         {
           "id": "goal_1795194363443_33xa",
@@ -1892,6 +2318,136 @@
           "completed": false,
           "createdAt": "2026-11-09T16:00:00.000Z",
           "updatedAt": 1794241382000
+        },
+        {
+          "id": "goal_1795321512342_pvxm",
+          "type": "day",
+          "scopeKey": "2026-11-22",
+          "text": "Done all syllabus",
+          "priority": "none",
+          "completed": true,
+          "createdAt": "2026-11-22T04:25:12.342Z",
+          "updatedAt": 1795344487706
+        },
+        {
+          "id": "goal_1795321810818_m4fg",
+          "type": "day",
+          "scopeKey": "2026-11-22",
+          "text": "Math by Topic open sat",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-22T04:30:10.818Z",
+          "updatedAt": 1795321810818
+        },
+        {
+          "id": "goal_1795418732930_sz0v",
+          "type": "day",
+          "scopeKey": "2026-11-23",
+          "text": "100 câu Algebra",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-23T07:25:32.930Z",
+          "updatedAt": 1795418740502
+        },
+        {
+          "id": "goal_1795418745699_bgre",
+          "type": "day",
+          "scopeKey": "2026-11-23",
+          "text": "100 câu Advance Math",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-23T07:25:45.699Z",
+          "updatedAt": 1795418745699
+        },
+        {
+          "id": "goal_1795418761255_9970",
+          "type": "day",
+          "scopeKey": "2026-11-23",
+          "text": "100 câu Geometry",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-23T07:26:01.255Z",
+          "updatedAt": 1795418761255
+        },
+        {
+          "id": "goal_1795418769469_u9cx",
+          "type": "day",
+          "scopeKey": "2026-11-23",
+          "text": "30 câu problem solving",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-23T07:26:09.469Z",
+          "updatedAt": 1795418769470
+        },
+        {
+          "id": "goal_1795493970177_ngs5",
+          "type": "day",
+          "scopeKey": "2026-11-24",
+          "text": "Productive dayyy !!",
+          "priority": "high",
+          "completed": false,
+          "createdAt": "2026-11-24T04:19:30.178Z",
+          "updatedAt": 1795493972002
+        },
+        {
+          "id": "goal_1795493990018_u25q",
+          "type": "day",
+          "scopeKey": "2026-11-24",
+          "text": "1 module algebra + 3 module advance + 1 module GEO",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-24T04:19:50.018Z",
+          "updatedAt": 1795493990018
+        },
+        {
+          "id": "goal_1795498783920_0wfk",
+          "type": "day",
+          "scopeKey": "2026-11-24",
+          "text": "math syllabus",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-24T05:39:43.920Z",
+          "updatedAt": 1795519966054
+        },
+        {
+          "id": "goal_1795660335904_yqy8",
+          "type": "week",
+          "scopeKey": "2026-11-23",
+          "text": "Done mỗi dạng 1 module",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-26T02:32:15.904Z",
+          "updatedAt": 1795660343502
+        },
+        {
+          "id": "goal_1795660369673_rsl4",
+          "type": "week",
+          "scopeKey": "2026-11-23",
+          "text": "focus pro december",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-26T02:32:49.673Z",
+          "updatedAt": 1795660369673
+        },
+        {
+          "id": "goal_1795660398337_aoh3",
+          "type": "week",
+          "scopeKey": "2026-11-23",
+          "text": "predict hard question",
+          "priority": "none",
+          "completed": false,
+          "createdAt": "2026-11-26T02:33:18.337Z",
+          "updatedAt": 1795660409413
+        },
+        {
+          "id": "goal_1795684201967_bph1",
+          "type": "day",
+          "scopeKey": "2026-11-26",
+          "text": "cố gắng làm nhiều module các dạng",
+          "priority": "high",
+          "completed": true,
+          "createdAt": "2026-11-26T09:10:01.967Z",
+          "updatedAt": 1795684204954
         }
       ],
       "daysHistory": {
@@ -2000,16 +2556,31 @@
           "maxFocusSeconds": 14827
         },
         "2026-11-21": {
-          "totalSeconds": 739,
-          "maxFocusSeconds": 683
+          "totalSeconds": 12500,
+          "maxFocusSeconds": 10319
+        },
+        "2026-11-22": {
+          "totalSeconds": 24323,
+          "maxFocusSeconds": 19127
+        },
+        "2026-11-23": {
+          "totalSeconds": 16398,
+          "maxFocusSeconds": 7796
+        },
+        "2026-11-24": {
+          "totalSeconds": 36765,
+          "maxFocusSeconds": 18414
+        },
+        "2026-11-25": {
+          "totalSeconds": 12256,
+          "maxFocusSeconds": 9575
+        },
+        "2026-11-26": {
+          "totalSeconds": 13453,
+          "maxFocusSeconds": 8064
         }
       },
       "deletedTasks": {
-        "dp_1794239639856_i0jb": 1794644003452,
-        "dp_1794698737254_1u48": 1794703915666,
-        "dp_1794698738246_gbbm": 1794703916164,
-        "dp_1794698739319_yqeu": 1794703916527,
-        "dp_1794897722564_phms": 1794909203081,
         "dp_1795145273065_lnri": 1795152691492,
         "dp_1795145278828_suvc": 1795152694248,
         "dp_1795145297060_6gbf": 1795152695184,
@@ -2020,25 +2591,32 @@
         "dp_1795152797435_4es5": 1795152803857,
         "dp_1795152796381_uwdi": 1795192103514,
         "dp_1795152800814_ni4c": 1795192103745,
-        "dp_1795152781881_jo7g": 1795193504343
+        "dp_1795152781881_jo7g": 1795193504343,
+        "dp_1795257090006_1ttq": 1795257095595,
+        "dp_1795257129975_2fsk": 1795257134327,
+        "dp_1795321802082_r2oo": 1795322151203,
+        "dp_1795321837578_n3w0": 1795351463293,
+        "dp_1795351467516_ssmu": 1795351487800,
+        "dp_1795589053787_lkyj": 1795603399925,
+        "dp_1795589133456_lw75": 1795660023492,
+        "dp_1795660035401_f457": 1795660040799,
+        "dp_1795660017089_dony": 1795669201889,
+        "dp_1795660224441_5g82": 1795701548692
       },
       "deletedGoals": {
-        "goal_1794243870073_ssr8": 1794907327861,
         "goal_1795145208114_m1r6": 1795152700888,
         "goal_1795145219858_ker1": 1795152702275,
         "goal_1795145241189_4jqr": 1795152704009,
         "goal_1795145252112_8jd4": 1795152705218,
         "goal_1795145263201_gsc2": 1795152705893,
-        "goal_1795152759933_czx0": 1795193502281
+        "goal_1795152759933_czx0": 1795193502281,
+        "goal_1795322144071_i2an": 1795493580183,
+        "goal_1795494453453_hifi": 1795519944364,
+        "goal_1795659994501_4cnm": 1795660014206,
+        "goal_1795660640255_rknk": 1795684189316
       },
-      "activeTimer": {
-        "taskId": "dp_1795193548559_8h19",
-        "taskTitle": "Làm full test CB",
-        "startedAt": 1795243808810,
-        "sessionStartedAt": 1795243750829,
-        "date": "2026-11-21"
-      },
-      "activeTimerChangedAt": 1795243808810
+      "activeTimer": null,
+      "activeTimerChangedAt": 1795686738001
     },
     "discordRpc": {
       "enabled": true,

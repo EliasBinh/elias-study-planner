@@ -4214,6 +4214,912 @@
       font-weight: 700;
     }
 
+    /* ========================================================
+       YPT TIMELINE & STUDY PLANNER VIEWS (NGÀY / TUẦN / THÁNG)
+       ======================================================== */
+    .planner-dday-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #E2E8F0;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      letter-spacing: 0.02em;
+    }
+    .planner-dday-pill:hover {
+      background: #E2E8F0;
+      color: #0F172A;
+    }
+    .planner-dday-pill.urgent {
+      background: #FEF2F2;
+      color: #DC2626;
+      border-color: #FECACA;
+    }
+
+    .planner-view-switcher {
+      display: inline-flex;
+      align-items: center;
+      background: #F3F4F6;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .planner-view-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 550;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.14s ease;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .planner-view-tab:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.55);
+    }
+    .planner-view-tab.active {
+      background: #FFFFFF;
+      color: var(--text-primary);
+      font-weight: 650;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    }
+
+    .ypt-break-inline-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      color: #15803D;
+      border-radius: 6px;
+      padding: 2px 9px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Split layout support on desktop */
+    .planner-page-wrapper.is-split-mode {
+      max-width: 1420px;
+    }
+    .planner-split-grid.active-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(380px, 0.95fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .planner-split-grid.active-split #plannerDayTimelinePanel {
+      position: sticky;
+      top: 66px;
+      margin-bottom: 0;
+    }
+    .planner-split-grid.active-split .tl-day-scroll {
+      max-height: calc(100vh - 205px);
+    }
+
+    /* Shared Timeline Panel Card */
+    .tl-panel-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      margin-bottom: 24px;
+    }
+    .tl-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 12px 16px;
+      background: #FAFAFA;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .tl-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tl-toolbar-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .tl-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .tl-stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+    .tl-stat-chip strong {
+      font-family: 'SF Mono', monospace;
+      color: var(--text-primary);
+    }
+    .tl-legacy-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 16px;
+      background: #FFFBEB;
+      border-bottom: 1px solid #FDE68A;
+      font-size: 12px;
+      color: #92400E;
+    }
+    .tl-btn-small {
+      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      color: var(--text-primary);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit;
+      transition: all 0.12s ease;
+    }
+    .tl-btn-small:hover {
+      background: var(--bg-hover);
+      border-color: #D3D1CB;
+    }
+    .tl-btn-small.primary {
+      background: var(--notion-blue);
+      border-color: var(--notion-blue);
+      color: #FFFFFF;
+    }
+    .tl-btn-small.primary:hover {
+      background: #1D70C5;
+    }
+
+    /* DAY VERTICAL TIMELINE GRID */
+    .tl-day-scroll {
+      max-height: 660px;
+      overflow-y: auto;
+      position: relative;
+      background: #FFFFFF;
+      scroll-behavior: smooth;
+    }
+    .tl-day-canvas {
+      display: flex;
+      position: relative;
+      min-height: 600px;
+    }
+    .tl-axis-col {
+      width: 62px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border-subtle);
+      background: #FCFCFB;
+      position: relative;
+      user-select: none;
+    }
+    .tl-axis-hour {
+      position: relative;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-align: right;
+      padding-right: 9px;
+      box-sizing: border-box;
+    }
+    .tl-axis-hour span {
+      position: relative;
+      top: -8px;
+      background: #FCFCFB;
+      padding: 0 2px;
+    }
+    .tl-axis-hour span sup {
+      font-size: 9px;
+      color: #EA580C;
+      font-weight: 700;
+      margin-left: 1px;
+    }
+    .tl-track-col {
+      flex: 1;
+      position: relative;
+      min-width: 0;
+    }
+    .tl-hour-line {
+      border-top: 1px solid #F1F1EF;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    }
+    .tl-hour-line:hover {
+      background: rgba(35, 131, 226, 0.03);
+    }
+
+    /* Planned Sleep Block (Dashed box - Images 3 & 4) */
+    .tl-sleep-block {
+      position: absolute;
+      left: 8px;
+      right: 10px;
+      border: 1.5px dashed #CBD5E1;
+      border-radius: 8px;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(241, 245, 249, 0.55),
+        rgba(241, 245, 249, 0.55) 8px,
+        rgba(248, 250, 252, 0.75) 8px,
+        rgba(248, 250, 252, 0.75) 16px
+      );
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      color: #64748B;
+      cursor: pointer;
+      z-index: 2;
+      transition: border-color 0.12s ease, background 0.12s ease;
+    }
+    .tl-sleep-block:hover {
+      border-color: #94A3B8;
+    }
+    .tl-sleep-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .tl-sleep-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tl-sleep-range {
+      font-family: 'SF Mono', monospace;
+      font-size: 11px;
+      color: #94A3B8;
+    }
+    .tl-sleep-dur {
+      font-size: 12px;
+      font-weight: 550;
+      color: #64748B;
+    }
+
+    /* Break / Gap Indicators */
+    .tl-break-slot {
+      position: absolute;
+      left: 10px;
+      right: 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 3px 10px;
+      pointer-events: none;
+      z-index: 3;
+      color: #9CA3AF;
+      font-size: 11.5px;
+      font-weight: 500;
+    }
+    .tl-break-range {
+      font-family: 'SF Mono', monospace;
+      font-size: 10.5px;
+      color: #9CA3AF;
+    }
+    .tl-break-dur {
+      font-size: 11.5px;
+      color: #6B7280;
+    }
+
+    /* Study Session Blocks */
+    .tl-session-block {
+      position: absolute;
+      left: 6px;
+      right: 10px;
+      border-radius: 6px;
+      border-left: 4px solid #2563EB;
+      background: rgba(37, 99, 235, 0.1);
+      border-top: 1px solid rgba(37, 99, 235, 0.15);
+      border-right: 1px solid rgba(37, 99, 235, 0.15);
+      border-bottom: 1px solid rgba(37, 99, 235, 0.15);
+      padding: 5px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+      z-index: 6;
+      overflow: hidden;
+      transition: transform 0.1s ease, box-shadow 0.12s ease;
+    }
+    .tl-session-block:hover {
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      z-index: 8;
+    }
+    .tl-session-block.is-live {
+      box-shadow: 0 2px 12px rgba(234, 88, 12, 0.18);
+    }
+    .tl-session-left {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+      flex: 1;
+    }
+    .tl-session-title {
+      font-size: 13px;
+      font-weight: 650;
+      color: #1E293B;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tl-session-time {
+      font-family: 'SF Mono', monospace;
+      font-size: 11px;
+      color: #475569;
+    }
+    .tl-session-dur {
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tl-session-block.compact {
+      flex-direction: row;
+      align-items: center;
+      padding: 0 8px;
+      line-height: 1;
+    }
+    .tl-session-block.compact .tl-session-title {
+      font-size: 12px;
+    }
+    .tl-session-block.compact .tl-session-dur {
+      font-size: 11px;
+    }
+    .tl-session-block.compact .tl-session-left {
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+    }
+    .tl-session-block.compact .tl-session-time {
+      display: none;
+    }
+    .tl-live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #EA580C;
+      animation: yptPulse 1.4s infinite;
+      flex-shrink: 0;
+    }
+
+    /* Current Time Line & Sleep Countdown */
+    .tl-now-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #1F2937;
+      z-index: 12;
+      pointer-events: none;
+    }
+    .tl-now-axis-pill {
+      position: absolute;
+      left: -56px;
+      top: -11px;
+      background: #1F2937;
+      color: #FFFFFF;
+      font-family: 'SF Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      z-index: 15;
+    }
+    .tl-sleep-countdown {
+      position: absolute;
+      right: 12px;
+      top: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #475569;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 1px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* WEEK TIMELINE GRID (3 / 5 / 7 DAYS - Image 2) */
+    .tl-week-scroll {
+      max-height: 680px;
+      overflow: auto;
+      position: relative;
+      background: #FFFFFF;
+    }
+    .tl-week-header-row {
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: #FAFAFA;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .tl-week-axis-spacer {
+      width: 48px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border-subtle);
+    }
+    .tl-week-day-cols-header {
+      flex: 1;
+      display: grid;
+      min-width: 0;
+    }
+    .tl-week-day-head {
+      padding: 8px 4px;
+      text-align: center;
+      border-right: 1px solid #F1F1EF;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      transition: background 0.12s ease;
+      min-width: 0;
+    }
+    .tl-week-day-head:hover {
+      background: var(--bg-hover);
+    }
+    .tl-week-day-head:last-child {
+      border-right: none;
+    }
+    .tl-week-dow {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .tl-week-date-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--text-primary);
+    }
+    .tl-week-day-head.is-today .tl-week-date-num {
+      background: #1F2937;
+      color: #FFFFFF;
+    }
+    .tl-week-day-head.is-selected {
+      background: #EFF6FF;
+    }
+    .tl-week-day-total {
+      font-family: 'SF Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 650;
+      color: #EA580C;
+      background: #FFF7ED;
+      border: 1px solid #FFEDD5;
+      padding: 0 5px;
+      border-radius: 4px;
+      white-space: nowrap;
+      line-height: 1.35;
+    }
+    .tl-week-body {
+      display: flex;
+      position: relative;
+    }
+    .tl-week-axis-col {
+      width: 48px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border-subtle);
+      background: #FCFCFB;
+      user-select: none;
+    }
+    .tl-week-axis-col .tl-axis-hour {
+      padding-right: 6px;
+      font-size: 10.5px;
+    }
+    .tl-week-cols-grid {
+      flex: 1;
+      display: grid;
+      position: relative;
+      min-width: 0;
+    }
+    .tl-week-day-col {
+      position: relative;
+      border-right: 1px solid #F1F1EF;
+      min-width: 0;
+    }
+    .tl-week-day-col:last-child {
+      border-right: none;
+    }
+    .tl-week-day-col.is-today {
+      background: rgba(248, 250, 252, 0.65);
+    }
+    .tl-week-hour-cell {
+      border-top: 1px solid #F4F4F2;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+    .tl-week-hour-cell:hover {
+      background: rgba(35, 131, 226, 0.03);
+    }
+    .tl-week-session {
+      position: absolute;
+      left: 3px;
+      right: 3px;
+      border-radius: 4px;
+      border-left: 3px solid #2563EB;
+      background: rgba(37, 99, 235, 0.13);
+      padding: 3px 5px;
+      overflow: hidden;
+      cursor: pointer;
+      z-index: 6;
+      font-size: 11px;
+      line-height: 1.25;
+      transition: filter 0.12s ease;
+    }
+    .tl-week-session:hover {
+      filter: brightness(0.95);
+      z-index: 10;
+    }
+    .tl-week-session-title {
+      font-weight: 650;
+      color: #1E293B;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tl-week-session-dur {
+      font-size: 10px;
+      color: #475569;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tl-week-break {
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      top: 0;
+      padding: 2px 4px;
+      font-size: 10px;
+      color: #9CA3AF;
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tl-week-now-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #1F2937;
+      z-index: 12;
+      pointer-events: none;
+    }
+    .tl-week-now-sub {
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      top: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #475569;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* FULL MONTH CALENDAR VIEW (Image 1 - Enhanced Milestones) */
+    .tl-month-grid-full {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      border-top: 1px solid var(--border-subtle);
+      background: var(--border-subtle);
+      gap: 1px;
+    }
+    .tl-month-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      padding: 8px 0;
+      background: #FAFAFA;
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 650;
+      color: var(--text-muted);
+    }
+    .tl-month-cell {
+      min-height: 82px;
+      background: #FFFFFF;
+      padding: 6px 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      transition: background 0.1s ease;
+      min-width: 0;
+    }
+    .tl-month-cell:hover {
+      background: #F9FAFB;
+    }
+    .tl-month-cell.is-outside {
+      background: #FCFCFB;
+      opacity: 0.45;
+    }
+    .tl-month-cell.is-selected {
+      background: #EFF6FF;
+      box-shadow: inset 0 0 0 1.5px #2563EB;
+    }
+    .tl-month-day-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .tl-month-cell.is-today .tl-month-day-num {
+      background: #1F2937;
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+    .tl-month-milestones {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 1px;
+    }
+    .tl-month-tag {
+      width: 100%;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 4px;
+      border-radius: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .tl-month-detail-card {
+      padding: 14px 16px;
+      background: #FAFAFA;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .tl-month-events-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .tl-event-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+    .tl-event-chip button {
+      border: none;
+      background: transparent;
+      color: inherit;
+      opacity: 0.65;
+      cursor: pointer;
+      font-size: 11px;
+      padding: 0 2px;
+    }
+    .tl-event-chip button:hover {
+      opacity: 1;
+    }
+
+    /* Floating Focus & Break Pill Bar (Images 3 & 4) */
+    .tl-floating-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 95;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid #E2E8F0;
+      border-radius: 999px;
+      padding: 6px 18px 6px 8px;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
+      max-width: calc(100vw - 24px);
+    }
+    .tl-floating-play-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      background: #1F2937;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+    .tl-floating-play-btn.running {
+      background: #EA580C;
+    }
+    .tl-floating-play-btn:hover {
+      transform: scale(1.06);
+    }
+    .tl-floating-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .tl-floating-clock {
+      font-family: 'SF Mono', monospace;
+      font-size: 16px;
+      font-weight: 750;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+    .tl-floating-clock.running {
+      color: #EA580C;
+    }
+    .tl-floating-sub {
+      font-size: 11.5px;
+      font-weight: 550;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 240px;
+    }
+
+    /* Color Swatches for Session & Event Pickers */
+    .color-swatch-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .color-swatch-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .color-swatch-dot.active {
+      border-color: #111827;
+      transform: scale(1.12);
+      box-shadow: 0 0 0 2px #FFFFFF inset;
+    }
+
+    .quick-task-pick-list {
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .quick-task-pick-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      background: #FFFFFF;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      transition: all 0.12s ease;
+    }
+    .quick-task-pick-btn:hover {
+      background: #F8FAFC;
+      border-color: #CBD5E1;
+    }
+
+    @media (max-width: 960px) {
+      .planner-view-tab[data-view="split"] {
+        display: none;
+      }
+      .planner-split-grid.active-split {
+        display: block;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .planner-page-wrapper {
+        padding: 18px 14px 120px;
+      }
+      .planner-top-nav {
+        margin-bottom: 16px;
+        gap: 10px;
+      }
+      .planner-date-title {
+        font-size: 18px;
+      }
+      .planner-view-switcher {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .planner-view-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 6px 6px;
+        font-size: 12px;
+      }
+      .tl-axis-col {
+        width: 50px;
+      }
+      .tl-now-axis-pill {
+        left: -47px;
+        font-size: 10px;
+        padding: 1px 5px;
+      }
+      .tl-month-cell {
+        min-height: 64px;
+        padding: 4px 2px;
+      }
+      .tl-week-day-total,
+      .ypt-cal-time-pill {
+        font-size: 9.5px;
+        padding: 1px 4px;
+        white-space: nowrap;
+      }
+      .tl-floating-bar {
+        bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+      }
+    }
+
     /* YPT 4-Action Status Popover (PURE WHITE NOTION STYLE - Matches user request) */
     .ypt-popover {
       position: fixed;
@@ -5263,7 +6169,7 @@
   <div id="pageView_planner" class="app-page-view" style="display: none;">
     <div class="planner-page-wrapper">
 
-      <!-- Top Date Switcher -->
+      <!-- Top Date Switcher & View Tabs -->
       <div class="planner-top-nav">
         <div class="planner-date-title">
           <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -5271,9 +6177,17 @@
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           <span id="plannerDateHeading">Hôm nay</span>
+          <span id="plannerDDayPill" class="planner-dday-pill" style="display: none;" onclick="openExamModal()" title="Bấm để chỉnh ngày thi SAT">D-9</span>
         </div>
 
-        <div class="planner-date-controls">
+        <div class="planner-date-controls" style="flex-wrap: wrap;">
+          <div class="planner-view-switcher" id="plannerViewSwitcher">
+            <button type="button" class="planner-view-tab active" data-view="tasks" onclick="switchPlannerSubView('tasks')">Kế hoạch</button>
+            <button type="button" class="planner-view-tab" data-view="day" onclick="switchPlannerSubView('day')">Ngày</button>
+            <button type="button" class="planner-view-tab" data-view="week" onclick="switchPlannerSubView('week')">Tuần</button>
+            <button type="button" class="planner-view-tab" data-view="month" onclick="switchPlannerSubView('month')">Tháng</button>
+            <button type="button" class="planner-view-tab" data-view="split" onclick="switchPlannerSubView('split')" title="Xem Kế hoạch + Timeline Ngày song song">Chia đôi</button>
+          </div>
           <button class="btn-ghost btn-outline" style="padding: 4px 8px;" onclick="changePlannerDate(-1)"
             title="Ngày trước">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -5294,7 +6208,7 @@
       <!-- YPT FOCUS TIMER DASHBOARD (Clean Notion Minimalist) -->
       <div class="ypt-dashboard-card" id="yptDashboardCard">
         <div class="ypt-dashboard-main">
-          <!-- Left: Digital Clock & Active Task Status -->
+          <!-- Left: Digital Clock & Active Task / Break Status -->
           <div class="ypt-clock-section">
             <div class="ypt-digital-clock" id="yptDigitalClock">00:00:00</div>
 
@@ -5304,6 +6218,9 @@
               <span class="ypt-active-task-pill" id="yptActiveTaskPill" style="display: none;">
                 <span id="yptActiveTaskName">Nhiệm vụ</span>
                 <button class="ypt-btn-pause-inline" onclick="stopCurrentYptTimer()" title="Tạm dừng">Tạm dừng</button>
+              </span>
+              <span class="ypt-break-inline-pill" id="yptBreakInlinePill" style="display: none;">
+                <span id="yptBreakInlineText">Giải lao 0 phút</span>
               </span>
             </div>
           </div>
@@ -5375,6 +6292,9 @@
         </div>
       </div>
 
+      <!-- SPLIT-READY CONTAINER: Tasks/Goals + Day Timeline -->
+      <div id="plannerSplitGrid" class="planner-split-grid">
+        <div id="plannerTasksContainer">
       <!-- GOAL TABLE: Day | Week | Month (Notion Style Grid) -->
       <div class="notion-goals-card" id="notionGoalsCard">
         <div class="notion-goals-header-bar">
@@ -5510,7 +6430,209 @@
         </div>
 
       </div>
+        </div><!-- End #plannerTasksContainer -->
 
+        <!-- TIMELINE DAY VIEW PANEL (Images 3 & 4) -->
+        <div id="plannerDayTimelinePanel" class="tl-panel-card" style="display: none;">
+          <div class="tl-toolbar">
+            <div class="tl-toolbar-left">
+              <span class="tl-toolbar-title" id="tlDayHeaderLabel">Th 5, 26/11</span>
+              <span class="tl-stat-chip">Học: <strong id="tlDayStudyStat">00:00:00</strong></span>
+              <span class="tl-stat-chip">Nghỉ: <strong id="tlDayBreakStat">0 phút</strong></span>
+            </div>
+            <div class="tl-toolbar-right">
+              <button type="button" class="tl-btn-small primary" onclick="openSessionModal()">+ Thêm phiên</button>
+              <button type="button" class="tl-btn-small" onclick="openScheduleSettingsModal()" title="Cài đặt giờ ngủ & ngày bắt đầu">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>Giờ ngủ</span>
+              </button>
+            </div>
+          </div>
+          <div id="tlDayLegacyBanner" class="tl-legacy-banner" style="display: none;">
+            <span id="tlDayLegacyText">Đã học trước đó: 0 phút (chưa chia block giờ)</span>
+            <button type="button" class="tl-btn-small" onclick="openSessionModal()">+ Ghi block giờ</button>
+          </div>
+          <div id="tlDayScrollContainer" class="tl-day-scroll">
+            <!-- Rendered dynamically by renderDayTimelineView() -->
+          </div>
+        </div>
+      </div><!-- End #plannerSplitGrid -->
+
+      <!-- TIMELINE WEEK VIEW PANEL (Image 2: 3 / 5 / 7 Days) -->
+      <div id="plannerWeekTimelinePanel" class="tl-panel-card" style="display: none;">
+        <div class="tl-toolbar">
+          <div class="tl-toolbar-left">
+            <span class="tl-toolbar-title" id="tlWeekRangeLabel">23/11 - 29/11</span>
+            <div style="display: inline-flex; gap: 3px;">
+              <button type="button" class="btn-cal-nav" onclick="shiftWeekTimeline(-1)">‹</button>
+              <button type="button" class="btn-cal-nav" onclick="resetWeekTimelineToToday()">Hôm nay</button>
+              <button type="button" class="btn-cal-nav" onclick="shiftWeekTimeline(1)">›</button>
+            </div>
+          </div>
+          <div class="tl-toolbar-right">
+            <div class="planner-view-switcher" style="padding: 2px;">
+              <button type="button" class="planner-view-tab" id="btnWeekCols3" onclick="setWeekColumnsCount(3)">3 ngày</button>
+              <button type="button" class="planner-view-tab active" id="btnWeekCols5" onclick="setWeekColumnsCount(5)">5 ngày</button>
+              <button type="button" class="planner-view-tab" id="btnWeekCols7" onclick="setWeekColumnsCount(7)">7 ngày</button>
+            </div>
+            <button type="button" class="tl-btn-small primary" onclick="openSessionModal()">+ Thêm phiên</button>
+          </div>
+        </div>
+        <div id="tlWeekScrollContainer" class="tl-week-scroll">
+          <!-- Rendered dynamically by renderWeekTimelineView() -->
+        </div>
+      </div>
+
+      <!-- FULL MONTH CALENDAR PANEL (Image 1: Study times + Milestones) -->
+      <div id="plannerMonthViewPanel" class="tl-panel-card" style="display: none;">
+        <div class="tl-toolbar">
+          <div class="tl-toolbar-left">
+            <span class="tl-toolbar-title" id="tlMonthTitle">Tháng 11, 2026</span>
+            <div style="display: inline-flex; gap: 3px;">
+              <button type="button" class="btn-cal-nav" onclick="changeMonthView(-1)">‹</button>
+              <button type="button" class="btn-cal-nav" onclick="resetMonthViewToToday()">Hôm nay</button>
+              <button type="button" class="btn-cal-nav" onclick="changeMonthView(1)">›</button>
+            </div>
+          </div>
+          <div class="tl-toolbar-right">
+            <span class="tl-stat-chip">Tổng tháng: <strong id="tlMonthTotalStat">0 giờ 0 phút</strong></span>
+          </div>
+        </div>
+        <div class="tl-month-weekdays">
+          <span>Th 2</span><span>Th 3</span><span>Th 4</span><span>Th 5</span><span>Th 6</span><span>Th 7</span><span>CN</span>
+        </div>
+        <div id="tlMonthGridFull" class="tl-month-grid-full">
+          <!-- Month cells generated dynamically -->
+        </div>
+        <div id="tlMonthDetailCard" class="tl-month-detail-card">
+          <!-- Selected day inspector + add milestone event + day sessions -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FLOATING QUICK FOCUS / BREAK BAR (Day & Week Views - Images 3 & 4) -->
+  <div id="tlFloatingBar" class="tl-floating-bar">
+    <button type="button" id="tlFloatingPlayBtn" class="tl-floating-play-btn" onclick="handleFloatingPlayClick()" title="Bắt đầu / Tạm dừng bấm giờ">
+      <svg id="tlFloatingPlayIcon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+    </button>
+    <div class="tl-floating-info" onclick="handleFloatingPlayClick()" style="cursor: pointer;">
+      <span id="tlFloatingClock" class="tl-floating-clock">00:00:00</span>
+      <span id="tlFloatingSub" class="tl-floating-sub">Giải lao 0 phút</span>
+    </div>
+  </div>
+
+  <!-- STUDY SESSION CREATE / EDIT MODAL -->
+  <div id="sessionEditorModal" class="modal-overlay" onclick="if(event.target === this) closeSessionModal()">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-title" id="sessionModalTitle">Thêm phiên học</div>
+      <input type="hidden" id="sesEditId" value="">
+
+      <label class="rpc-group-label">Nội dung / Môn học:</label>
+      <input id="sesInputTitle" class="modal-input" type="text" placeholder="Ví dụ: SAT math, SAT Verbal, Full test..." style="margin-bottom: 10px;">
+
+      <label class="rpc-group-label">Liên kết với Task trong ngày (tùy chọn):</label>
+      <select id="sesSelectTask" class="modal-input" style="margin-bottom: 10px;" onchange="onSessionTaskSelectChange()">
+        <option value="">-- Không liên kết task --</option>
+      </select>
+
+      <label class="rpc-group-label">Màu hiển thị trên Timeline:</label>
+      <div class="color-swatch-row" id="sesColorSwatches">
+        <button type="button" class="color-swatch-dot active" data-color="#2563EB" style="background: #2563EB;" onclick="selectSessionColor('#2563EB')" title="Math (Xanh dương)"></button>
+        <button type="button" class="color-swatch-dot" data-color="#7C3AED" style="background: #7C3AED;" onclick="selectSessionColor('#7C3AED')" title="Verbal (Tím)"></button>
+        <button type="button" class="color-swatch-dot" data-color="#0EA5E9" style="background: #0EA5E9;" onclick="selectSessionColor('#0EA5E9')" title="Xanh ngọc"></button>
+        <button type="button" class="color-swatch-dot" data-color="#10B981" style="background: #10B981;" onclick="selectSessionColor('#10B981')" title="Khác / Gym (Xanh lá)"></button>
+        <button type="button" class="color-swatch-dot" data-color="#F59E0B" style="background: #F59E0B;" onclick="selectSessionColor('#F59E0B')" title="Cam"></button>
+        <button type="button" class="color-swatch-dot" data-color="#EF4444" style="background: #EF4444;" onclick="selectSessionColor('#EF4444')" title="Đỏ"></button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+        <div>
+          <label class="rpc-group-label">Ngày:</label>
+          <input id="sesInputDate" class="modal-input" type="date" style="margin-bottom: 0;">
+        </div>
+        <div>
+          <label class="rpc-group-label">Bắt đầu:</label>
+          <input id="sesInputStart" class="modal-input" type="time" value="14:00" style="margin-bottom: 0;">
+        </div>
+        <div>
+          <label class="rpc-group-label">Kết thúc:</label>
+          <input id="sesInputEnd" class="modal-input" type="time" value="15:30" style="margin-bottom: 0;">
+        </div>
+      </div>
+
+      <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; cursor: pointer;">
+        <input type="checkbox" id="sesChkOvernight"> Bắt đầu sau nửa đêm (+1 ngày tiếp theo, ví dụ 00:30+1)
+      </label>
+
+      <label class="rpc-group-label">Ghi chú (tùy chọn):</label>
+      <input id="sesInputNote" class="modal-input" type="text" placeholder="Ví dụ: Đúng 28/30 câu..." style="margin-bottom: 12px;">
+
+      <div class="modal-actions" style="justify-content: space-between;">
+        <button type="button" id="btnDeleteSessionModal" class="btn-ghost" style="color: #DC2626; display: none;" onclick="deleteCurrentEditingSession()">Xóa phiên</button>
+        <div style="display: flex; gap: 8px; margin-left: auto;">
+          <button type="button" class="btn-ghost btn-outline" onclick="closeSessionModal()">Hủy</button>
+          <button type="button" class="btn-ghost" style="background: var(--notion-blue); color: #fff;" onclick="saveSessionFromModal()">Lưu phiên</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLEEP SCHEDULE & TIMELINE SETTINGS MODAL -->
+  <div id="scheduleSettingsModal" class="modal-overlay" onclick="if(event.target === this) closeScheduleSettingsModal()">
+    <div class="modal-card" style="max-width: 400px;">
+      <div class="modal-title">Cài đặt Giờ ngủ & Timeline</div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);">
+        <span style="font-size: 13px; font-weight: 600;">Hiển thị khối Ngủ (dự kiến)</span>
+        <input type="checkbox" id="schChkSleepEnabled" checked style="width: 16px; height: 16px; cursor: pointer;">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+        <div>
+          <label class="rpc-group-label">Giờ đi ngủ:</label>
+          <input id="schInputBedTime" class="modal-input" type="time" value="22:35" style="margin-bottom: 0;">
+        </div>
+        <div>
+          <label class="rpc-group-label">Giờ thức dậy (+1):</label>
+          <input id="schInputWakeTime" class="modal-input" type="time" value="04:45" style="margin-bottom: 0;">
+        </div>
+      </div>
+
+      <label class="rpc-group-label">Giờ bắt đầu Timeline trong ngày:</label>
+      <select id="schSelectDayStart" class="modal-input" style="margin-bottom: 12px;">
+        <option value="0">00:00 (Từ nửa đêm)</option>
+        <option value="3">03:00 sáng</option>
+        <option value="4">04:00 sáng (Mặc định)</option>
+        <option value="5">05:00 sáng</option>
+        <option value="6">06:00 sáng</option>
+      </select>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+        <span style="font-size: 13px; font-weight: 500;">Hiện thời gian Giải lao giữa các phiên</span>
+        <input type="checkbox" id="schChkShowBreaks" checked style="width: 16px; height: 16px; cursor: pointer;">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost btn-outline" onclick="closeScheduleSettingsModal()">Hủy</button>
+        <button type="button" class="btn-ghost" style="background: var(--notion-blue); color: #fff;" onclick="saveScheduleSettingsFromModal()">Lưu cài đặt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK TIMER PICKER MODAL (When clicking Play on Floating Pill) -->
+  <div id="quickTimerPickerModal" class="modal-overlay" onclick="if(event.target === this) closeQuickTimerPicker()">
+    <div class="modal-card" style="max-width: 400px;">
+      <div class="modal-title">Chọn việc để bắt đầu bấm giờ</div>
+      <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+        <input id="quickStartNewTaskInput" class="modal-input" type="text" placeholder="Hoặc gõ nhanh tên bài học mới..." style="margin-bottom: 0; flex: 1;" onkeydown="if(event.key==='Enter'){ quickCreateAndStartTask(); }">
+        <button type="button" class="btn-ghost" style="background: #EA580C; color: #FFFFFF; font-weight: 600;" onclick="quickCreateAndStartTask()">Học ngay</button>
+      </div>
+      <div id="quickTaskPickList" class="quick-task-pick-list"></div>
+      <div class="modal-actions" style="margin-top: 12px;">
+        <button type="button" class="btn-ghost btn-outline" onclick="closeQuickTimerPicker()">Đóng</button>
+      </div>
     </div>
   </div>
 
@@ -5554,7 +6676,7 @@
           </svg>
           <span style="font-size: 13px; color: #4B5563; font-weight: 500;">Đang nạp file đề thi...</span>
         </div>
-        <iframe id="pdfModalIframe" class="pdf-iframe" onload="onPdfIframeLoaded()"></iframe>
+        <iframe id="pdfModalIframe" class="pdf-iframe" onload="if(window.onPdfIframeLoaded) onPdfIframeLoaded()"></iframe>
       </div>
     </div>
   </div>
@@ -6004,10 +7126,15 @@
       if (dropdown) dropdown.classList.remove('show');
 
       // Trigger loads & instant render
+      const floatingBar = document.getElementById('tlFloatingBar');
+      if (pageId !== 'planner' && floatingBar) {
+        floatingBar.style.display = 'none';
+      }
       if (pageId === 'habits') {
         renderHabitsPage();
         loadHabits();
       } else if (pageId === 'planner') {
+        applyPlannerSubViewLayout();
         renderDailyPlannerPage();
         loadDailyPlanner();
       }
@@ -6098,7 +7225,11 @@
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.tasks)) {
           if (!Array.isArray(parsed.goals)) parsed.goals = [];
+          if (!Array.isArray(parsed.sessions)) parsed.sessions = [];
+          if (!Array.isArray(parsed.calendarEvents)) parsed.calendarEvents = [];
           if (!parsed.deletedGoals) parsed.deletedGoals = {};
+          if (!parsed.deletedSessions) parsed.deletedSessions = {};
+          if (!parsed.deletedCalendarEvents) parsed.deletedCalendarEvents = {};
           return parsed;
         }
       } catch (e) {
@@ -6141,9 +7272,14 @@
           body: JSON.stringify({
             tasks: dataToSync.tasks,
             goals: dataToSync.goals || [],
+            sessions: dataToSync.sessions || [],
+            calendarEvents: dataToSync.calendarEvents || [],
+            scheduleSettings: dataToSync.scheduleSettings || null,
             daysHistory: dataToSync.daysHistory,
             deletedTasks: dataToSync.deletedTasks,
             deletedGoals: dataToSync.deletedGoals || {},
+            deletedSessions: dataToSync.deletedSessions || {},
+            deletedCalendarEvents: dataToSync.deletedCalendarEvents || {},
             activeTimer: dataToSync.activeTimer,
             activeTimerChangedAt: dataToSync.activeTimerChangedAt,
             habits: habitsData
@@ -6167,9 +7303,14 @@
           body: JSON.stringify({
             tasks: plannerData?.tasks || [],
             goals: plannerData?.goals || [],
+            sessions: plannerData?.sessions || [],
+            calendarEvents: plannerData?.calendarEvents || [],
+            scheduleSettings: plannerData?.scheduleSettings || null,
             daysHistory: plannerData?.daysHistory || {},
             deletedTasks: plannerData?.deletedTasks || {},
             deletedGoals: plannerData?.deletedGoals || {},
+            deletedSessions: plannerData?.deletedSessions || {},
+            deletedCalendarEvents: plannerData?.deletedCalendarEvents || {},
             activeTimer: plannerData?.activeTimer || null,
             activeTimerChangedAt: plannerData?.activeTimerChangedAt || 0,
             habits: habitsToSync
@@ -6236,21 +7377,18 @@
 
     function reconcilePlannerWithServer(freshData) {
       if (!freshData) return;
-      const local = loadPlannerFromLocal() || plannerData || { tasks: [], daysHistory: {}, activeTimer: null };
+      const local = loadPlannerFromLocal() || plannerData || { tasks: [], goals: [], sessions: [], calendarEvents: [], daysHistory: {}, activeTimer: null };
       const server = freshData;
 
       let needsPushToServer = false;
 
-      // 1. Merge deletedTasks tombstones
+      // 1. Merge deletedTasks tombstones & tasks
       const mergedDeleted = { ...(server.deletedTasks || {}), ...(local.deletedTasks || {}) };
-
-      // 2. Build task map from server tasks
       const taskMap = new Map();
       (server.tasks || []).forEach(t => {
         if (t && t.id) taskMap.set(String(t.id), { ...t });
       });
 
-      // 3. Inspect local tasks
       (local.tasks || []).forEach(localTask => {
         if (!localTask || !localTask.id) return;
         const idStr = String(localTask.id);
@@ -6263,52 +7401,65 @@
         }
 
         if (!taskMap.has(idStr)) {
-          // Render wake-up case: server is missing this task that was created locally!
           taskMap.set(idStr, { ...localTask });
           needsPushToServer = true;
-          console.log(`[Auto-Heal] Rescuing task missing on server: "${localTask.title}" (${idStr})`);
         } else {
           const serverTask = taskMap.get(idStr);
           const serverUpdated = serverTask.updatedAt || (serverTask.createdAt ? new Date(serverTask.createdAt).getTime() : 0);
-
           if (localUpdated > serverUpdated) {
             taskMap.set(idStr, { ...serverTask, ...localTask });
             needsPushToServer = true;
           }
 
           const currentItem = taskMap.get(idStr);
-          const maxSpent = Math.max(localTask.spentSeconds || 0, serverTask.spentSeconds || 0);
-          if (maxSpent > (currentItem.spentSeconds || 0)) {
-            currentItem.spentSeconds = maxSpent;
-          }
-          if (maxSpent > (serverTask.spentSeconds || 0)) {
+          const lAdj = localTask.adjustedAt || 0;
+          const sAdj = serverTask.adjustedAt || 0;
+          if (lAdj > sAdj) {
+            currentItem.spentSeconds = Math.max(0, localTask.spentSeconds || 0);
+            currentItem.adjustedAt = lAdj;
             needsPushToServer = true;
+          } else if (sAdj > lAdj) {
+            currentItem.spentSeconds = Math.max(0, serverTask.spentSeconds || 0);
+            currentItem.adjustedAt = sAdj;
+          } else {
+            const maxSpent = Math.max(localTask.spentSeconds || 0, serverTask.spentSeconds || 0);
+            if (maxSpent > (currentItem.spentSeconds || 0)) currentItem.spentSeconds = maxSpent;
+            if (maxSpent > (serverTask.spentSeconds || 0)) needsPushToServer = true;
           }
         }
       });
 
-      // 4. Merge daysHistory
+      // 2. Merge daysHistory with adjustedAt guard
       const mergedHistory = { ...(server.daysHistory || {}) };
       const localHistory = local.daysHistory || {};
       for (const [dateKey, lDay] of Object.entries(localHistory)) {
+        if (!lDay || typeof lDay !== 'object') continue;
         if (!mergedHistory[dateKey]) {
           mergedHistory[dateKey] = { ...lDay };
           if ((lDay.totalSeconds || 0) > 0) needsPushToServer = true;
         } else {
           const sDay = mergedHistory[dateKey];
-          const maxTotal = Math.max(lDay.totalSeconds || 0, sDay.totalSeconds || 0);
-          const maxFocus = Math.max(lDay.maxFocusSeconds || 0, sDay.maxFocusSeconds || 0);
-          if (maxTotal > (sDay.totalSeconds || 0)) {
+          const lAdj = lDay.adjustedAt || 0;
+          const sAdj = sDay.adjustedAt || 0;
+          if (lAdj > sAdj) {
+            mergedHistory[dateKey] = { ...lDay };
             needsPushToServer = true;
+          } else if (sAdj > lAdj) {
+            mergedHistory[dateKey] = { ...sDay };
+          } else {
+            const maxTotal = Math.max(lDay.totalSeconds || 0, sDay.totalSeconds || 0);
+            const maxFocus = Math.max(lDay.maxFocusSeconds || 0, sDay.maxFocusSeconds || 0);
+            if (maxTotal > (sDay.totalSeconds || 0)) needsPushToServer = true;
+            mergedHistory[dateKey] = {
+              totalSeconds: maxTotal,
+              maxFocusSeconds: maxFocus,
+              adjustedAt: sAdj || lAdj || 0
+            };
           }
-          mergedHistory[dateKey] = {
-            totalSeconds: maxTotal,
-            maxFocusSeconds: maxFocus
-          };
         }
       }
 
-      // 5. Merge activeTimer
+      // 3. Merge activeTimer
       let finalActiveTimer = server.activeTimer;
       const localTimerChangedAt = local.activeTimerChangedAt || 0;
       const serverTimerChangedAt = server.activeTimerChangedAt || 0;
@@ -6324,23 +7475,16 @@
         return tUp > delTime;
       });
 
-      // 6. Merge deletedGoals and goals
+      // 4. Merge deletedGoals and goals
       const mergedDeletedGoals = { ...(server.deletedGoals || {}), ...(local.deletedGoals || {}) };
       const goalMap = new Map();
-      (server.goals || []).forEach(g => {
-        if (g && g.id) goalMap.set(String(g.id), { ...g });
-      });
+      (server.goals || []).forEach(g => { if (g && g.id) goalMap.set(String(g.id), { ...g }); });
       (local.goals || []).forEach(localGoal => {
         if (!localGoal || !localGoal.id) return;
         const idStr = String(localGoal.id);
         const delTime = mergedDeletedGoals[idStr];
         const localUpdated = localGoal.updatedAt || (localGoal.createdAt ? new Date(localGoal.createdAt).getTime() : 0);
-
-        if (delTime && delTime >= localUpdated) {
-          goalMap.delete(idStr);
-          return;
-        }
-
+        if (delTime && delTime >= localUpdated) { goalMap.delete(idStr); return; }
         if (!goalMap.has(idStr)) {
           goalMap.set(idStr, { ...localGoal });
           needsPushToServer = true;
@@ -6353,7 +7497,6 @@
           }
         }
       });
-
       const finalGoals = Array.from(goalMap.values()).filter(g => {
         const delTime = mergedDeletedGoals[g.id];
         if (!delTime) return true;
@@ -6361,14 +7504,82 @@
         return gUp > delTime;
       });
 
+      // 5. Merge sessions with deletedSessions tombstones
+      const mergedDeletedSessions = { ...(server.deletedSessions || {}), ...(local.deletedSessions || {}) };
+      const sesMap = new Map();
+      (server.sessions || []).forEach(s => { if (s && s.id) sesMap.set(String(s.id), { ...s }); });
+      (local.sessions || []).forEach(localSes => {
+        if (!localSes || !localSes.id) return;
+        const idStr = String(localSes.id);
+        const delTime = mergedDeletedSessions[idStr];
+        const localUpdated = localSes.updatedAt || localSes.endedAt || 0;
+        if (delTime && delTime >= localUpdated) { sesMap.delete(idStr); return; }
+        if (!sesMap.has(idStr)) {
+          sesMap.set(idStr, { ...localSes });
+          needsPushToServer = true;
+        } else {
+          const serverSes = sesMap.get(idStr);
+          const serverUpdated = serverSes.updatedAt || serverSes.endedAt || 0;
+          if (localUpdated > serverUpdated) {
+            sesMap.set(idStr, { ...serverSes, ...localSes });
+            needsPushToServer = true;
+          }
+        }
+      });
+      const finalSessions = Array.from(sesMap.values()).filter(s => {
+        const delTime = mergedDeletedSessions[s.id];
+        if (!delTime) return true;
+        const sUp = s.updatedAt || s.endedAt || 0;
+        return sUp > delTime;
+      });
+
+      // 6. Merge calendarEvents with deletedCalendarEvents tombstones
+      const mergedDeletedCalEvents = { ...(server.deletedCalendarEvents || {}), ...(local.deletedCalendarEvents || {}) };
+      const calEvMap = new Map();
+      (server.calendarEvents || []).forEach(ev => { if (ev && ev.id) calEvMap.set(String(ev.id), { ...ev }); });
+      (local.calendarEvents || []).forEach(localEv => {
+        if (!localEv || !localEv.id) return;
+        const idStr = String(localEv.id);
+        const delTime = mergedDeletedCalEvents[idStr];
+        const localUpdated = localEv.updatedAt || 0;
+        if (delTime && delTime >= localUpdated) { calEvMap.delete(idStr); return; }
+        if (!calEvMap.has(idStr)) {
+          calEvMap.set(idStr, { ...localEv });
+          needsPushToServer = true;
+        } else {
+          const serverEv = calEvMap.get(idStr);
+          const serverUpdated = serverEv.updatedAt || 0;
+          if (localUpdated > serverUpdated) {
+            calEvMap.set(idStr, { ...serverEv, ...localEv });
+            needsPushToServer = true;
+          }
+        }
+      });
+      const finalCalEvents = Array.from(calEvMap.values()).filter(ev => {
+        const delTime = mergedDeletedCalEvents[ev.id];
+        if (!delTime) return true;
+        return (ev.updatedAt || 0) > delTime;
+      });
+
+      // 7. Merge scheduleSettings via LWW
+      const sSch = server.scheduleSettings || {};
+      const lSch = local.scheduleSettings || {};
+      const finalScheduleSettings = ((lSch.updatedAt || 0) > (sSch.updatedAt || 0)) ? { ...lSch } : { ...sSch };
+      if ((lSch.updatedAt || 0) > (sSch.updatedAt || 0)) needsPushToServer = true;
+
       plannerData = {
         tasks: finalTasks,
         goals: finalGoals,
+        sessions: finalSessions,
+        calendarEvents: finalCalEvents,
+        scheduleSettings: finalScheduleSettings,
         daysHistory: mergedHistory,
         activeTimer: finalActiveTimer,
         activeTimerChangedAt: Math.max(localTimerChangedAt, serverTimerChangedAt),
         deletedTasks: mergedDeleted,
-        deletedGoals: mergedDeletedGoals
+        deletedGoals: mergedDeletedGoals,
+        deletedSessions: mergedDeletedSessions,
+        deletedCalendarEvents: mergedDeletedCalEvents
       };
 
       savePlannerToLocal();
@@ -7254,9 +8465,24 @@
     /* ========================================================
        DAILY PLANNER & YPT FOCUS TIMER CONTROLLER
        ======================================================== */
-    let plannerData = loadPlannerFromLocal() || { tasks: [], goals: [], deletedGoals: {}, daysHistory: {}, activeTimer: null };
+    let plannerData = loadPlannerFromLocal() || {
+      tasks: [],
+      goals: [],
+      sessions: [],
+      calendarEvents: [],
+      scheduleSettings: { dayStartHour: 4, sleepEnabled: true, bedTime: '22:35', wakeTime: '04:45', showBreaks: true, minBreakSeconds: 60, updatedAt: 0 },
+      deletedGoals: {},
+      deletedSessions: {},
+      deletedCalendarEvents: {},
+      daysHistory: {},
+      activeTimer: null
+    };
     if (!Array.isArray(plannerData.goals)) plannerData.goals = [];
+    if (!Array.isArray(plannerData.sessions)) plannerData.sessions = [];
+    if (!Array.isArray(plannerData.calendarEvents)) plannerData.calendarEvents = [];
     if (!plannerData.deletedGoals) plannerData.deletedGoals = {};
+    if (!plannerData.deletedSessions) plannerData.deletedSessions = {};
+    if (!plannerData.deletedCalendarEvents) plannerData.deletedCalendarEvents = {};
     let currentPlannerDate = getLocalDateStr();
     let currentPopoverTaskId = null;
     let activeDraftSection = null;
@@ -7341,6 +8567,1230 @@
       return maxSec;
     }
 
+    /* ========================================================
+       YPT TIMELINE & STUDY ANALYTICS CONTROLLER (DAY / WEEK / MONTH)
+       ======================================================== */
+    const VN_OFFSET_MS_FE = 7 * 3600 * 1000;
+    const DAY_MS_FE = 24 * 3600 * 1000;
+    const DEFAULT_SCHEDULE_FE = {
+      dayStartHour: 4,
+      sleepEnabled: true,
+      bedTime: '22:35',
+      wakeTime: '04:45',
+      showBreaks: true,
+      minBreakSeconds: 60,
+      updatedAt: 0
+    };
+    let currentPlannerSubView = localStorage.getItem('elias_planner_subview') || 'tasks';
+    if (currentPlannerSubView === 'split' && window.innerWidth <= 960) currentPlannerSubView = 'tasks';
+    let weekColsCount = parseInt(localStorage.getItem('elias_planner_week_cols') || (window.innerWidth <= 768 ? '5' : '7'), 10);
+    if (![3, 5, 7].includes(weekColsCount)) weekColsCount = 5;
+    let weekCursorDate = getLocalDateStr();
+    let fullMonthYear = new Date().getFullYear();
+    let fullMonthIdx = new Date().getMonth();
+    let selectedMonthDate = getLocalDateStr();
+    let selectedEventColor = '#2563EB';
+    let selectedSessionModalColor = '#2563EB';
+    let _dayTimelineAutoScrolledKey = '';
+    let _weekTimelineAutoScrolled = false;
+
+    function getScheduleSettingsFE() {
+      const s = (plannerData && plannerData.scheduleSettings && typeof plannerData.scheduleSettings === 'object') ? plannerData.scheduleSettings : {};
+      return { ...DEFAULT_SCHEDULE_FE, ...s };
+    }
+
+    function vnDateTimeToMsFE(dateStr, hh = 0, mm = 0, addDays = 0) {
+      const parts = String(dateStr || getLocalDateStr()).split('-').map(Number);
+      return Date.UTC(parts[0] || 2026, (parts[1] || 1) - 1, (parts[2] || 1) + addDays, hh - 7, mm, 0, 0);
+    }
+
+    function msToVnPartsFE(ts) {
+      const vn = new Date(Number(ts) + VN_OFFSET_MS_FE);
+      const y = vn.getUTCFullYear();
+      const m = vn.getUTCMonth() + 1;
+      const d = vn.getUTCDate();
+      const h = vn.getUTCHours();
+      const min = vn.getUTCMinutes();
+      return {
+        dateStr: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
+        hours: h,
+        minutes: min,
+        hhmm: `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`,
+        totalMinutes: h * 60 + min
+      };
+    }
+
+    function addDaysToDateStr(dateStr, deltaDays) {
+      return msToVnPartsFE(vnDateTimeToMsFE(dateStr, 12, 0, deltaDays)).dateStr;
+    }
+
+    function formatVnDuration(seconds, compact = false) {
+      const s = Math.max(0, Math.floor(seconds || 0));
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      if (h > 0 && m > 0) return compact ? `${h} giờ ${m}` : `${h} giờ ${m} phút`;
+      if (h > 0) return compact ? `${h} giờ` : `${h} giờ`;
+      if (m > 0) return `${m} phút`;
+      return compact ? `<1 phút` : `${s} giây`;
+    }
+
+    function hexToRgbaTint(hex, alpha = 0.12) {
+      const clean = String(hex || '#2563EB').replace('#', '');
+      if (clean.length === 3) {
+        const r = parseInt(clean[0] + clean[0], 16);
+        const g = parseInt(clean[1] + clean[1], 16);
+        const b = parseInt(clean[2] + clean[2], 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+      if (clean.length >= 6) {
+        const r = parseInt(clean.slice(0, 2), 16);
+        const g = parseInt(clean.slice(2, 4), 16);
+        const b = parseInt(clean.slice(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+      return `rgba(37, 99, 235, ${alpha})`;
+    }
+
+    function inferSessionColorFE(title = '', explicitSubject = '', explicitColor = '') {
+      if (explicitColor && /^#[0-9a-f]{3,8}$/i.test(explicitColor.trim())) return explicitColor.trim();
+      const subj = String(explicitSubject || '').toUpperCase();
+      if (subj === 'MATH') return '#2563EB';
+      if (subj === 'VERBAL') return '#7C3AED';
+      if (subj === 'OTHER') return '#10B981';
+      const t = String(title || '').toLowerCase();
+      if (/\b(math|toán|algebra|geo|geometry|adv|advance|polynomial|equation|calculus|prob|statistic|function|graph)\b|toán|câu\s*(geo|adv|prob|alg)/i.test(t)) return '#2563EB';
+      if (/\b(verbal|ebrw|reading|writing|grammar|vocab|passage|transition|synthesis|inference|details|main idea|structure|english)\b/i.test(t)) return '#7C3AED';
+      return '#10B981';
+    }
+
+    function formatAxisHourLabel(hourInt) {
+      const h = hourInt % 24;
+      const suffix = hourInt >= 24 ? '<sup>+1</sup>' : '';
+      if (h === 0) return `12 AM${suffix}`;
+      if (h < 12) return `${h} AM${suffix}`;
+      if (h === 12) return `12 PM${suffix}`;
+      return `${h - 12} PM${suffix}`;
+    }
+
+    function formatRelMinTime(relMin) {
+      const total = Math.max(0, Math.round(relMin));
+      const isNext = total >= 1440;
+      const dayMin = total % 1440;
+      const h = Math.floor(dayMin / 60);
+      const m = dayMin % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}${isNext ? '+1' : ''}`;
+    }
+
+    function getDDayInfo(baseDateStr) {
+      if (!appSettings || !appSettings.examDate) return null;
+      const examPart = String(appSettings.examDate).slice(0, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(examPart)) return null;
+      const diff = Math.round((vnDateTimeToMsFE(examPart, 0, 0) - vnDateTimeToMsFE(baseDateStr || getLocalDateStr(), 0, 0)) / DAY_MS_FE);
+      return {
+        days: diff,
+        label: diff > 0 ? `D-${diff}` : (diff === 0 ? 'D-DAY' : `D+${Math.abs(diff)}`),
+        urgent: diff >= 0 && diff <= 10
+      };
+    }
+
+    function computeDayTimelineClient(dateStr, nowMs = getSyncedServerNow()) {
+      const sch = getScheduleSettingsFE();
+      const todayStr = getLocalDateStr(new Date(nowMs));
+      const dayMidnightMs = vnDateTimeToMsFE(dateStr, 0, 0, 0);
+      const deletedSes = plannerData.deletedSessions || {};
+
+      let sessions = (plannerData.sessions || [])
+        .filter(s => s && s.id && !deletedSes[s.id] && s.date === dateStr && s.endedAt > s.startedAt)
+        .map(s => ({ ...s, isLive: false }));
+
+      const active = plannerData.activeTimer;
+      if (active && active.date === dateStr) {
+        const origStart = active.sessionStartedAt || active.startedAt;
+        const liveEnd = Math.max(origStart, nowMs);
+        const liveDur = Math.min(4 * 3600, Math.floor((liveEnd - origStart) / 1000));
+        const taskObj = (plannerData.tasks || []).find(t => t.id === active.taskId);
+        const title = taskObj?.title || active.taskTitle || 'Focus';
+        const color = inferSessionColorFE(title, active.subject || taskObj?.subject, active.color || taskObj?.color);
+        const sesId = active.sessionId || ('ses_' + origStart + '_auto');
+        const idx = sessions.findIndex(s => s.id === sesId);
+        const liveSes = {
+          id: sesId,
+          taskId: active.taskId || null,
+          title,
+          color,
+          date: dateStr,
+          startedAt: origStart,
+          endedAt: origStart + liveDur * 1000,
+          durationSeconds: liveDur,
+          isLive: true
+        };
+        if (idx >= 0) sessions[idx] = liveSes;
+        else sessions.push(liveSes);
+      }
+
+      sessions.sort((a, b) => a.startedAt - b.startedAt);
+      sessions = sessions.map(s => ({
+        ...s,
+        startRelMin: (s.startedAt - dayMidnightMs) / 60000,
+        endRelMin: (s.endedAt - dayMidnightMs) / 60000,
+        startLabel: formatRelMinTime((s.startedAt - dayMidnightMs) / 60000),
+        endLabel: formatRelMinTime((s.endedAt - dayMidnightMs) / 60000),
+        color: inferSessionColorFE(s.title, s.subject, s.color)
+      }));
+
+      // Merged intervals for gap / break calculation
+      const merged = [];
+      for (const s of sessions) {
+        if (s.endedAt <= s.startedAt) continue;
+        if (!merged.length || s.startedAt > merged[merged.length - 1].endedAt) {
+          merged.push({ startedAt: s.startedAt, endedAt: s.endedAt });
+        } else {
+          merged[merged.length - 1].endedAt = Math.max(merged[merged.length - 1].endedAt, s.endedAt);
+        }
+      }
+
+      const breaks = [];
+      const minBreak = sch.minBreakSeconds || 60;
+      for (let i = 0; i < merged.length - 1; i++) {
+        const gStart = merged[i].endedAt;
+        const gEnd = merged[i + 1].startedAt;
+        const dur = Math.floor((gEnd - gStart) / 1000);
+        if (dur >= minBreak) {
+          const sr = (gStart - dayMidnightMs) / 60000;
+          const er = (gEnd - dayMidnightMs) / 60000;
+          breaks.push({ startedAt: gStart, endedAt: gEnd, durationSeconds: dur, startRelMin: sr, endRelMin: er, startLabel: formatRelMinTime(sr), endLabel: formatRelMinTime(er), isOngoing: false });
+        }
+      }
+
+      let ongoingBreakSeconds = 0;
+      if (dateStr === todayStr && !active && merged.length > 0) {
+        const lastEnd = merged[merged.length - 1].endedAt;
+        if (nowMs > lastEnd) {
+          ongoingBreakSeconds = Math.floor((nowMs - lastEnd) / 1000);
+          if (ongoingBreakSeconds >= minBreak) {
+            const sr = (lastEnd - dayMidnightMs) / 60000;
+            const er = (nowMs - dayMidnightMs) / 60000;
+            breaks.push({ startedAt: lastEnd, endedAt: nowMs, durationSeconds: ongoingBreakSeconds, startRelMin: sr, endRelMin: er, startLabel: formatRelMinTime(sr), endLabel: formatRelMinTime(er), isOngoing: true });
+          }
+        }
+      }
+
+      // Resolve Sleep Window
+      const [bH, bM] = (sch.bedTime || '22:35').split(':').map(Number);
+      const [wH, wM] = (sch.wakeTime || '04:45').split(':').map(Number);
+      const bedBaseMin = (bH || 22) * 60 + (bM || 0);
+      const wakeBaseMin = (wH || 4) * 60 + (wM || 0);
+      const bedRelMin = bedBaseMin < (sch.dayStartHour * 60) ? bedBaseMin + 1440 : bedBaseMin;
+      const wakeRelMin = wakeBaseMin <= bedBaseMin ? (bedBaseMin < (sch.dayStartHour * 60) ? wakeBaseMin + 1440 : wakeBaseMin + 1440) : (bedBaseMin < (sch.dayStartHour * 60) ? wakeBaseMin + 1440 : wakeBaseMin);
+      const bedAtMs = dayMidnightMs + bedRelMin * 60000;
+      const sleepDurSec = Math.max(0, Math.round((wakeRelMin - bedRelMin) * 60));
+
+      let countdownToSleepSeconds = null;
+      if (dateStr === todayStr && sch.sleepEnabled && nowMs < bedAtMs) {
+        countdownToSleepSeconds = Math.floor((bedAtMs - nowMs) / 1000);
+      }
+
+      const loggedSessionSeconds = sessions.reduce((sum, s) => sum + (s.durationSeconds || 0), 0);
+      const dayTotalSeconds = Math.max(getDayTotalSeconds(dateStr), loggedSessionSeconds);
+      const totalBreakSeconds = breaks.reduce((sum, b) => sum + b.durationSeconds, 0);
+
+      return {
+        dateStr,
+        isToday: dateStr === todayStr,
+        nowMs,
+        nowRelMin: (nowMs - dayMidnightMs) / 60000,
+        sch,
+        sessions,
+        breaks,
+        ongoingBreakSeconds,
+        sleep: {
+          enabled: !!sch.sleepEnabled,
+          bedRelMin,
+          wakeRelMin,
+          bedLabel: formatRelMinTime(bedRelMin),
+          wakeLabel: formatRelMinTime(wakeRelMin),
+          durationSeconds: sleepDurSec
+        },
+        countdownToSleepSeconds,
+        dayTotalSeconds,
+        loggedSessionSeconds,
+        unloggedLegacySeconds: Math.max(0, dayTotalSeconds - loggedSessionSeconds),
+        totalBreakSeconds
+      };
+    }
+
+    function switchPlannerSubView(viewId) {
+      if (viewId === 'split' && window.innerWidth <= 960) viewId = 'tasks';
+      currentPlannerSubView = viewId;
+      try { localStorage.setItem('elias_planner_subview', viewId); } catch (e) { }
+      if (viewId === 'month') {
+        const [y, m] = (currentPlannerDate || getLocalDateStr()).split('-').map(Number);
+        if (y && m) { fullMonthYear = y; fullMonthIdx = m - 1; selectedMonthDate = currentPlannerDate; }
+      } else if (viewId === 'week') {
+        weekCursorDate = currentPlannerDate;
+      }
+      applyPlannerSubViewLayout();
+      renderDailyPlannerPage();
+      updateYptLiveTimers();
+    }
+
+    function applyPlannerSubViewLayout() {
+      const wrapper = document.querySelector('.planner-page-wrapper');
+      const splitGrid = document.getElementById('plannerSplitGrid');
+      const tasksEl = document.getElementById('plannerTasksContainer');
+      const dayEl = document.getElementById('plannerDayTimelinePanel');
+      const weekEl = document.getElementById('plannerWeekTimelinePanel');
+      const monthEl = document.getElementById('plannerMonthViewPanel');
+      const floatingEl = document.getElementById('tlFloatingBar');
+
+      document.querySelectorAll('#plannerViewSwitcher .planner-view-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-view') === currentPlannerSubView);
+      });
+
+      if (wrapper) wrapper.classList.toggle('is-split-mode', currentPlannerSubView === 'split');
+      if (splitGrid) splitGrid.classList.toggle('active-split', currentPlannerSubView === 'split');
+
+      if (tasksEl) tasksEl.style.display = (currentPlannerSubView === 'tasks' || currentPlannerSubView === 'split') ? 'block' : 'none';
+      if (dayEl) dayEl.style.display = (currentPlannerSubView === 'day' || currentPlannerSubView === 'split') ? 'block' : 'none';
+      if (weekEl) weekEl.style.display = (currentPlannerSubView === 'week') ? 'block' : 'none';
+      if (monthEl) monthEl.style.display = (currentPlannerSubView === 'month') ? 'block' : 'none';
+
+      if (floatingEl) {
+        const showFloating = (currentPage === 'planner') && (currentPlannerSubView === 'day' || currentPlannerSubView === 'week');
+        floatingEl.style.display = showFloating ? 'flex' : 'none';
+      }
+    }
+
+    function renderDayTimelineView() {
+      const container = document.getElementById('tlDayScrollContainer');
+      if (!container) return;
+      const data = computeDayTimelineClient(currentPlannerDate);
+      const sch = data.sch;
+
+      // Update toolbar metadata
+      const [yyyy, mm, dd] = currentPlannerDate.split('-').map(Number);
+      const dowNames = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'];
+      const dow = new Date(vnDateTimeToMsFE(currentPlannerDate, 12, 0)).getUTCDay();
+      const hdrLabel = document.getElementById('tlDayHeaderLabel');
+      if (hdrLabel) hdrLabel.innerText = `${dowNames[dow]}, ${dd}/${mm}`;
+      const studyStat = document.getElementById('tlDayStudyStat');
+      if (studyStat) studyStat.innerText = formatHMS(data.dayTotalSeconds);
+      const breakStat = document.getElementById('tlDayBreakStat');
+      if (breakStat) breakStat.innerText = data.totalBreakSeconds > 0 ? formatVnDuration(data.totalBreakSeconds) : '0 phút';
+
+      const legBanner = document.getElementById('tlDayLegacyBanner');
+      const legText = document.getElementById('tlDayLegacyText');
+      if (legBanner && legText) {
+        if (data.unloggedLegacySeconds >= 60) {
+          legBanner.style.display = 'flex';
+          legText.innerText = `Đã ghi nhận trước đó: ${formatVnDuration(data.unloggedLegacySeconds)} (chưa chia block mốc giờ)`;
+        } else {
+          legBanner.style.display = 'none';
+        }
+      }
+
+      // Compute visible hour span cleanly
+      const minSesStart = data.sessions.length ? Math.min(...data.sessions.map(s => s.startRelMin)) : null;
+      const maxSesEnd = data.sessions.length ? Math.max(...data.sessions.map(s => s.endRelMin)) : null;
+      let startHour = sch.dayStartHour;
+      if ((minSesStart !== null && minSesStart < startHour * 60) || (data.isToday && data.nowRelMin >= 0 && data.nowRelMin < startHour * 60)) {
+        startHour = 0;
+      }
+      let endHour = Math.max(
+        24,
+        data.sleep.enabled ? Math.ceil((data.sleep.wakeRelMin + 15) / 60) : 25,
+        maxSesEnd !== null ? Math.ceil(maxSesEnd / 60) + 1 : 25
+      );
+      endHour = Math.min(36, Math.max(startHour + 12, endHour));
+
+      const PX_PER_HOUR = 64;
+      const totalHours = endHour - startHour;
+      const totalHeight = totalHours * PX_PER_HOUR;
+      const startTotalMin = startHour * 60;
+      const toY = (relMin) => ((relMin - startTotalMin) / 60) * PX_PER_HOUR;
+
+      let axisHtml = '';
+      let gridHtml = '';
+      for (let h = startHour; h < endHour; h++) {
+        axisHtml += `<div class="tl-axis-hour" style="height: ${PX_PER_HOUR}px;"><span>${formatAxisHourLabel(h)}</span></div>`;
+        gridHtml += `<div class="tl-hour-line" style="height: ${PX_PER_HOUR}px;" onclick="openSessionModalForHour('${currentPlannerDate}', ${h})" title="Bấm để thêm phiên lúc ${formatRelMinTime(h * 60)}"></div>`;
+      }
+
+      // Planned sleep block
+      let sleepHtml = '';
+      if (data.sleep.enabled) {
+        const sTop = Math.max(0, toY(data.sleep.bedRelMin));
+        const sBot = Math.min(totalHeight, toY(data.sleep.wakeRelMin));
+        const sHeight = Math.max(36, sBot - sTop);
+        sleepHtml = `
+          <div class="tl-sleep-block" style="top: ${sTop}px; height: ${sHeight}px;" onclick="openScheduleSettingsModal()" title="Bấm để chỉnh giờ ngủ dự kiến">
+            <div class="tl-sleep-left">
+              <div class="tl-sleep-title">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2 17v-6a2 2 0 012-2h16a2 2 0 012 2v6M2 13h20M6 9V7a2 2 0 012-2h3a2 2 0 012 2v2"/></svg>
+                <span>Ngủ (dự kiến)</span>
+              </div>
+              <div class="tl-sleep-range">${data.sleep.bedLabel}-${data.sleep.wakeLabel}</div>
+            </div>
+            <div class="tl-sleep-dur">${formatVnDuration(data.sleep.durationSeconds)}</div>
+          </div>
+        `;
+      }
+
+      // Session blocks (track visual bottoms so adjacent break labels NEVER overlap clamped short sessions!)
+      const renderedSessionBoxes = [];
+      const sessionsHtml = data.sessions.map(s => {
+        const sTop = Math.max(0, toY(s.startRelMin));
+        const sBot = Math.min(totalHeight, toY(s.endRelMin));
+        const sHeight = Math.max(22, sBot - sTop);
+        renderedSessionBoxes.push({ startedAt: s.startedAt, endedAt: s.endedAt, visualBottom: sTop + sHeight });
+        const isCompact = sHeight < 38;
+        const bgTint = hexToRgbaTint(s.color, 0.13);
+        const borderTint = hexToRgbaTint(s.color, 0.25);
+        return `
+          <div class="tl-session-block ${isCompact ? 'compact' : ''} ${s.isLive ? 'is-live' : ''}"
+               id="${s.isLive ? 'tlLiveSessionBlock' : ''}"
+               style="top: ${sTop}px; height: ${sHeight}px; border-left-color: ${s.color}; background: ${bgTint}; border-top-color: ${borderTint}; border-right-color: ${borderTint}; border-bottom-color: ${borderTint};"
+               onclick="openSessionModal('${s.id}')"
+               title="${escapeHtml(s.title)} (${s.startLabel} - ${s.endLabel})">
+            <div class="tl-session-left">
+              <div class="tl-session-title">
+                ${s.isLive ? '<span class="tl-live-dot"></span>' : ''}
+                <span>${escapeHtml(s.title)}</span>
+              </div>
+              <div class="tl-session-time">${s.startLabel}-${s.endLabel}</div>
+            </div>
+            <div class="tl-session-dur" id="${s.isLive ? 'tlLiveSessionDurText' : ''}">${s.isLive ? formatHMS(s.durationSeconds) : formatVnDuration(s.durationSeconds)}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Breaks between sessions (positioned strictly below any minimum-height clamped session block)
+      let breaksHtml = '';
+      if (sch.showBreaks) {
+        breaksHtml = data.breaks.map(b => {
+          const prevBox = renderedSessionBoxes.filter(bx => bx.endedAt <= b.startedAt + 1000).pop();
+          const minTopFromPrev = prevBox ? (prevBox.visualBottom + 2) : 0;
+          const bTop = Math.max(0, toY(b.startRelMin), minTopFromPrev);
+          const bBot = Math.min(totalHeight, toY(b.endRelMin));
+          const bHeight = bBot - bTop;
+          if (bHeight < 16) return '';
+          return `
+            <div class="tl-break-slot ${b.isOngoing ? 'is-ongoing-break' : ''}" id="${b.isOngoing ? 'tlOngoingBreakSlot' : ''}" style="top: ${bTop}px; height: ${bHeight}px;">
+              <span class="tl-break-range">${b.startLabel}-${b.endLabel}</span>
+              <span class="tl-break-dur">${formatVnDuration(b.durationSeconds)}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Current time indicator line
+      let nowHtml = '';
+      if (data.isToday && data.nowRelMin >= startTotalMin && data.nowRelMin <= endHour * 60) {
+        const nowY = toY(data.nowRelMin);
+        const nowPillText = msToVnPartsFE(data.nowMs).hhmm;
+        const cdText = data.countdownToSleepSeconds !== null
+          ? `Còn ${formatVnDuration(data.countdownToSleepSeconds)} đến giờ ngủ`
+          : '';
+        nowHtml = `
+          <div class="tl-now-line" id="tlDayNowLine" data-start-hour="${startHour}" data-px-per-hour="${PX_PER_HOUR}" style="top: ${nowY}px;">
+            <span class="tl-now-axis-pill" id="tlDayNowPill">${nowPillText}</span>
+            ${cdText ? `<span class="tl-sleep-countdown" id="tlDaySleepCountdown">${cdText}</span>` : ''}
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="tl-day-canvas" style="height: ${totalHeight + 70}px;">
+          <div class="tl-axis-col">${axisHtml}</div>
+          <div class="tl-track-col">
+            ${gridHtml}
+            ${sleepHtml}
+            ${breaksHtml}
+            ${sessionsHtml}
+            ${nowHtml}
+          </div>
+        </div>
+      `;
+
+      // Auto-scroll smoothly once per date/view switch
+      if (_dayTimelineAutoScrolledKey !== currentPlannerDate + '_' + currentPlannerSubView) {
+        _dayTimelineAutoScrolledKey = currentPlannerDate + '_' + currentPlannerSubView;
+        setTimeout(() => {
+          if (data.isToday && data.nowRelMin >= startTotalMin) {
+            container.scrollTop = Math.max(0, toY(data.nowRelMin) - 240);
+          } else if (data.sessions.length > 0) {
+            container.scrollTop = Math.max(0, toY(data.sessions[0].startRelMin) - 80);
+          } else {
+            container.scrollTop = Math.max(0, toY(8 * 60));
+          }
+        }, 15);
+      }
+    }
+
+    /* WEEK TIMELINE VIEW (Image 2: 3 / 5 / 7 Days) */
+    function setWeekColumnsCount(cnt) {
+      weekColsCount = cnt;
+      try { localStorage.setItem('elias_planner_week_cols', String(cnt)); } catch (e) { }
+      renderWeekTimelineView();
+    }
+
+    function shiftWeekTimeline(deltaUnits) {
+      const step = weekColsCount === 7 ? 7 * deltaUnits : weekColsCount * deltaUnits;
+      weekCursorDate = addDaysToDateStr(weekCursorDate, step);
+      renderWeekTimelineView();
+    }
+
+    function resetWeekTimelineToToday() {
+      weekCursorDate = getLocalDateStr();
+      renderWeekTimelineView();
+    }
+
+    function getWeekDisplayDates() {
+      if (weekColsCount === 7 || weekColsCount === 5) {
+        const dt = new Date(vnDateTimeToMsFE(weekCursorDate, 12, 0));
+        const dow = dt.getUTCDay();
+        const mondayDelta = dow === 0 ? -6 : 1 - dow;
+        let startDate = addDaysToDateStr(weekCursorDate, mondayDelta);
+        if (weekColsCount === 5) {
+          // Slide 5-day window if selected date is Sat/Sun so today stays visible
+          const offsetFromMon = Math.round((vnDateTimeToMsFE(weekCursorDate, 0, 0) - vnDateTimeToMsFE(startDate, 0, 0)) / DAY_MS_FE);
+          if (offsetFromMon >= 5) startDate = addDaysToDateStr(startDate, offsetFromMon - 4);
+        }
+        return Array.from({ length: weekColsCount }, (_, i) => addDaysToDateStr(startDate, i));
+      }
+      // 3-day centered view
+      return [addDaysToDateStr(weekCursorDate, -1), weekCursorDate, addDaysToDateStr(weekCursorDate, 1)];
+    }
+
+    function renderWeekTimelineView() {
+      const container = document.getElementById('tlWeekScrollContainer');
+      if (!container) return;
+
+      [3, 5, 7].forEach(c => {
+        const b = document.getElementById('btnWeekCols' + c);
+        if (b) b.classList.toggle('active', weekColsCount === c);
+      });
+
+      const dates = getWeekDisplayDates();
+      const firstD = dates[0];
+      const lastD = dates[dates.length - 1];
+      const fmtDM = (ds) => { const p = ds.split('-'); return `${p[2]}/${p[1]}`; };
+      const rangeLbl = document.getElementById('tlWeekRangeLabel');
+      if (rangeLbl) rangeLbl.innerText = `${fmtDM(firstD)} - ${fmtDM(lastD)}`;
+
+      const nowMs = getSyncedServerNow();
+      const dayDatas = dates.map(ds => computeDayTimelineClient(ds, nowMs));
+      const sch = getScheduleSettingsFE();
+
+      // Determine shared vertical hour bounds
+      let minSesStart = null;
+      let maxSesEnd = null;
+      let todayHasEarlyNow = false;
+      dayDatas.forEach(dd => {
+        dd.sessions.forEach(s => {
+          minSesStart = minSesStart === null ? s.startRelMin : Math.min(minSesStart, s.startRelMin);
+          maxSesEnd = maxSesEnd === null ? s.endRelMin : Math.max(maxSesEnd, s.endRelMin);
+        });
+        if (dd.isToday && dd.nowRelMin >= 0 && dd.nowRelMin < sch.dayStartHour * 60) todayHasEarlyNow = true;
+      });
+      const startHour = ((minSesStart !== null && minSesStart < sch.dayStartHour * 60) || todayHasEarlyNow) ? 0 : sch.dayStartHour;
+      const endHour = Math.min(30, Math.max(24, maxSesEnd !== null ? Math.ceil(maxSesEnd / 60) + 1 : 24));
+      const PX_PER_HOUR = 48;
+      const totalHeight = (endHour - startHour) * PX_PER_HOUR;
+      const startTotalMin = startHour * 60;
+      const toY = (relMin) => ((relMin - startTotalMin) / 60) * PX_PER_HOUR;
+
+      const dowMap = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'];
+      const headersHtml = dayDatas.map(dd => {
+        const dNum = dd.dateStr.split('-')[2];
+        const dowIdx = new Date(vnDateTimeToMsFE(dd.dateStr, 12, 0)).getUTCDay();
+        return `
+          <div class="tl-week-day-head ${dd.isToday ? 'is-today' : ''} ${dd.dateStr === currentPlannerDate ? 'is-selected' : ''}"
+               onclick="currentPlannerDate='${dd.dateStr}'; switchPlannerSubView('day');"
+               title="Mở Timeline chi tiết ngày ${dd.dateStr}">
+            <span class="tl-week-dow">${dowMap[dowIdx]}</span>
+            <span class="tl-week-date-num">${parseInt(dNum, 10)}</span>
+            ${dd.dayTotalSeconds > 0 ? `<span class="tl-week-day-total">⏱ ${formatHM(dd.dayTotalSeconds)}</span>` : '<span style="font-size:10px;color:#CBD5E1;">-</span>'}
+          </div>
+        `;
+      }).join('');
+
+      let axisHtml = '';
+      for (let h = startHour; h < endHour; h++) {
+        const shortLbl = h === 0 ? '12A' : (h < 12 ? `${h}A` : (h === 12 ? '12P' : (h < 24 ? `${h - 12}P` : `${h - 24}A+1`)));
+        axisHtml += `<div class="tl-axis-hour" style="height: ${PX_PER_HOUR}px;"><span>${shortLbl}</span></div>`;
+      }
+
+      const colsHtml = dayDatas.map(dd => {
+        let gridCells = '';
+        for (let h = startHour; h < endHour; h++) {
+          gridCells += `<div class="tl-week-hour-cell" style="height: ${PX_PER_HOUR}px;" onclick="openSessionModalForHour('${dd.dateStr}', ${h})"></div>`;
+        }
+        const renderedBoxes = [];
+        const sesHtml = dd.sessions.map(s => {
+          const sTop = Math.max(0, toY(s.startRelMin));
+          const sBot = Math.min(totalHeight, toY(s.endRelMin));
+          const sh = Math.max(18, sBot - sTop);
+          renderedBoxes.push({ endedAt: s.endedAt, visualBottom: sTop + sh });
+          const bgTint = hexToRgbaTint(s.color, 0.14);
+          return `
+            <div class="tl-week-session ${s.isLive ? 'is-live' : ''}"
+                 style="top: ${sTop}px; height: ${sh}px; border-left-color: ${s.color}; background: ${bgTint};"
+                 onclick="openSessionModal('${s.id}')"
+                 title="${escapeHtml(s.title)} (${s.startLabel} - ${s.endLabel})">
+              <div class="tl-week-session-title">${escapeHtml(s.title)}</div>
+              ${sh >= 30 ? `<div class="tl-week-session-dur">${formatVnDuration(s.durationSeconds, true)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+        const breaksHtml = sch.showBreaks ? dd.breaks.map(b => {
+          const prevBox = renderedBoxes.filter(bx => bx.endedAt <= b.startedAt + 1000).pop();
+          const bTop = Math.max(0, toY(b.startRelMin), prevBox ? prevBox.visualBottom + 1 : 0);
+          const bBot = Math.min(totalHeight, toY(b.endRelMin));
+          const bh = bBot - bTop;
+          if (bh < 16) return '';
+          return `<div class="tl-week-break" style="top: ${bTop}px; height: ${bh}px;">${formatVnDuration(b.durationSeconds, true)}</div>`;
+        }).join('') : '';
+
+        let nowHtml = '';
+        if (dd.isToday && dd.nowRelMin >= startTotalMin && dd.nowRelMin <= endHour * 60) {
+          const ny = toY(dd.nowRelMin);
+          const cd = dd.countdownToSleepSeconds !== null ? formatVnDuration(dd.countdownToSleepSeconds, true) : '';
+          nowHtml = `
+            <div class="tl-week-now-bar" style="top: ${ny}px;">
+              ${cd ? `<div class="tl-week-now-sub">${cd}</div>` : ''}
+            </div>
+          `;
+        }
+
+        return `
+          <div class="tl-week-day-col ${dd.isToday ? 'is-today' : ''}" style="height: ${totalHeight}px;">
+            ${gridCells}
+            ${breaksHtml}
+            ${sesHtml}
+            ${nowHtml}
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="tl-week-header-row">
+          <div class="tl-week-axis-spacer"></div>
+          <div class="tl-week-day-cols-header" style="grid-template-columns: repeat(${dates.length}, minmax(0, 1fr));">
+            ${headersHtml}
+          </div>
+        </div>
+        <div class="tl-week-body">
+          <div class="tl-week-axis-col">${axisHtml}</div>
+          <div class="tl-week-cols-grid" style="grid-template-columns: repeat(${dates.length}, minmax(0, 1fr));">
+            ${colsHtml}
+          </div>
+        </div>
+      `;
+
+      if (!_weekTimelineAutoScrolled) {
+        _weekTimelineAutoScrolled = true;
+        setTimeout(() => {
+          const targetMin = minSesStart !== null ? minSesStart : 12 * 60;
+          container.scrollTop = Math.max(0, toY(targetMin) - 60);
+        }, 20);
+      }
+    }
+
+    /* FULL MONTH CALENDAR VIEW (Image 1: Study times + Milestones) */
+    function changeMonthView(delta) {
+      fullMonthIdx += delta;
+      if (fullMonthIdx < 0) { fullMonthIdx = 11; fullMonthYear--; }
+      else if (fullMonthIdx > 11) { fullMonthIdx = 0; fullMonthYear++; }
+      renderMonthTimelineView();
+    }
+
+    function resetMonthViewToToday() {
+      const now = new Date();
+      fullMonthYear = now.getFullYear();
+      fullMonthIdx = now.getMonth();
+      selectedMonthDate = getLocalDateStr(now);
+      renderMonthTimelineView();
+    }
+
+    function selectMonthViewDay(dateStr) {
+      selectedMonthDate = dateStr;
+      renderMonthTimelineView();
+    }
+
+    function getMilestonesForDate(dateStr) {
+      const tags = [];
+      if (appSettings?.examDate && String(appSettings.examDate).slice(0, 10) === dateStr) {
+        tags.push({ title: '🎯 ' + (appSettings.examTitle || 'Thi SAT'), color: '#DC2626', isExam: true });
+      }
+      const deletedEvs = plannerData.deletedCalendarEvents || {};
+      (plannerData.calendarEvents || []).forEach(ev => {
+        if (ev && ev.id && !deletedEvs[ev.id] && ev.date === dateStr) {
+          tags.push({ id: ev.id, title: ev.title, color: ev.color || '#2563EB', isEvent: true });
+        }
+      });
+      const deletedGoals = plannerData.deletedGoals || {};
+      (plannerData.goals || []).forEach(g => {
+        if (g && g.id && !deletedGoals[g.id] && g.type === 'day' && g.scopeKey === dateStr && (g.completed || g.priority === 'high')) {
+          tags.push({ title: (g.completed ? '✓ ' : '') + g.text, color: g.completed ? '#059669' : '#D97706', isGoal: true });
+        }
+      });
+      return tags;
+    }
+
+    function renderMonthTimelineView() {
+      const titleEl = document.getElementById('tlMonthTitle');
+      const gridEl = document.getElementById('tlMonthGridFull');
+      const totalStatEl = document.getElementById('tlMonthTotalStat');
+      if (!gridEl) return;
+
+      const monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+      if (titleEl) titleEl.innerText = `${monthNames[fullMonthIdx]}, ${fullMonthYear}`;
+
+      const todayStr = getLocalDateStr();
+      const firstDay = new Date(fullMonthYear, fullMonthIdx, 1);
+      let startDow = firstDay.getDay() - 1;
+      if (startDow === -1) startDow = 6;
+      const daysInMonth = new Date(fullMonthYear, fullMonthIdx + 1, 0).getDate();
+      const daysInPrevMonth = new Date(fullMonthYear, fullMonthIdx, 0).getDate();
+
+      let monthSumSec = 0;
+      let html = '';
+
+      const renderCell = (ds, dayNum, isOutside) => {
+        const sec = getDayTotalSeconds(ds);
+        if (!isOutside) monthSumSec += sec;
+        const milestones = getMilestonesForDate(ds);
+        const msHtml = milestones.slice(0, 2).map(ms => {
+          return `<div class="tl-month-tag" style="background: ${hexToRgbaTint(ms.color, 0.14)}; color: ${ms.color};" title="${escapeHtml(ms.title)}">${escapeHtml(ms.title)}</div>`;
+        }).join('') + (milestones.length > 2 ? `<div style="font-size:9.5px;color:#6B7280;">+${milestones.length - 2} nữa</div>` : '');
+
+        return `
+          <div class="tl-month-cell ${isOutside ? 'is-outside' : ''} ${ds === todayStr ? 'is-today' : ''} ${ds === selectedMonthDate ? 'is-selected' : ''}"
+               onclick="selectMonthViewDay('${ds}')">
+            <span class="tl-month-day-num">${dayNum}</span>
+            ${sec > 0 ? `<span class="ypt-cal-time-pill">⏱ ${formatHM(sec)}</span>` : ''}
+            <div class="tl-month-milestones">${msHtml}</div>
+          </div>
+        `;
+      };
+
+      for (let i = startDow - 1; i >= 0; i--) {
+        const d = daysInPrevMonth - i;
+        const pm = fullMonthIdx === 0 ? 11 : fullMonthIdx - 1;
+        const py = fullMonthIdx === 0 ? fullMonthYear - 1 : fullMonthYear;
+        html += renderCell(`${py}-${String(pm + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`, d, true);
+      }
+      for (let d = 1; d <= daysInMonth; d++) {
+        html += renderCell(`${fullMonthYear}-${String(fullMonthIdx + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`, d, false);
+      }
+      const rem = (7 - ((startDow + daysInMonth) % 7)) % 7;
+      for (let i = 1; i <= rem; i++) {
+        const nm = fullMonthIdx === 11 ? 0 : fullMonthIdx + 1;
+        const ny = fullMonthIdx === 11 ? fullMonthYear + 1 : fullMonthYear;
+        html += renderCell(`${ny}-${String(nm + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`, i, true);
+      }
+
+      gridEl.innerHTML = html;
+      if (totalStatEl) totalStatEl.innerText = formatVnDuration(monthSumSec);
+      renderMonthDayDetail();
+    }
+
+    function renderMonthDayDetail() {
+      const box = document.getElementById('tlMonthDetailCard');
+      if (!box) return;
+      const ds = selectedMonthDate || getLocalDateStr();
+      const [yyyy, mm, dd] = ds.split('-');
+      const dDay = getDDayInfo(ds);
+      const dayData = computeDayTimelineClient(ds);
+      const maxFocus = getDayMaxFocusSeconds(ds);
+      const deletedEvs = plannerData.deletedCalendarEvents || {};
+      const events = (plannerData.calendarEvents || []).filter(ev => ev && ev.id && !deletedEvs[ev.id] && ev.date === ds);
+
+      const evHtml = events.map(ev => `
+        <span class="tl-event-chip" style="background: ${hexToRgbaTint(ev.color || '#2563EB', 0.14)}; color: ${ev.color || '#2563EB'};">
+          <span>${escapeHtml(ev.title)}</span>
+          <button type="button" onclick="deleteMonthEvent('${ev.id}')" title="Xóa mốc">✕</button>
+        </span>
+      `).join('');
+
+      const sesHtml = dayData.sessions.length
+        ? dayData.sessions.map(s => `
+            <div onclick="openSessionModal('${s.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:#FFFFFF;border:1px solid var(--border-subtle);border-left:3px solid ${s.color};border-radius:5px;cursor:pointer;font-size:12px;">
+              <span><b>${escapeHtml(s.title)}</b> <span style="color:var(--text-muted);font-family:monospace;">(${s.startLabel}-${s.endLabel})</span></span>
+              <span style="font-weight:600;color:#334155;">${formatVnDuration(s.durationSeconds)}</span>
+            </div>
+          `).join('')
+        : `<div style="font-size:12px;color:#9CA3AF;font-style:italic;">Chưa có block phiên học nào cho ngày này.</div>`;
+
+      const colorDots = ['#2563EB', '#EF4444', '#059669', '#7C3AED', '#F59E0B'].map(c =>
+        `<span onclick="selectedEventColor='${c}'; renderMonthDayDetail();" style="width:16px;height:16px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${selectedEventColor === c ? '#111827' : 'transparent'};display:inline-block;"></span>`
+      ).join('');
+
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <strong style="font-size:14px;">Ngày ${dd}/${mm}/${yyyy}</strong>
+            ${dDay ? `<span class="planner-dday-pill ${dDay.urgent ? 'urgent' : ''}">${dDay.label}</span>` : ''}
+            <span class="tl-stat-chip">Tổng: <strong>${formatHMS(dayData.dayTotalSeconds)}</strong></span>
+            <span class="tl-stat-chip">Max Focus: <strong style="color:#EA580C;">${formatHMS(maxFocus)}</strong></span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="tl-btn-small primary" onclick="currentPlannerDate='${ds}'; switchPlannerSubView('day');">Mở Timeline ngày</button>
+          </div>
+        </div>
+
+        <div class="tl-month-events-bar">
+          ${evHtml}
+          <div style="display:inline-flex;align-items:center;gap:6px;background:#FFFFFF;border:1px solid var(--border-subtle);border-radius:6px;padding:3px 8px;">
+            ${colorDots}
+            <input id="tlMonthEventInput" type="text" placeholder="+ Thêm mốc sự kiện (vd: Xong Lý)..." style="border:none;outline:none;font-size:12px;width:190px;background:transparent;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addMonthEventForDate('${ds}'); }">
+            <button type="button" class="tl-btn-small" style="padding:2px 8px;" onclick="addMonthEventForDate('${ds}')">Lưu</button>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:5px;">
+          ${sesHtml}
+        </div>
+      `;
+    }
+
+    async function addMonthEventForDate(dateStr) {
+      const inp = document.getElementById('tlMonthEventInput');
+      if (!inp || !inp.value.trim()) return;
+      const title = inp.value.trim();
+      const evId = 'cal_' + getSyncedServerNow() + '_' + Math.random().toString(36).slice(2, 6);
+      const ev = { id: evId, date: dateStr, title, color: selectedEventColor, updatedAt: Date.now() };
+      if (!Array.isArray(plannerData.calendarEvents)) plannerData.calendarEvents = [];
+      plannerData.calendarEvents.push(ev);
+      savePlannerToLocal();
+      renderMonthTimelineView();
+      toast(`Đã thêm mốc: ${title}`);
+
+      isTaskMutating++;
+      try {
+        const res = await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add-cal-event', id: evId, date: dateStr, title, color: selectedEventColor })
+        });
+        if (res.ok) {
+          const d = await res.json();
+          if (d.dailyPlanner) reconcilePlannerWithServer(d.dailyPlanner);
+          renderMonthTimelineView();
+        }
+      } catch (e) {
+        console.warn('Add cal event err:', e);
+      } finally {
+        isTaskMutating--;
+      }
+    }
+
+    async function deleteMonthEvent(evId) {
+      if (!plannerData.deletedCalendarEvents) plannerData.deletedCalendarEvents = {};
+      plannerData.deletedCalendarEvents[evId] = Date.now();
+      plannerData.calendarEvents = (plannerData.calendarEvents || []).filter(e => e.id !== evId);
+      savePlannerToLocal();
+      renderMonthTimelineView();
+
+      isTaskMutating++;
+      try {
+        await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete-cal-event', id: evId })
+        });
+      } catch (e) {
+        console.warn('Delete cal event err:', e);
+      } finally {
+        isTaskMutating--;
+      }
+    }
+
+    /* SESSION MODAL & SCHEDULE SETTINGS MODAL */
+    function selectSessionColor(colorHex) {
+      selectedSessionModalColor = colorHex;
+      document.querySelectorAll('#sesColorSwatches .color-swatch-dot').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-color') === colorHex);
+      });
+    }
+
+    function openSessionModalForHour(dateStr, hourInt) {
+      const isOvernight = hourInt >= 24;
+      const normH = hourInt % 24;
+      const startStr = `${String(normH).padStart(2, '0')}:00`;
+      const endStr = `${String((normH + 1) % 24).padStart(2, '0')}:00`;
+      openSessionModal(null, { date: dateStr, startTime: startStr, endTime: endStr, isOvernight });
+    }
+
+    function openSessionModal(sessionId = null, prefill = null) {
+      const modal = document.getElementById('sessionEditorModal');
+      if (!modal) return;
+      const titleEl = document.getElementById('sessionModalTitle');
+      const idInp = document.getElementById('sesEditId');
+      const nameInp = document.getElementById('sesInputTitle');
+      const taskSel = document.getElementById('sesSelectTask');
+      const dateInp = document.getElementById('sesInputDate');
+      const startInp = document.getElementById('sesInputStart');
+      const endInp = document.getElementById('sesInputEnd');
+      const overnightChk = document.getElementById('sesChkOvernight');
+      const noteInp = document.getElementById('sesInputNote');
+      const delBtn = document.getElementById('btnDeleteSessionModal');
+
+      const targetDate = prefill?.date || currentPlannerDate || getLocalDateStr();
+      const dayTasks = (plannerData.tasks || []).filter(t => (t.date || targetDate) === targetDate);
+      taskSel.innerHTML = `<option value="">-- Không liên kết task --</option>` + dayTasks.map(t =>
+        `<option value="${t.id}">${escapeHtml(t.title)}</option>`
+      ).join('');
+
+      if (sessionId) {
+        const ses = computeDayTimelineClient(currentPlannerDate).sessions.find(s => s.id === sessionId)
+          || (plannerData.sessions || []).find(s => s.id === sessionId);
+        if (!ses) return;
+        titleEl.innerText = ses.isLive ? 'Đang bấm giờ (Chỉnh sửa phiên)' : 'Chỉnh sửa phiên học';
+        idInp.value = ses.id;
+        nameInp.value = ses.title || '';
+        taskSel.value = ses.taskId || '';
+        dateInp.value = ses.date || targetDate;
+        const sParts = msToVnPartsFE(ses.startedAt);
+        const eParts = msToVnPartsFE(ses.endedAt);
+        startInp.value = sParts.hhmm;
+        endInp.value = eParts.hhmm;
+        overnightChk.checked = sParts.dateStr > (ses.date || targetDate);
+        noteInp.value = ses.note || '';
+        selectSessionColor(ses.color || inferSessionColorFE(ses.title, ses.subject));
+        delBtn.style.display = 'inline-flex';
+      } else {
+        titleEl.innerText = 'Thêm phiên học mới';
+        idInp.value = '';
+        nameInp.value = '';
+        taskSel.value = '';
+        dateInp.value = targetDate;
+        startInp.value = prefill?.startTime || '14:00';
+        endInp.value = prefill?.endTime || '15:30';
+        overnightChk.checked = !!prefill?.isOvernight;
+        noteInp.value = '';
+        selectSessionColor('#2563EB');
+        delBtn.style.display = 'none';
+      }
+
+      modal.style.display = 'flex';
+      modal.classList.add('active', 'show');
+      setTimeout(() => nameInp.focus(), 40);
+    }
+
+    function onSessionTaskSelectChange() {
+      const sel = document.getElementById('sesSelectTask');
+      const nameInp = document.getElementById('sesInputTitle');
+      if (!sel || !sel.value) return;
+      const t = (plannerData.tasks || []).find(item => item.id === sel.value);
+      if (t) {
+        if (!nameInp.value.trim()) nameInp.value = t.title;
+        selectSessionColor(inferSessionColorFE(t.title, t.subject, t.color));
+      }
+    }
+
+    function closeSessionModal() {
+      const modal = document.getElementById('sessionEditorModal');
+      if (modal) {
+        modal.classList.remove('show', 'active');
+        modal.style.display = 'none';
+      }
+    }
+
+    async function saveSessionFromModal() {
+      const editId = document.getElementById('sesEditId').value.trim();
+      const title = document.getElementById('sesInputTitle').value.trim() || 'Tự học';
+      const taskId = document.getElementById('sesSelectTask').value || null;
+      const dateStr = document.getElementById('sesInputDate').value || currentPlannerDate;
+      const startTime = document.getElementById('sesInputStart').value || '14:00';
+      const endTime = document.getElementById('sesInputEnd').value || '15:00';
+      const isOvernightStart = !!document.getElementById('sesChkOvernight').checked;
+      const note = document.getElementById('sesInputNote').value.trim();
+
+      const payload = editId
+        ? { action: 'update-session', id: editId, title, taskId, color: selectedSessionModalColor, date: dateStr, startTime, endTime, isOvernightStart, note }
+        : { action: 'add-session', title, taskId, color: selectedSessionModalColor, date: dateStr, startTime, endTime, isOvernightStart, note };
+
+      isTaskMutating++;
+      try {
+        const res = await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          toast(data.error || 'Khoảng thời gian phiên học không hợp lệ');
+          return;
+        }
+        if (data.dailyPlanner) reconcilePlannerWithServer(data.dailyPlanner);
+        closeSessionModal();
+        renderDailyPlannerPage();
+        updateYptLiveTimers();
+        toast(editId ? 'Đã cập nhật phiên học' : 'Đã lưu phiên học');
+      } catch (e) {
+        toast('Lỗi kết nối khi lưu phiên học');
+      } finally {
+        isTaskMutating--;
+      }
+    }
+
+    async function deleteCurrentEditingSession() {
+      const editId = document.getElementById('sesEditId').value.trim();
+      if (!editId) return;
+      closeSessionModal();
+      if (!plannerData.deletedSessions) plannerData.deletedSessions = {};
+      plannerData.deletedSessions[editId] = Date.now();
+      plannerData.sessions = (plannerData.sessions || []).filter(s => s.id !== editId);
+      savePlannerToLocal();
+      renderDailyPlannerPage();
+
+      isTaskMutating++;
+      try {
+        const res = await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete-session', id: editId })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.dailyPlanner) reconcilePlannerWithServer(data.dailyPlanner);
+          renderDailyPlannerPage();
+          updateYptLiveTimers();
+          toast('Đã xóa phiên học');
+        }
+      } catch (e) {
+        toast('Lỗi xóa phiên học');
+      } finally {
+        isTaskMutating--;
+      }
+    }
+
+    function openScheduleSettingsModal() {
+      const modal = document.getElementById('scheduleSettingsModal');
+      if (!modal) return;
+      const sch = getScheduleSettingsFE();
+      document.getElementById('schChkSleepEnabled').checked = !!sch.sleepEnabled;
+      document.getElementById('schInputBedTime').value = sch.bedTime || '22:35';
+      document.getElementById('schInputWakeTime').value = sch.wakeTime || '04:45';
+      document.getElementById('schSelectDayStart').value = String(sch.dayStartHour !== undefined ? sch.dayStartHour : 4);
+      document.getElementById('schChkShowBreaks').checked = !!sch.showBreaks;
+      modal.style.display = 'flex';
+      modal.classList.add('active', 'show');
+    }
+
+    function closeScheduleSettingsModal() {
+      const modal = document.getElementById('scheduleSettingsModal');
+      if (modal) {
+        modal.classList.remove('show', 'active');
+        modal.style.display = 'none';
+      }
+    }
+
+    async function saveScheduleSettingsFromModal() {
+      const newSch = {
+        sleepEnabled: !!document.getElementById('schChkSleepEnabled').checked,
+        bedTime: document.getElementById('schInputBedTime').value || '22:35',
+        wakeTime: document.getElementById('schInputWakeTime').value || '04:45',
+        dayStartHour: parseInt(document.getElementById('schSelectDayStart').value, 10) || 0,
+        showBreaks: !!document.getElementById('schChkShowBreaks').checked,
+        minBreakSeconds: 60,
+        updatedAt: Date.now()
+      };
+      plannerData.scheduleSettings = newSch;
+      savePlannerToLocal();
+      closeScheduleSettingsModal();
+      renderDailyPlannerPage();
+      updateYptLiveTimers();
+      toast('Đã lưu lịch ngủ & timeline');
+
+      isTaskMutating++;
+      try {
+        const res = await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'update-schedule-settings', scheduleSettings: newSch })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.dailyPlanner) reconcilePlannerWithServer(data.dailyPlanner);
+          renderDailyPlannerPage();
+        }
+      } catch (e) {
+        console.warn('Save schedule settings error:', e);
+      } finally {
+        isTaskMutating--;
+      }
+    }
+
+    /* FLOATING BAR & QUICK TIMER PICKER */
+    function handleFloatingPlayClick() {
+      if (plannerData.activeTimer) {
+        stopCurrentYptTimer();
+      } else {
+        openQuickTimerPicker();
+      }
+    }
+
+    function openQuickTimerPicker() {
+      const modal = document.getElementById('quickTimerPickerModal');
+      const listEl = document.getElementById('quickTaskPickList');
+      if (!modal || !listEl) return;
+      const targetDate = currentPlannerDate || getLocalDateStr();
+      const dayTasks = (plannerData.tasks || []).filter(t => (t.date || targetDate) === targetDate);
+      if (dayTasks.length === 0) {
+        listEl.innerHTML = `<div style="font-size:12.5px;color:#9CA3AF;padding:12px;text-align:center;">Chưa có task nào cho ngày này. Nhập tên bên trên để bắt đầu ngay!</div>`;
+      } else {
+        listEl.innerHTML = dayTasks.map(t => `
+          <button type="button" class="quick-task-pick-btn" onclick="closeQuickTimerPicker(); startTaskYptTimer('${t.id}');">
+            <span style="display:flex;align-items:center;gap:8px;min-width:0;">
+              <span style="width:8px;height:8px;border-radius:50%;background:${inferSessionColorFE(t.title, t.subject, t.color)};flex-shrink:0;"></span>
+              <span style="font-weight:600;color:#1E293B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(t.title)}</span>
+            </span>
+            <span style="font-family:monospace;font-size:11.5px;color:#64748B;">${formatHMS(t.spentSeconds || 0)}</span>
+          </button>
+        `).join('');
+      }
+      modal.style.display = 'flex';
+      modal.classList.add('active', 'show');
+    }
+
+    function closeQuickTimerPicker() {
+      const modal = document.getElementById('quickTimerPickerModal');
+      if (modal) {
+        modal.classList.remove('show', 'active');
+        modal.style.display = 'none';
+      }
+    }
+
+    async function quickCreateAndStartTask() {
+      const inp = document.getElementById('quickStartNewTaskInput');
+      if (!inp || !inp.value.trim()) return;
+      const title = inp.value.trim();
+      inp.value = '';
+      closeQuickTimerPicker();
+      const targetDate = currentPlannerDate || getLocalDateStr();
+
+      isTaskMutating++;
+      let createdId = null;
+      try {
+        const res = await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add', title, section: 'morning', date: targetDate })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.dailyPlanner) reconcilePlannerWithServer(data.dailyPlanner);
+          const created = (plannerData.tasks || []).slice().reverse().find(t => t.title === title && t.date === targetDate);
+          if (created) createdId = created.id;
+        }
+      } catch (e) {
+        toast('Lỗi tạo bài học nhanh');
+      } finally {
+        isTaskMutating--;
+      }
+      if (createdId) {
+        await startTaskYptTimer(createdId);
+      }
+    }
+
+    function updateTimelineLiveTick() {
+      const nowMs = getSyncedServerNow();
+      const todayStr = getLocalDateStr(new Date(nowMs));
+      const data = computeDayTimelineClient(currentPlannerDate, nowMs);
+
+      // Update break inline pill in dashboard card
+      const breakPill = document.getElementById('yptBreakInlinePill');
+      const breakText = document.getElementById('yptBreakInlineText');
+      if (breakPill && breakText) {
+        if (!plannerData.activeTimer && currentPlannerDate === todayStr && data.ongoingBreakSeconds >= 60) {
+          breakPill.style.display = 'inline-flex';
+          breakText.innerText = `Giải lao ${formatVnDuration(data.ongoingBreakSeconds)}`;
+        } else {
+          breakPill.style.display = 'none';
+        }
+      }
+
+      // Update floating pill bar
+      const fClock = document.getElementById('tlFloatingClock');
+      const fSub = document.getElementById('tlFloatingSub');
+      const fBtn = document.getElementById('tlFloatingPlayBtn');
+      const fIcon = document.getElementById('tlFloatingPlayIcon');
+      if (fClock && fSub && fBtn && fIcon) {
+        const active = plannerData.activeTimer;
+        if (active) {
+          const liveSessionSec = Math.max(0, Math.floor((nowMs - active.startedAt) / 1000));
+          const targetTask = (plannerData.tasks || []).find(t => t.id === active.taskId);
+          const taskCumulativeSec = (targetTask ? (targetTask.spentSeconds || 0) : 0) + liveSessionSec;
+          fClock.innerText = formatHMS(taskCumulativeSec);
+          fClock.classList.add('running');
+          fBtn.classList.add('running');
+          fIcon.innerHTML = `<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>`;
+          fSub.innerText = `Đang học: ${active.taskTitle || 'Focus'} • Tổng ${formatHM(data.dayTotalSeconds)}`;
+        } else {
+          fClock.innerText = formatHMS(data.dayTotalSeconds);
+          fClock.classList.remove('running');
+          fBtn.classList.remove('running');
+          fIcon.innerHTML = `<polygon points="6 4 20 12 6 20 6 4"/>`;
+          if (currentPlannerDate === todayStr && data.ongoingBreakSeconds >= 60) {
+            fSub.innerText = `Giải lao ${formatVnDuration(data.ongoingBreakSeconds)}`;
+          } else if (data.countdownToSleepSeconds !== null) {
+            fSub.innerText = `Còn ${formatVnDuration(data.countdownToSleepSeconds)} đến giờ ngủ`;
+          } else {
+            fSub.innerText = 'Nhấn Play để bắt đầu bấm giờ';
+          }
+        }
+      }
+
+      // Live tick elements on Day Timeline without rebuilding scroll DOM
+      if (currentPage === 'planner' && (currentPlannerSubView === 'day' || currentPlannerSubView === 'split')) {
+        const nowLine = document.getElementById('tlDayNowLine');
+        if (nowLine) {
+          const startHour = parseInt(nowLine.getAttribute('data-start-hour') || '4', 10);
+          const pxPerHour = parseFloat(nowLine.getAttribute('data-px-per-hour') || '64');
+          const topY = ((data.nowRelMin - startHour * 60) / 60) * pxPerHour;
+          if (topY >= 0) nowLine.style.top = `${topY}px`;
+          const pill = document.getElementById('tlDayNowPill');
+          if (pill) pill.innerText = msToVnPartsFE(nowMs).hhmm;
+          const cd = document.getElementById('tlDaySleepCountdown');
+          if (cd && data.countdownToSleepSeconds !== null) {
+            cd.innerText = `Còn ${formatVnDuration(data.countdownToSleepSeconds)} đến giờ ngủ`;
+          }
+        }
+        const liveSes = data.sessions.find(s => s.isLive);
+        const liveEl = document.getElementById('tlLiveSessionBlock');
+        const liveDurEl = document.getElementById('tlLiveSessionDurText');
+        if (liveSes && liveEl) {
+          const nowLineEl = document.getElementById('tlDayNowLine');
+          const startHour = parseInt(nowLineEl?.getAttribute('data-start-hour') || String(getScheduleSettingsFE().dayStartHour), 10);
+          const pxPerHour = parseFloat(nowLineEl?.getAttribute('data-px-per-hour') || '64');
+          const topY = ((liveSes.startRelMin - startHour * 60) / 60) * pxPerHour;
+          const hPx = Math.max(20, ((liveSes.endRelMin - liveSes.startRelMin) / 60) * pxPerHour);
+          liveEl.style.height = `${hPx}px`;
+          liveEl.classList.toggle('compact', hPx < 38);
+          if (liveDurEl) liveDurEl.innerText = formatHMS(liveSes.durationSeconds);
+        }
+        const ongoingBreak = data.breaks.find(b => b.isOngoing);
+        const ongoingBreakEl = document.getElementById('tlOngoingBreakSlot');
+        if (ongoingBreak && ongoingBreakEl) {
+          const startHour = parseInt(nowLine?.getAttribute('data-start-hour') || String(getScheduleSettingsFE().dayStartHour), 10);
+          const pxPerHour = parseFloat(nowLine?.getAttribute('data-px-per-hour') || '64');
+          const bHp = Math.max(18, ((ongoingBreak.endRelMin - ongoingBreak.startRelMin) / 60) * pxPerHour);
+          ongoingBreakEl.style.height = `${bHp}px`;
+          const rangeSp = ongoingBreakEl.querySelector('.tl-break-range');
+          const durSp = ongoingBreakEl.querySelector('.tl-break-dur');
+          if (rangeSp) rangeSp.innerText = `${ongoingBreak.startLabel}-${ongoingBreak.endLabel}`;
+          if (durSp) durSp.innerText = formatVnDuration(ongoingBreak.durationSeconds);
+        }
+        const studyStat = document.getElementById('tlDayStudyStat');
+        if (studyStat) studyStat.innerText = formatHMS(data.dayTotalSeconds);
+        const breakStat = document.getElementById('tlDayBreakStat');
+        if (breakStat && data.totalBreakSeconds > 0) breakStat.innerText = formatVnDuration(data.totalBreakSeconds);
+      }
+    }
+
     /* Live 1s Stopwatch Tick for YPT Dashboard */
     function updateYptLiveTimers() {
       const active = plannerData.activeTimer;
@@ -7362,6 +9812,7 @@
       if (currentPage === 'planner') {
         updateLiveDeadlines();
       }
+      updateTimelineLiveTick();
 
       if (!active) {
         if (clockEl) {
@@ -7458,16 +9909,21 @@
           // Reconcile conflict-free with local-first source of truth
           reconcilePlannerWithServer(freshData);
 
-          // Avoid re-rendering while user is actively typing in an input field
+          const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal'].some(mid => {
+            const m = document.getElementById(mid);
+            return m && m.style.display === 'flex';
+          });
+          // Avoid re-rendering while user is actively typing in an input field or editing in a modal
           const activeEl = document.activeElement;
-          const isUserTyping = activeEl && (
+          const isUserTyping = isModalOpen || (activeEl && (
+            activeEl.id === 'tlMonthEventInput' ||
             activeEl.classList?.contains('inline-task-title-input') ||
             activeEl.classList?.contains('inline-deadline-input') ||
             activeEl.classList?.contains('planner-draft-input') ||
             activeEl.classList?.contains('notion-goal-input') ||
             activeEl.classList?.contains('notion-goal-text') ||
             activeEl.closest?.('.planner-draft-item')
-          );
+          ));
 
           if (!isUserTyping) {
             renderDailyPlannerPage();
@@ -8176,6 +10632,19 @@
         headingEl.innerText = `${prefix}Ngày ${dd}/${mm}/${yyyy}`;
       }
 
+      // D-Day Countdown pill in Daily Plan header
+      const dDayPill = document.getElementById('plannerDDayPill');
+      if (dDayPill) {
+        const dDay = getDDayInfo(currentPlannerDate);
+        if (dDay) {
+          dDayPill.style.display = 'inline-flex';
+          dDayPill.innerText = dDay.label;
+          dDayPill.classList.toggle('urgent', !!dDay.urgent);
+        } else {
+          dDayPill.style.display = 'none';
+        }
+      }
+
       // Filter tasks for the selected date
       const dateTasks = tasks.filter(t => (t.date || todayStr) === currentPlannerDate);
 
@@ -8326,6 +10795,19 @@
       if (calPanel && calPanel.style.display !== 'none') {
         renderYptCalendar();
       }
+
+      // Render active Timeline sub-view (Day / Week / Month / Split)
+      applyPlannerSubViewLayout();
+      if (currentPlannerSubView === 'day' || currentPlannerSubView === 'split') {
+        renderDayTimelineView();
+      }
+      if (currentPlannerSubView === 'week') {
+        renderWeekTimelineView();
+      }
+      if (currentPlannerSubView === 'month') {
+        renderMonthTimelineView();
+      }
+      updateTimelineLiveTick();
     }
 
     /* ========================================================
@@ -8615,10 +11097,12 @@
       if (!task) return;
 
 
-      // If switching from another running task, immediately accumulate previous task time in memory so UI is instant:
-      if (plannerData.activeTimer && plannerData.activeTimer.taskId !== taskId) {
+      // Helper: finalize current active timer optimistically into plannerData.sessions
+      const finalizeLocalSession = () => {
+        if (!plannerData.activeTimer) return;
         const prev = plannerData.activeTimer;
-        const sessionSec = Math.max(0, Math.floor((getSyncedServerNow() - prev.startedAt) / 1000));
+        const now = getSyncedServerNow();
+        const sessionSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
         const prevTask = (plannerData.tasks || []).find(t => t.id === prev.taskId);
         if (prevTask) {
           prevTask.spentSeconds = (prevTask.spentSeconds || 0) + sessionSec;
@@ -8630,18 +11114,48 @@
         plannerData.daysHistory[prev.date].totalSeconds += sessionSec;
 
         const origStart = prev.sessionStartedAt || prev.startedAt;
-        const continuousSessionSec = Math.max(0, Math.floor((getSyncedServerNow() - origStart) / 1000));
+        const continuousSessionSec = Math.min(4 * 3600, Math.max(0, Math.floor((now - origStart) / 1000)));
         plannerData.daysHistory[prev.date].maxFocusSeconds = Math.max(
           plannerData.daysHistory[prev.date].maxFocusSeconds || 0,
           continuousSessionSec
         );
+        if (continuousSessionSec >= 1) {
+          if (!Array.isArray(plannerData.sessions)) plannerData.sessions = [];
+          const sesId = prev.sessionId || ('ses_' + origStart + '_auto');
+          const color = inferSessionColorFE(prevTask?.title || prev.taskTitle, prev.subject || prevTask?.subject, prev.color || prevTask?.color);
+          const sesPayload = {
+            id: sesId,
+            taskId: prev.taskId || null,
+            title: prevTask?.title || prev.taskTitle || 'Focus',
+            color,
+            date: prev.date,
+            startedAt: origStart,
+            endedAt: origStart + continuousSessionSec * 1000,
+            durationSeconds: continuousSessionSec,
+            source: 'timer',
+            updatedAt: now
+          };
+          const existingIdx = plannerData.sessions.findIndex(s => s.id === sesId);
+          if (existingIdx >= 0) plannerData.sessions[existingIdx] = { ...plannerData.sessions[existingIdx], ...sesPayload };
+          else plannerData.sessions.push(sesPayload);
+        }
+      };
+
+      // If switching from another running task, immediately accumulate previous task time & session:
+      if (plannerData.activeTimer && plannerData.activeTimer.taskId !== taskId) {
+        finalizeLocalSession();
       }
 
+      const startNow = getSyncedServerNow();
+      const newSessionId = 'ses_' + startNow + '_' + Math.random().toString(36).slice(2, 6);
       plannerData.activeTimer = {
         taskId: task.id,
         taskTitle: task.title,
-        startedAt: getSyncedServerNow(),
-        sessionStartedAt: getSyncedServerNow(),
+        subject: task.subject || undefined,
+        color: inferSessionColorFE(task.title, task.subject, task.color),
+        sessionId: newSessionId,
+        startedAt: startNow,
+        sessionStartedAt: startNow,
         date: currentPlannerDate
       };
       plannerData.activeTimerChangedAt = Date.now();
@@ -8661,6 +11175,7 @@
             action: 'start-timer',
             id: taskId,
             date: currentPlannerDate,
+            sessionId: newSessionId,
             clientStartedAt: plannerData.activeTimer.startedAt
           })
         });
@@ -8686,7 +11201,8 @@
     async function stopCurrentYptTimer() {
       if (!plannerData.activeTimer) return;
       const prev = plannerData.activeTimer;
-      const sessionSec = Math.max(0, Math.floor((getSyncedServerNow() - prev.startedAt) / 1000));
+      const now = getSyncedServerNow();
+      const sessionSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
 
       const targetTask = (plannerData.tasks || []).find(t => t.id === prev.taskId);
       if (targetTask) {
@@ -8699,11 +11215,31 @@
       plannerData.daysHistory[prev.date].totalSeconds += sessionSec;
 
       const origStart = prev.sessionStartedAt || prev.startedAt;
-      const continuousSessionSec = Math.max(0, Math.floor((getSyncedServerNow() - origStart) / 1000));
+      const continuousSessionSec = Math.min(4 * 3600, Math.max(0, Math.floor((now - origStart) / 1000)));
       plannerData.daysHistory[prev.date].maxFocusSeconds = Math.max(
         plannerData.daysHistory[prev.date].maxFocusSeconds || 0,
         continuousSessionSec
       );
+      if (continuousSessionSec >= 1) {
+        if (!Array.isArray(plannerData.sessions)) plannerData.sessions = [];
+        const sesId = prev.sessionId || ('ses_' + origStart + '_auto');
+        const color = inferSessionColorFE(targetTask?.title || prev.taskTitle, prev.subject || targetTask?.subject, prev.color || targetTask?.color);
+        const sesPayload = {
+          id: sesId,
+          taskId: prev.taskId || null,
+          title: targetTask?.title || prev.taskTitle || 'Focus',
+          color,
+          date: prev.date,
+          startedAt: origStart,
+          endedAt: origStart + continuousSessionSec * 1000,
+          durationSeconds: continuousSessionSec,
+          source: 'timer',
+          updatedAt: now
+        };
+        const existingIdx = plannerData.sessions.findIndex(s => s.id === sesId);
+        if (existingIdx >= 0) plannerData.sessions[existingIdx] = { ...plannerData.sessions[existingIdx], ...sesPayload };
+        else plannerData.sessions.push(sesPayload);
+      }
       plannerData.activeTimer = null;
       plannerData.activeTimerChangedAt = Date.now();
       savePlannerToLocal();
@@ -9363,12 +11899,25 @@
             }
           }
 
-          // Real-time Multi-Device Sync: Daily Planner
+          // Real-time Multi-Device Sync: Daily Planner (Conflict-free reconcile)
           if (data.settings.dailyPlanner && !isTimerSwitching && isTaskMutating === 0) {
-            const serverPlannerStr = JSON.stringify(data.settings.dailyPlanner);
-            if (serverPlannerStr !== JSON.stringify(plannerData)) {
-              plannerData = data.settings.dailyPlanner;
-              const isTyping = document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA');
+            const beforeSig = JSON.stringify({
+              t: plannerData.tasks, g: plannerData.goals, s: plannerData.sessions,
+              e: plannerData.calendarEvents, sch: plannerData.scheduleSettings,
+              h: plannerData.daysHistory, a: plannerData.activeTimer
+            });
+            reconcilePlannerWithServer(data.settings.dailyPlanner);
+            const afterSig = JSON.stringify({
+              t: plannerData.tasks, g: plannerData.goals, s: plannerData.sessions,
+              e: plannerData.calendarEvents, sch: plannerData.scheduleSettings,
+              h: plannerData.daysHistory, a: plannerData.activeTimer
+            });
+            if (beforeSig !== afterSig) {
+              const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal'].some(mid => {
+                const m = document.getElementById(mid);
+                return m && m.style.display === 'flex';
+              });
+              const isTyping = isModalOpen || (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA'));
               if (currentPage === 'planner' && !isTyping) {
                 renderDailyPlannerPage();
               }
@@ -9545,6 +12094,7 @@
         if (data.success) {
           appSettings = data.settings;
           updateWidgets();
+          if (currentPage === 'planner') renderDailyPlannerPage();
           closeExamModal();
           toast('Đã lưu ngày thi thành công');
         }
@@ -11758,25 +14308,36 @@
               const prevTasksJson = JSON.stringify(plannerData.tasks || []);
               const prevGoalsJson = JSON.stringify(plannerData.goals || []);
               const prevHistoryJson = JSON.stringify(plannerData.daysHistory || {});
+              const prevSesJson = JSON.stringify(plannerData.sessions || []);
+              const prevCalEvJson = JSON.stringify(plannerData.calendarEvents || []);
+              const prevSchJson = JSON.stringify(plannerData.scheduleSettings || {});
 
               if (data.dailyPlanner) {
                 reconcilePlannerWithServer(data.dailyPlanner);
               }
 
+              const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal'].some(mid => {
+                const m = document.getElementById(mid);
+                return m && m.style.display === 'flex';
+              });
               const activeEl = document.activeElement;
-              const isUserTyping = activeEl && (
+              const isUserTyping = isModalOpen || (activeEl && (
+                activeEl.id === 'tlMonthEventInput' ||
                 activeEl.classList?.contains('inline-task-title-input') ||
                 activeEl.classList?.contains('inline-deadline-input') ||
                 activeEl.classList?.contains('planner-draft-input') ||
                 activeEl.classList?.contains('notion-goal-input') ||
                 activeEl.classList?.contains('notion-goal-text') ||
                 activeEl.closest?.('.planner-draft-item')
-              );
+              ));
               if (!isUserTyping) {
                 const nowTasksJson = JSON.stringify(plannerData.tasks || []);
                 const nowGoalsJson = JSON.stringify(plannerData.goals || []);
                 const nowHistoryJson = JSON.stringify(plannerData.daysHistory || {});
-                if (wasRunning !== isRunningNow || taskChanged || prevTasksJson !== nowTasksJson || prevGoalsJson !== nowGoalsJson || prevHistoryJson !== nowHistoryJson) {
+                const nowSesJson = JSON.stringify(plannerData.sessions || []);
+                const nowCalEvJson = JSON.stringify(plannerData.calendarEvents || []);
+                const nowSchJson = JSON.stringify(plannerData.scheduleSettings || {});
+                if (wasRunning !== isRunningNow || taskChanged || prevTasksJson !== nowTasksJson || prevGoalsJson !== nowGoalsJson || prevHistoryJson !== nowHistoryJson || prevSesJson !== nowSesJson || prevCalEvJson !== nowCalEvJson || prevSchJson !== nowSchJson) {
                   renderDailyPlannerPage();
                 }
               }

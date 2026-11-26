@@ -59,12 +59,12 @@ async function calibrateClockOffset() {
 // Folders: Priority to in-repo data/10SAT for Cloud Render deployment & standalone execution, fallback to Downloads/10SAT
 const REPO_10SAT = path.join(__dirname, 'data', '10SAT');
 const USER_DOWNLOADS_10SAT = path.join(os.homedir(), 'Downloads', '10SAT');
-const BASE_10SAT = (fs.existsSync(REPO_10SAT) && fs.existsSync(path.join(REPO_10SAT, 'VERBAL'))) 
-  ? REPO_10SAT 
+const BASE_10SAT = (fs.existsSync(REPO_10SAT) && fs.existsSync(path.join(REPO_10SAT, 'VERBAL')))
+  ? REPO_10SAT
   : USER_DOWNLOADS_10SAT;
 const VERBAL_DIR = path.join(BASE_10SAT, 'VERBAL');
 const MATH_DIR = path.join(BASE_10SAT, 'MATH');
-const DB_FILE = path.join(__dirname, 'database.json');
+const DB_FILE = process.env.DB_FILE ? path.resolve(process.env.DB_FILE) : path.join(__dirname, 'database.json');
 
 // Ensure directories exist
 fs.mkdirSync(VERBAL_DIR, { recursive: true });
@@ -105,6 +105,19 @@ let appSettings = {
     ],
     goals: [],
     deletedGoals: {},
+    sessions: [],
+    deletedSessions: {},
+    calendarEvents: [],
+    deletedCalendarEvents: {},
+    scheduleSettings: {
+      dayStartHour: 4,
+      sleepEnabled: true,
+      bedTime: '22:35',
+      wakeTime: '04:45',
+      showBreaks: true,
+      minBreakSeconds: 60,
+      updatedAt: 0
+    },
     daysHistory: {},
     activeTimer: null
   },
@@ -166,7 +179,7 @@ function formatFilename(baseName, deadlineTag, subject = 'Verbal', isDone = fals
   if (isDone) result = `[Done] ${result}`;
   return result.replace(/[<>:"/\\|?*]/g, '_').trim();
 }
- 
+
 // Universal PDF path resolver (Local Windows disk + Repo data folder)
 function resolveLocalPdfPath(item) {
   if (!item) return null;
@@ -205,7 +218,7 @@ function resolveLocalPdfPath(item) {
         const files = fs.readdirSync(d);
         const match = files.find(f => cleanBaseName(f).toLowerCase() === cleanTarget);
         if (match) return path.join(d, match);
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
@@ -218,7 +231,7 @@ function resolveLocalPdfPath(item) {
         const files = fs.readdirSync(d);
         const match = files.find(f => cleanBaseName(f).replace(/\.pdf$/i, '').toLowerCase() === cleanTitle);
         if (match) return path.join(d, match);
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
@@ -251,11 +264,16 @@ function loadDatabase() {
           dailyPlanner: {
             tasks: Array.isArray(data.settings?.dailyPlanner?.tasks) ? data.settings.dailyPlanner.tasks : (appSettings.dailyPlanner?.tasks || []),
             goals: Array.isArray(data.settings?.dailyPlanner?.goals) ? data.settings.dailyPlanner.goals : (appSettings.dailyPlanner?.goals || []),
+            sessions: Array.isArray(data.settings?.dailyPlanner?.sessions) ? data.settings.dailyPlanner.sessions : [],
+            calendarEvents: Array.isArray(data.settings?.dailyPlanner?.calendarEvents) ? data.settings.dailyPlanner.calendarEvents : [],
+            scheduleSettings: normalizeScheduleSettings(data.settings?.dailyPlanner?.scheduleSettings),
             daysHistory: (typeof data.settings?.dailyPlanner?.daysHistory === 'object' && data.settings.dailyPlanner.daysHistory !== null) ? data.settings.dailyPlanner.daysHistory : (appSettings.dailyPlanner?.daysHistory || {}),
             deletedTasks: (typeof data.settings?.dailyPlanner?.deletedTasks === 'object' && data.settings.dailyPlanner.deletedTasks !== null) ? data.settings.dailyPlanner.deletedTasks : {},
             deletedGoals: (typeof data.settings?.dailyPlanner?.deletedGoals === 'object' && data.settings.dailyPlanner.deletedGoals !== null) ? data.settings.dailyPlanner.deletedGoals : {},
             activeTimer: data.settings?.dailyPlanner?.activeTimer || null,
-            activeTimerChangedAt: data.settings?.dailyPlanner?.activeTimerChangedAt || 0
+            activeTimerChangedAt: data.settings?.dailyPlanner?.activeTimerChangedAt || 0,
+            deletedSessions: (typeof data.settings?.dailyPlanner?.deletedSessions === 'object' && data.settings?.dailyPlanner?.deletedSessions !== null) ? data.settings.dailyPlanner.deletedSessions : {},
+            deletedCalendarEvents: (typeof data.settings?.dailyPlanner?.deletedCalendarEvents === 'object' && data.settings?.dailyPlanner?.deletedCalendarEvents !== null) ? data.settings.dailyPlanner.deletedCalendarEvents : {}
           },
           discordRpc: {
             ...appSettings.discordRpc,
@@ -272,6 +290,26 @@ function loadDatabase() {
               t.status = t.completed ? 'completed' : 'incomplete';
             }
           }
+        }
+        if (appSettings.dailyPlanner && Array.isArray(appSettings.dailyPlanner.sessions)) {
+          appSettings.dailyPlanner.sessions = appSettings.dailyPlanner.sessions
+            .filter(s => s && s.id && Number.isFinite(Number(s.startedAt)) && Number.isFinite(Number(s.endedAt)) && Number(s.endedAt) >= Number(s.startedAt))
+            .map(s => {
+              const startedAt = Number(s.startedAt);
+              const endedAt = Number(s.endedAt);
+              const meta = inferPlannerSubjectAndColor(s.title, s.subject, s.color);
+              return {
+                ...s,
+                title: String(s.title || 'Focus').trim() || 'Focus',
+                subject: meta.subject,
+                color: meta.color,
+                date: /^\d{4}-\d{2}-\d{2}$/.test(s.date || '') ? s.date : getVnDateStr(startedAt),
+                startedAt,
+                endedAt,
+                durationSeconds: Number.isFinite(Number(s.durationSeconds)) ? Math.max(0, Math.round(Number(s.durationSeconds))) : Math.max(0, Math.floor((endedAt - startedAt) / 1000)),
+                updatedAt: s.updatedAt || endedAt || Date.now()
+              };
+            });
         }
       }
       // Populate history from existing completed items if empty
@@ -330,11 +368,11 @@ function _atomicWriteSync(filePath, content) {
     if (['EPERM', 'EBUSY', 'EEXIST'].includes(err.code)) {
       try {
         fs.copyFileSync(tmpPath, filePath);
-        try { fs.unlinkSync(tmpPath); } catch (_) {}
+        try { fs.unlinkSync(tmpPath); } catch (_) { }
         return;
       } catch (copyErr) {
         fs.writeFileSync(filePath, content, 'utf-8');
-        try { fs.unlinkSync(tmpPath); } catch (_) {}
+        try { fs.unlinkSync(tmpPath); } catch (_) { }
         return;
       }
     }
@@ -385,37 +423,389 @@ process.on('exit', () => { flushDatabaseSync(); });
 // Global Fault-Tolerant Process Error Shield (Keeps backend 100% resilient & 24/7 online)
 process.on('uncaughtException', (err) => {
   console.error(`[Server Fault Shield] Uncaught Exception at ${new Date().toISOString()}:`, err);
-  try { flushDatabaseSync(); } catch (_) {}
+  try { flushDatabaseSync(); } catch (_) { }
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error(`[Server Fault Shield] Unhandled Rejection at ${new Date().toISOString()}:`, reason);
 });
 
+// ========== Daily Planner Helpers: Timezone, Sessions, Timeline & LWW Sync ==========
+const VN_OFFSET_MS = 7 * 3600 * 1000;
+const DAY_MS = 24 * 3600 * 1000;
+const MAX_TIMER_INCREMENT_SEC = 4 * 3600;
+const DEFAULT_SCHEDULE_SETTINGS = {
+  dayStartHour: 4,
+  sleepEnabled: true,
+  bedTime: '22:35',
+  wakeTime: '04:45',
+  showBreaks: true,
+  minBreakSeconds: 60,
+  updatedAt: 0
+};
+const SUBJECT_COLORS = {
+  MATH: '#2563EB',
+  VERBAL: '#7C3AED',
+  OTHER: '#10B981'
+};
+
+function normalizeHHMM(val, fallback = '22:35') {
+  const match = String(val || '').trim().match(/^(\d{1,2})[:hH](\d{1,2})$/);
+  if (!match) return fallback;
+  const h = Math.max(0, Math.min(23, parseInt(match[1], 10)));
+  const m = Math.max(0, Math.min(59, parseInt(match[2], 10)));
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+function normalizeScheduleSettings(raw = {}) {
+  const src = (raw && typeof raw === 'object') ? raw : {};
+  const dayStartRaw = Number(src.dayStartHour);
+  const minBreakRaw = Number(src.minBreakSeconds);
+  return {
+    dayStartHour: Number.isFinite(dayStartRaw) ? Math.max(0, Math.min(12, Math.round(dayStartRaw))) : DEFAULT_SCHEDULE_SETTINGS.dayStartHour,
+    sleepEnabled: src.sleepEnabled !== undefined ? !!src.sleepEnabled : DEFAULT_SCHEDULE_SETTINGS.sleepEnabled,
+    bedTime: normalizeHHMM(src.bedTime, DEFAULT_SCHEDULE_SETTINGS.bedTime),
+    wakeTime: normalizeHHMM(src.wakeTime, DEFAULT_SCHEDULE_SETTINGS.wakeTime),
+    showBreaks: src.showBreaks !== undefined ? !!src.showBreaks : DEFAULT_SCHEDULE_SETTINGS.showBreaks,
+    minBreakSeconds: Number.isFinite(minBreakRaw) ? Math.max(10, Math.min(3600, Math.round(minBreakRaw))) : DEFAULT_SCHEDULE_SETTINGS.minBreakSeconds,
+    updatedAt: Number(src.updatedAt) || 0
+  };
+}
+
+function inferPlannerSubjectAndColor(title = '', explicitSubject = '', explicitColor = '') {
+  const t = String(title || '').toLowerCase();
+  let subject = String(explicitSubject || '').toUpperCase();
+  if (!['MATH', 'VERBAL', 'OTHER'].includes(subject)) {
+    const mathRe = /\b(math|toán|algebra|geo|geometry|adv|advance|polynomial|equation|calculus|prob|probability|statistic|trigonometry|function|graph|ratio|percent|angle|quadratic|linear)\b|câu\s*(geo|adv|prob|alg)/i;
+    const verbalRe = /\b(verbal|ebrw|reading|writing|grammar|vocab|vocabulary|passage|transition|synthesis|inference|details|detail|main idea|structure|rhetoric|wic|word|english|critical)\b/i;
+    if (mathRe.test(t) || t.includes('toán')) subject = 'MATH';
+    else if (verbalRe.test(t) || t.includes('tiếng anh')) subject = 'VERBAL';
+    else subject = 'OTHER';
+  }
+  const cleanColor = /^#[0-9a-f]{3,8}$/i.test(String(explicitColor || '').trim()) ? String(explicitColor).trim() : '';
+  return {
+    subject,
+    color: cleanColor || SUBJECT_COLORS[subject] || SUBJECT_COLORS.OTHER
+  };
+}
+
+function vnDateTimeToMs(dateStr, hh = 0, mm = 0, addDays = 0) {
+  const parts = String(dateStr || getVnDateStr()).split('-').map(Number);
+  const y = parts[0] || 2026;
+  const m = (parts[1] || 1) - 1;
+  const d = (parts[2] || 1) + addDays;
+  return Date.UTC(y, m, d, hh - 7, mm, 0, 0);
+}
+
+function msToVnParts(ts) {
+  const vn = new Date(Number(ts) + VN_OFFSET_MS);
+  const y = vn.getUTCFullYear();
+  const m = vn.getUTCMonth() + 1;
+  const d = vn.getUTCDate();
+  const hours = vn.getUTCHours();
+  const minutes = vn.getUTCMinutes();
+  return {
+    dateStr: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
+    hours,
+    minutes,
+    hhmm: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`,
+    totalMinutes: hours * 60 + minutes
+  };
+}
+
+function ensureDailyPlannerShape(planner) {
+  if (!planner || typeof planner !== 'object') return;
+  if (!Array.isArray(planner.tasks)) planner.tasks = [];
+  if (!Array.isArray(planner.goals)) planner.goals = [];
+  if (!Array.isArray(planner.sessions)) planner.sessions = [];
+  if (!Array.isArray(planner.calendarEvents)) planner.calendarEvents = [];
+  if (!planner.daysHistory || typeof planner.daysHistory !== 'object') planner.daysHistory = {};
+  if (!planner.deletedTasks || typeof planner.deletedTasks !== 'object') planner.deletedTasks = {};
+  if (!planner.deletedGoals || typeof planner.deletedGoals !== 'object') planner.deletedGoals = {};
+  if (!planner.deletedSessions || typeof planner.deletedSessions !== 'object') planner.deletedSessions = {};
+  if (!planner.deletedCalendarEvents || typeof planner.deletedCalendarEvents !== 'object') planner.deletedCalendarEvents = {};
+  planner.scheduleSettings = normalizeScheduleSettings(planner.scheduleSettings);
+  if (planner.activeTimerChangedAt === undefined) planner.activeTimerChangedAt = 0;
+}
+
+function filterDeletedEntities(list, deletedMap) {
+  if (!Array.isArray(list)) return [];
+  const del = deletedMap || {};
+  return list.filter(item => {
+    if (!item || !item.id) return false;
+    const delTime = del[item.id];
+    if (!delTime) return true;
+    const updated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
+    return updated > delTime;
+  });
+}
+
+function buildPlannerPayload(planner) {
+  ensureDailyPlannerShape(planner);
+  return {
+    ...planner,
+    tasks: filterDeletedEntities(planner.tasks, planner.deletedTasks),
+    goals: filterDeletedEntities(planner.goals, planner.deletedGoals),
+    sessions: filterDeletedEntities(planner.sessions, planner.deletedSessions),
+    calendarEvents: filterDeletedEntities(planner.calendarEvents, planner.deletedCalendarEvents),
+    scheduleSettings: normalizeScheduleSettings(planner.scheduleSettings)
+  };
+}
+
+function recomputeDayStatsFromSessions(planner, dateStr) {
+  ensureDailyPlannerShape(planner);
+  if (!dateStr) return;
+  if (!planner.daysHistory[dateStr]) {
+    planner.daysHistory[dateStr] = { totalSeconds: 0, maxFocusSeconds: 0 };
+  }
+  const dayEntry = planner.daysHistory[dateStr];
+  dayEntry.totalSeconds = Math.max(0, Math.round(dayEntry.totalSeconds || 0));
+  const activeSessions = filterDeletedEntities(planner.sessions, planner.deletedSessions).filter(s => s.date === dateStr);
+  const maxSessionDur = activeSessions.reduce((mx, s) => Math.max(mx, s.durationSeconds || 0), 0);
+  const sumSessionDur = activeSessions.reduce((sum, s) => sum + (s.durationSeconds || 0), 0);
+  const unloggedLegacy = Math.max(0, dayEntry.totalSeconds - sumSessionDur);
+  const maxTaskSpentOnDay = filterDeletedEntities(planner.tasks, planner.deletedTasks)
+    .filter(t => (t.date || dateStr) === dateStr)
+    .reduce((mx, t) => Math.max(mx, t.spentSeconds || 0), 0);
+  const legacyMaxEstimate = unloggedLegacy > 0
+    ? Math.min(unloggedLegacy, Math.max(maxTaskSpentOnDay, dayEntry.maxFocusSeconds || 0))
+    : 0;
+  dayEntry.maxFocusSeconds = Math.min(dayEntry.totalSeconds, Math.max(maxSessionDur, legacyMaxEstimate));
+}
+
+function upsertSessionRecord(planner, sessionObj) {
+  ensureDailyPlannerShape(planner);
+  if (!sessionObj || !sessionObj.id) return null;
+  const delTime = planner.deletedSessions[sessionObj.id];
+  if (delTime && delTime >= (sessionObj.updatedAt || 0)) return null;
+  const idx = planner.sessions.findIndex(s => s.id === sessionObj.id);
+  if (idx >= 0) {
+    planner.sessions[idx] = { ...planner.sessions[idx], ...sessionObj };
+    return planner.sessions[idx];
+  }
+  planner.sessions.push(sessionObj);
+  return sessionObj;
+}
+
+function applyActiveTimerDelta(planner, now, mode = 'checkpoint') {
+  ensureDailyPlannerShape(planner);
+  if (!planner.activeTimer) return 0;
+  const prev = planner.activeTimer;
+  const rawSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
+  const sessionSec = Math.min(MAX_TIMER_INCREMENT_SEC, rawSec);
+  const origStart = prev.sessionStartedAt || prev.startedAt;
+  const continuousSec = Math.min(MAX_TIMER_INCREMENT_SEC, Math.max(0, Math.floor((now - origStart) / 1000)));
+  const sessionId = prev.sessionId || ('ses_' + origStart + '_auto');
+  const prevTask = planner.tasks.find(item => item.id === prev.taskId);
+
+  if (prevTask && sessionSec > 0) {
+    prevTask.spentSeconds = (prevTask.spentSeconds || 0) + sessionSec;
+    prevTask.updatedAt = now;
+  }
+
+  const timerDate = prev.date || getVnDateStr(origStart);
+  if (!planner.daysHistory[timerDate]) {
+    planner.daysHistory[timerDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
+  }
+  if (sessionSec > 0) {
+    planner.daysHistory[timerDate].totalSeconds = (planner.daysHistory[timerDate].totalSeconds || 0) + sessionSec;
+  }
+  planner.daysHistory[timerDate].maxFocusSeconds = Math.max(
+    planner.daysHistory[timerDate].maxFocusSeconds || 0,
+    continuousSec,
+    prevTask ? (prevTask.spentSeconds || 0) : 0
+  );
+
+  if ((mode === 'stop' && continuousSec >= 1) || (mode === 'checkpoint' && continuousSec >= 5)) {
+    const title = prevTask?.title || prev.taskTitle || 'Focus';
+    const meta = inferPlannerSubjectAndColor(title, prev.subject || prevTask?.subject, prev.color || prevTask?.color);
+    upsertSessionRecord(planner, {
+      id: sessionId,
+      taskId: prev.taskId || null,
+      title,
+      subject: meta.subject,
+      color: meta.color,
+      date: timerDate,
+      startedAt: origStart,
+      endedAt: origStart + continuousSec * 1000,
+      durationSeconds: continuousSec,
+      source: 'timer',
+      note: '',
+      updatedAt: now
+    });
+  }
+
+  if (mode === 'stop') {
+    planner.activeTimer = null;
+    planner.activeTimerChangedAt = now;
+  } else if (sessionSec > 0) {
+    prev.sessionId = sessionId;
+    prev.sessionStartedAt = origStart;
+    prev.startedAt = now;
+    planner.activeTimerChangedAt = now;
+  }
+  return continuousSec;
+}
+
+function resolveSleepWindowForDate(dateStr, scheduleSettings) {
+  const sch = normalizeScheduleSettings(scheduleSettings);
+  const [bH, bM] = sch.bedTime.split(':').map(Number);
+  const [wH, wM] = sch.wakeTime.split(':').map(Number);
+  const bedMin = bH * 60 + bM;
+  const wakeMin = wH * 60 + wM;
+  const bedAddDay = bedMin < sch.dayStartHour * 60 ? 1 : 0;
+  const wakeAddDay = (wakeMin <= bedMin || bedAddDay > 0) ? (bedAddDay + (wakeMin <= bedMin ? 1 : 0)) : bedAddDay;
+  const bedAtMs = vnDateTimeToMs(dateStr, bH, bM, bedAddDay);
+  const wakeAtMs = vnDateTimeToMs(dateStr, wH, wM, wakeAddDay);
+  return {
+    enabled: sch.sleepEnabled,
+    bedTime: sch.bedTime,
+    wakeTime: sch.wakeTime,
+    bedAtMs,
+    wakeAtMs,
+    durationSeconds: Math.max(0, Math.floor((wakeAtMs - bedAtMs) / 1000))
+  };
+}
+
+function buildDayTimelineSummary(planner, dateStr, now = getCanonicalNow()) {
+  ensureDailyPlannerShape(planner);
+  const sch = normalizeScheduleSettings(planner.scheduleSettings);
+  const todayStr = getVnDateStr(now);
+
+  // Completed / checkpointed sessions for dateStr
+  let sessions = filterDeletedEntities(planner.sessions, planner.deletedSessions)
+    .filter(s => s.date === dateStr)
+    .map(s => ({ ...s, isLive: false }));
+
+  // Include / overlay active running timer if on dateStr
+  const active = planner.activeTimer;
+  if (active && active.date === dateStr) {
+    const origStart = active.sessionStartedAt || active.startedAt;
+    const liveEnd = Math.max(origStart, now);
+    const liveDur = Math.min(MAX_TIMER_INCREMENT_SEC, Math.floor((liveEnd - origStart) / 1000));
+    const taskObj = planner.tasks.find(t => t.id === active.taskId);
+    const title = taskObj?.title || active.taskTitle || 'Focus';
+    const meta = inferPlannerSubjectAndColor(title, active.subject || taskObj?.subject, active.color || taskObj?.color);
+    const liveSessionId = active.sessionId || ('ses_' + origStart + '_auto');
+    const existingIdx = sessions.findIndex(s => s.id === liveSessionId);
+    const liveObj = {
+      id: liveSessionId,
+      taskId: active.taskId || null,
+      title,
+      subject: meta.subject,
+      color: meta.color,
+      date: dateStr,
+      startedAt: origStart,
+      endedAt: origStart + liveDur * 1000,
+      durationSeconds: liveDur,
+      source: 'timer',
+      note: '',
+      isLive: true,
+      updatedAt: now
+    };
+    if (existingIdx >= 0) sessions[existingIdx] = liveObj;
+    else sessions.push(liveObj);
+  }
+
+  sessions.sort((a, b) => a.startedAt - b.startedAt);
+
+  // Merge overlapping intervals to accurately compute idle break gaps
+  const mergedIntervals = [];
+  for (const s of sessions) {
+    if (s.endedAt <= s.startedAt) continue;
+    if (mergedIntervals.length === 0 || s.startedAt > mergedIntervals[mergedIntervals.length - 1].endedAt) {
+      mergedIntervals.push({ startedAt: s.startedAt, endedAt: s.endedAt });
+    } else {
+      mergedIntervals[mergedIntervals.length - 1].endedAt = Math.max(mergedIntervals[mergedIntervals.length - 1].endedAt, s.endedAt);
+    }
+  }
+
+  const breaks = [];
+  for (let i = 0; i < mergedIntervals.length - 1; i++) {
+    const gapStart = mergedIntervals[i].endedAt;
+    const gapEnd = mergedIntervals[i + 1].startedAt;
+    const dur = Math.floor((gapEnd - gapStart) / 1000);
+    if (dur >= sch.minBreakSeconds) {
+      breaks.push({ startedAt: gapStart, endedAt: gapEnd, durationSeconds: dur, isOngoing: false });
+    }
+  }
+
+  // Ongoing break after last study block if viewing Today & currently not studying
+  let ongoingBreakSeconds = 0;
+  if (dateStr === todayStr && !active && mergedIntervals.length > 0) {
+    const lastEnd = mergedIntervals[mergedIntervals.length - 1].endedAt;
+    if (now > lastEnd) {
+      ongoingBreakSeconds = Math.floor((now - lastEnd) / 1000);
+      if (ongoingBreakSeconds >= sch.minBreakSeconds) {
+        breaks.push({ startedAt: lastEnd, endedAt: now, durationSeconds: ongoingBreakSeconds, isOngoing: true });
+      }
+    }
+  }
+
+  const sleep = resolveSleepWindowForDate(dateStr, sch);
+  let countdownToSleepSeconds = null;
+  if (dateStr === todayStr && sleep.enabled && now < sleep.bedAtMs) {
+    countdownToSleepSeconds = Math.floor((sleep.bedAtMs - now) / 1000);
+  }
+
+  const dayHistory = planner.daysHistory[dateStr] || { totalSeconds: 0, maxFocusSeconds: 0 };
+  const liveDelta = (active && active.date === dateStr) ? Math.max(0, Math.floor((now - active.startedAt) / 1000)) : 0;
+  const tasksSum = filterDeletedEntities(planner.tasks, planner.deletedTasks)
+    .filter(t => (t.date || todayStr) === dateStr)
+    .reduce((sum, t) => sum + (t.spentSeconds || 0), 0);
+  const loggedSessionSeconds = sessions.reduce((sum, s) => sum + (s.durationSeconds || 0), 0);
+  const dayTotalSeconds = Math.max((dayHistory.totalSeconds || 0) + liveDelta, tasksSum + liveDelta, loggedSessionSeconds);
+  const maxFocusSeconds = Math.max(dayHistory.maxFocusSeconds || 0, sessions.reduce((mx, s) => Math.max(mx, s.durationSeconds || 0), 0));
+  const totalBreakSeconds = breaks.reduce((sum, b) => sum + b.durationSeconds, 0);
+
+  // Compute D-Day relative to dateStr using examDate YYYY-MM-DD
+  let dDay = null;
+  if (appSettings.examDate) {
+    const examDatePart = String(appSettings.examDate).slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(examDatePart)) {
+      const diff = Math.round((vnDateTimeToMs(examDatePart, 0, 0) - vnDateTimeToMs(dateStr, 0, 0)) / DAY_MS);
+      dDay = {
+        examDate: appSettings.examDate,
+        examTitle: appSettings.examTitle || 'SAT',
+        daysRemaining: diff,
+        label: diff > 0 ? `D-${diff}` : (diff === 0 ? 'D-DAY' : `D+${Math.abs(diff)}`)
+      };
+    }
+  }
+
+  const events = filterDeletedEntities(planner.calendarEvents, planner.deletedCalendarEvents).filter(ev => ev.date === dateStr);
+  const dayGoals = filterDeletedEntities(planner.goals, planner.deletedGoals).filter(g => g.type === 'day' && g.scopeKey === dateStr);
+
+  return {
+    date: dateStr,
+    isToday: dateStr === todayStr,
+    schedule: sch,
+    sessions,
+    breaks,
+    ongoingBreakSeconds,
+    sleep,
+    countdownToSleepSeconds,
+    dDay,
+    events,
+    dayGoals,
+    totals: {
+      dayTotalSeconds,
+      maxFocusSeconds,
+      loggedSessionSeconds,
+      unloggedLegacySeconds: Math.max(0, dayTotalSeconds - loggedSessionSeconds),
+      totalBreakSeconds
+    }
+  };
+}
+
 // ========== SSE (Server-Sent Events) Real-Time Push ==========
 const sseClients = new Set();
 
 function broadcastPlannerUpdate() {
   if (sseClients.size === 0) return;
-  const filteredTasks = (appSettings.dailyPlanner?.tasks || []).filter(item => {
-    const delTime = appSettings.dailyPlanner?.deletedTasks?.[item.id];
-    if (!delTime) return true;
-    const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-    return taskUpdated > delTime;
-  });
-  const filteredGoals = (appSettings.dailyPlanner?.goals || []).filter(item => {
-    const delTime = appSettings.dailyPlanner?.deletedGoals?.[item.id];
-    if (!delTime) return true;
-    const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-    return goalUpdated > delTime;
-  });
   const payload = {
     type: 'PLANNER_UPDATE',
-    dailyPlanner: {
-      ...appSettings.dailyPlanner,
-      tasks: filteredTasks,
-      goals: filteredGoals
-    },
+    dailyPlanner: buildPlannerPayload(appSettings.dailyPlanner),
     habits: appSettings.habits,
     serverTime: getCanonicalNow()
   };
@@ -425,143 +815,196 @@ function broadcastPlannerUpdate() {
   }
 }
 
-// Top-Level Helper: Conflict-Free Last-Write-Wins (LWW) Task & History Merge
-function mergePlannerTasks(localPlanner, incomingPlanner) {
-  if (!incomingPlanner) return false;
+function mergeCollectionWithTombstones({ localList, localDeleted, incomingList, incomingDeleted, applyFields, pruneMs = 14 * 24 * 3600 * 1000 }) {
   let changed = false;
-  if (!localPlanner.tasks) localPlanner.tasks = [];
-  if (!localPlanner.deletedTasks) localPlanner.deletedTasks = {};
+  const now = getCanonicalNow();
+  const list = Array.isArray(localList) ? localList : [];
+  const deleted = (localDeleted && typeof localDeleted === 'object') ? localDeleted : {};
 
-  // 1. Merge deletedTasks tombstones
-  const incDeleted = incomingPlanner.deletedTasks || {};
-  for (const [delId, delTime] of Object.entries(incDeleted)) {
-    if ((localPlanner.deletedTasks[delId] || 0) < delTime) {
-      localPlanner.deletedTasks[delId] = delTime;
+  for (const [delId, delTime] of Object.entries(incomingDeleted || {})) {
+    if ((deleted[delId] || 0) < delTime) {
+      deleted[delId] = delTime;
       changed = true;
     }
   }
-
-  // Prune tombstones older than 7 days
-  const SEVEN_DAYS = 7 * 24 * 3600 * 1000;
-  const now = Date.now();
-  for (const [delId, delTime] of Object.entries(localPlanner.deletedTasks)) {
-    if (now - delTime > SEVEN_DAYS) delete localPlanner.deletedTasks[delId];
+  for (const [delId, delTime] of Object.entries(deleted)) {
+    if (now - delTime > pruneMs) delete deleted[delId];
   }
 
-  // Remove local tasks that have been deleted
-  const prevCount = localPlanner.tasks.length;
-  localPlanner.tasks = localPlanner.tasks.filter(t => {
-    const delTime = localPlanner.deletedTasks[t.id];
-    if (!delTime) return true;
-    const taskUpdated = t.updatedAt || (t.createdAt ? new Date(t.createdAt).getTime() : 0);
-    return taskUpdated > delTime;
-  });
-  if (localPlanner.tasks.length !== prevCount) changed = true;
+  const prevLen = list.length;
+  const filteredList = filterDeletedEntities(list, deleted);
+  if (filteredList.length !== prevLen) changed = true;
 
-  // 2. Merge incoming tasks (Last-Write-Wins based on updatedAt)
-  const incomingTasks = Array.isArray(incomingPlanner.tasks) ? incomingPlanner.tasks : [];
-  for (const inc of incomingTasks) {
+  const byId = new Map(filteredList.map(item => [String(item.id), item]));
+  for (const inc of (Array.isArray(incomingList) ? incomingList : [])) {
     if (!inc || !inc.id) continue;
-    const delTime = localPlanner.deletedTasks[inc.id];
+    const idKey = String(inc.id);
+    const delTime = deleted[idKey];
     const incUpdated = inc.updatedAt || (inc.createdAt ? new Date(inc.createdAt).getTime() : 0);
-    if (delTime && delTime >= incUpdated) {
-      continue; // Skip deleted task
-    }
+    if (delTime && delTime >= incUpdated) continue;
 
-    const existing = localPlanner.tasks.find(t => t.id === inc.id);
+    const existing = byId.get(idKey);
     if (!existing) {
-      localPlanner.tasks.push({
-        ...inc,
-        updatedAt: incUpdated || Date.now()
-      });
+      const cloned = { ...inc, updatedAt: incUpdated || now };
+      filteredList.push(cloned);
+      byId.set(idKey, cloned);
       changed = true;
     } else {
       const existingUpdated = existing.updatedAt || (existing.createdAt ? new Date(existing.createdAt).getTime() : 0);
+      if (applyFields(existing, inc, existingUpdated, incUpdated)) {
+        changed = true;
+      }
+    }
+  }
+
+  return { list: filteredList, deleted, changed };
+}
+
+// Top-Level Helper: Conflict-Free Last-Write-Wins (LWW) Task, Session, Event & History Merge
+function mergePlannerTasks(localPlanner, incomingPlanner) {
+  if (!incomingPlanner) return false;
+  ensureDailyPlannerShape(localPlanner);
+  let changed = false;
+
+  // 1. Merge tasks with tombstones + adjustedAt safety
+  const mergedTasks = mergeCollectionWithTombstones({
+    localList: localPlanner.tasks,
+    localDeleted: localPlanner.deletedTasks,
+    incomingList: incomingPlanner.tasks,
+    incomingDeleted: incomingPlanner.deletedTasks,
+    pruneMs: 7 * 24 * 3600 * 1000,
+    applyFields: (existing, inc, existingUpdated, incUpdated) => {
+      let itemChanged = false;
       if (incUpdated > existingUpdated) {
         if (inc.title !== undefined) existing.title = inc.title;
         if (inc.section !== undefined) existing.section = inc.section;
         if (inc.date !== undefined) existing.date = inc.date;
         if (inc.deadline !== undefined) existing.deadline = inc.deadline;
+        if (inc.subject !== undefined) existing.subject = inc.subject;
+        if (inc.color !== undefined) existing.color = inc.color;
         existing.status = inc.status || (inc.completed ? 'completed' : 'incomplete');
         existing.completed = (existing.status === 'completed');
         existing.completedAt = inc.completedAt || null;
         existing.updatedAt = incUpdated;
-        changed = true;
+        itemChanged = true;
       }
-      // Always take highest cumulative spentSeconds
-      if ((inc.spentSeconds || 0) > (existing.spentSeconds || 0)) {
+      const incAdj = inc.adjustedAt || 0;
+      const existAdj = existing.adjustedAt || 0;
+      if (incAdj > existAdj) {
+        existing.spentSeconds = Math.max(0, inc.spentSeconds || 0);
+        existing.adjustedAt = incAdj;
+        itemChanged = true;
+      } else if (incAdj === existAdj && (inc.spentSeconds || 0) > (existing.spentSeconds || 0)) {
         existing.spentSeconds = inc.spentSeconds;
-        changed = true;
+        itemChanged = true;
       }
+      return itemChanged;
     }
-  }
-
-  // 2.5 Merge deletedGoals and incoming goals
-  if (!localPlanner.goals) localPlanner.goals = [];
-  if (!localPlanner.deletedGoals) localPlanner.deletedGoals = {};
-  const incDeletedGoals = incomingPlanner.deletedGoals || {};
-  for (const [delId, delTime] of Object.entries(incDeletedGoals)) {
-    if ((localPlanner.deletedGoals[delId] || 0) < delTime) {
-      localPlanner.deletedGoals[delId] = delTime;
-      changed = true;
-    }
-  }
-  for (const [delId, delTime] of Object.entries(localPlanner.deletedGoals)) {
-    if (now - delTime > SEVEN_DAYS) delete localPlanner.deletedGoals[delId];
-  }
-  const prevGoalCount = localPlanner.goals.length;
-  localPlanner.goals = localPlanner.goals.filter(g => {
-    const delTime = localPlanner.deletedGoals[g.id];
-    if (!delTime) return true;
-    const goalUpdated = g.updatedAt || (g.createdAt ? new Date(g.createdAt).getTime() : 0);
-    return goalUpdated > delTime;
   });
-  if (localPlanner.goals.length !== prevGoalCount) changed = true;
+  localPlanner.tasks = mergedTasks.list;
+  localPlanner.deletedTasks = mergedTasks.deleted;
+  if (mergedTasks.changed) changed = true;
 
-  const incomingGoals = Array.isArray(incomingPlanner.goals) ? incomingPlanner.goals : [];
-  for (const inc of incomingGoals) {
-    if (!inc || !inc.id) continue;
-    const delTime = localPlanner.deletedGoals[inc.id];
-    const incUpdated = inc.updatedAt || (inc.createdAt ? new Date(inc.createdAt).getTime() : 0);
-    if (delTime && delTime >= incUpdated) continue;
+  // 2. Merge goals with tombstones
+  const mergedGoals = mergeCollectionWithTombstones({
+    localList: localPlanner.goals,
+    localDeleted: localPlanner.deletedGoals,
+    incomingList: incomingPlanner.goals,
+    incomingDeleted: incomingPlanner.deletedGoals,
+    pruneMs: 7 * 24 * 3600 * 1000,
+    applyFields: (existing, inc, existingUpdated, incUpdated) => {
+      if (incUpdated <= existingUpdated) return false;
+      if (inc.text !== undefined) existing.text = inc.text;
+      if (inc.priority !== undefined) existing.priority = inc.priority;
+      if (inc.type !== undefined) existing.type = inc.type;
+      if (inc.scopeKey !== undefined) existing.scopeKey = inc.scopeKey;
+      if (inc.completed !== undefined) existing.completed = inc.completed;
+      existing.updatedAt = incUpdated;
+      return true;
+    }
+  });
+  localPlanner.goals = mergedGoals.list;
+  localPlanner.deletedGoals = mergedGoals.deleted;
+  if (mergedGoals.changed) changed = true;
 
-    const existing = localPlanner.goals.find(g => g.id === inc.id);
-    if (!existing) {
-      localPlanner.goals.push({
-        ...inc,
-        updatedAt: incUpdated || Date.now()
-      });
-      changed = true;
-    } else {
-      const existingUpdated = existing.updatedAt || (existing.createdAt ? new Date(existing.createdAt).getTime() : 0);
+  // 3. Merge study sessions with tombstones
+  const mergedSessions = mergeCollectionWithTombstones({
+    localList: localPlanner.sessions,
+    localDeleted: localPlanner.deletedSessions,
+    incomingList: incomingPlanner.sessions,
+    incomingDeleted: incomingPlanner.deletedSessions,
+    applyFields: (existing, inc, existingUpdated, incUpdated) => {
       if (incUpdated > existingUpdated) {
-        if (inc.text !== undefined) existing.text = inc.text;
-        if (inc.priority !== undefined) existing.priority = inc.priority;
-        if (inc.type !== undefined) existing.type = inc.type;
-        if (inc.scopeKey !== undefined) existing.scopeKey = inc.scopeKey;
-        if (inc.completed !== undefined) existing.completed = inc.completed;
-        existing.updatedAt = incUpdated;
-        changed = true;
+        Object.assign(existing, {
+          ...inc,
+          startedAt: Number(inc.startedAt) || existing.startedAt,
+          endedAt: Number(inc.endedAt) || existing.endedAt,
+          durationSeconds: Number.isFinite(Number(inc.durationSeconds)) ? Number(inc.durationSeconds) : existing.durationSeconds,
+          updatedAt: incUpdated
+        });
+        return true;
       }
+      return false;
+    }
+  });
+  localPlanner.sessions = mergedSessions.list;
+  localPlanner.deletedSessions = mergedSessions.deleted;
+  if (mergedSessions.changed) changed = true;
+
+  // 4. Merge calendarEvents (Month milestones) with tombstones
+  const mergedCalEvents = mergeCollectionWithTombstones({
+    localList: localPlanner.calendarEvents,
+    localDeleted: localPlanner.deletedCalendarEvents,
+    incomingList: incomingPlanner.calendarEvents,
+    incomingDeleted: incomingPlanner.deletedCalendarEvents,
+    applyFields: (existing, inc, existingUpdated, incUpdated) => {
+      if (incUpdated <= existingUpdated) return false;
+      if (inc.title !== undefined) existing.title = inc.title;
+      if (inc.date !== undefined) existing.date = inc.date;
+      if (inc.color !== undefined) existing.color = inc.color;
+      existing.updatedAt = incUpdated;
+      return true;
+    }
+  });
+  localPlanner.calendarEvents = mergedCalEvents.list;
+  localPlanner.deletedCalendarEvents = mergedCalEvents.deleted;
+  if (mergedCalEvents.changed) changed = true;
+
+  // 5. Merge scheduleSettings (Sleep window & dayStartHour) via LWW
+  if (incomingPlanner.scheduleSettings && typeof incomingPlanner.scheduleSettings === 'object') {
+    const incSch = normalizeScheduleSettings(incomingPlanner.scheduleSettings);
+    const curSch = normalizeScheduleSettings(localPlanner.scheduleSettings);
+    if (incSch.updatedAt > curSch.updatedAt) {
+      localPlanner.scheduleSettings = incSch;
+      changed = true;
     }
   }
 
-  // 3. Merge daysHistory
+  // 6. Merge daysHistory (respecting adjustedAt when sessions were edited/deleted)
   const incHistory = incomingPlanner.daysHistory || {};
-  if (!localPlanner.daysHistory) localPlanner.daysHistory = {};
   for (const [dateKey, dayData] of Object.entries(incHistory)) {
+    if (!dayData || typeof dayData !== 'object') continue;
     if (!localPlanner.daysHistory[dateKey]) {
       localPlanner.daysHistory[dateKey] = { ...dayData };
       changed = true;
     } else {
       const cur = localPlanner.daysHistory[dateKey];
-      if ((dayData.totalSeconds || 0) > (cur.totalSeconds || 0)) {
-        cur.totalSeconds = dayData.totalSeconds;
+      const incAdj = dayData.adjustedAt || 0;
+      const curAdj = cur.adjustedAt || 0;
+      if (incAdj > curAdj) {
+        cur.totalSeconds = Math.max(0, dayData.totalSeconds || 0);
+        cur.maxFocusSeconds = Math.max(0, dayData.maxFocusSeconds || 0);
+        cur.adjustedAt = incAdj;
         changed = true;
-      }
-      if ((dayData.maxFocusSeconds || 0) > (cur.maxFocusSeconds || 0)) {
-        cur.maxFocusSeconds = dayData.maxFocusSeconds;
-        changed = true;
+      } else if (incAdj === curAdj) {
+        if ((dayData.totalSeconds || 0) > (cur.totalSeconds || 0)) {
+          cur.totalSeconds = dayData.totalSeconds;
+          changed = true;
+        }
+        if ((dayData.maxFocusSeconds || 0) > (cur.maxFocusSeconds || 0)) {
+          cur.maxFocusSeconds = dayData.maxFocusSeconds;
+          changed = true;
+        }
       }
     }
   }
@@ -654,16 +1097,16 @@ function detectSubject(title = '', altText = '') {
   const t = (title + ' ' + altText).toLowerCase();
 
   const mathKeywords = [
-    'math', 'algebra', 'geometry', 'statistic', 'toán', 'function', 'equation', 
-    'triangle', 'circle', 'polynomial', 'graph', 'm-ad', 'sat m-', 'calculus', 
+    'math', 'algebra', 'geometry', 'statistic', 'toán', 'function', 'equation',
+    'triangle', 'circle', 'polynomial', 'graph', 'm-ad', 'sat m-', 'calculus',
     'probability', 'arithmetic', 'coordinate', 'parabola', 'linear',
     'area', 'volume', 'ratio', 'percentage', 'percent', 'angle', 'line', 'rates',
     'quadratic', 'integer', 'exponent', 'quadrilateral', 'polygon', 'inequality', 'system',
     'data analysis', 'data anaysis', 'analysis', 'data'
   ];
   const verbalKeywords = [
-    'verbal', 'ebrw', 'words in context', 'critical reader', 'literary art', 'central idea', 
-    'reading', 'writing', 'v-ad', 'sat v-', 'vocabulary', 'passage', 'remains of the day', 
+    'verbal', 'ebrw', 'words in context', 'critical reader', 'literary art', 'central idea',
+    'reading', 'writing', 'v-ad', 'sat v-', 'vocabulary', 'passage', 'remains of the day',
     'conventions', 'standard english', 'craft', 'structure', 'rhetorical', 'textual',
     'dune', 'society', 'markets', 'synthesis'
   ];
@@ -713,10 +1156,10 @@ function normalizeTitle(t = '') {
 function extractSetNumbers(str = '') {
   const norm = normalizeTitle(str);
   const res = {};
-  
+
   const lessonMatch = norm.match(/lesson\s*(\d+)/);
   if (lessonMatch) res.lesson = lessonMatch[1];
-  
+
   const noMatch = norm.match(/no\s*(\d+)/);
   if (noMatch) {
     res.no = noMatch[1];
@@ -751,7 +1194,7 @@ function matchTodo(title = '', filename = '', excludeIds = null) {
   const combined = (title + ' ' + filename).toLowerCase();
   const fileNumbers = extractSetNumbers(combined);
   const normSearch = normalizeTitle(title || filename);
-  
+
   let bestTodo = null;
   let highestScore = -1;
 
@@ -759,7 +1202,7 @@ function matchTodo(title = '', filename = '', excludeIds = null) {
     if (excludeIds && excludeIds.has(todo.id)) continue;
     const todoCombined = todo.title.toLowerCase();
     const todoNumbers = extractSetNumbers(todoCombined);
-    
+
     // Strict number constraints:
     if (fileNumbers.lesson && todoNumbers.lesson && fileNumbers.lesson !== todoNumbers.lesson) continue;
     if (fileNumbers.no && todoNumbers.no && fileNumbers.no !== todoNumbers.no) continue;
@@ -876,8 +1319,8 @@ function indexLocalFolders() {
       const fullPath = path.join(dir, file);
       const isDone = file.startsWith('[Done]');
       const cleanTitle = cleanBaseName(file).replace(/\.pdf$/i, '');
-      let exists = Array.from(pdfStore.values()).find(item => 
-        item.localPath === fullPath || 
+      let exists = Array.from(pdfStore.values()).find(item =>
+        item.localPath === fullPath ||
         item.filename === file ||
         (item.filename && cleanBaseName(item.filename) === cleanBaseName(file)) ||
         (item.title && cleanBaseName(item.title).toLowerCase() === cleanBaseName(cleanTitle).toLowerCase())
@@ -941,7 +1384,7 @@ function cdpSend(ws, method, params = {}) {
           ws.removeEventListener('message', onMsg);
           resolve(msg.result);
         }
-      } catch (e) {}
+      } catch (e) { }
     };
 
     ws.addEventListener('message', onMsg);
@@ -1102,8 +1545,8 @@ async function scanClassIn() {
           // 1. By exact uniqueId or pdfUrl
           // 2. OR by cleanBaseName
           // 3. OR by exact todoId
-          let existingItem = pdfStore.get(pdfUrl) || Array.from(pdfStore.values()).find(i => 
-            i.id === uniqueId || 
+          let existingItem = pdfStore.get(pdfUrl) || Array.from(pdfStore.values()).find(i =>
+            i.id === uniqueId ||
             i.url === pdfUrl ||
             (i.filename && cleanBaseName(i.filename).toLowerCase() === cleanBaseName(cleanName).toLowerCase()) ||
             (todo && i.todoId === todo.id)
@@ -1215,7 +1658,7 @@ function fetchFile(url, destPath) {
               }
             }
           }
-        } catch (_) {}
+        } catch (_) { }
         resolve(destPath);
       });
       stream.on('error', reject);
@@ -1353,9 +1796,9 @@ function getMergedItems() {
 
     const detectedSubj = detectSubject(bestPendingTodo.title);
     const timed = isTimedExam(bestPendingTodo);
-    const isSkippedNoPdf = (appSettings.skippedNoPdf || []).some(k => 
-      k === bestPendingTodo.id || 
-      k === ('todo_' + bestPendingTodo.id) || 
+    const isSkippedNoPdf = (appSettings.skippedNoPdf || []).some(k =>
+      k === bestPendingTodo.id ||
+      k === ('todo_' + bestPendingTodo.id) ||
       k === normalizeTitle(bestPendingTodo.title)
     );
 
@@ -1403,8 +1846,8 @@ function getTodayStudySeconds() {
   const dayStats = appSettings.dailyPlanner?.daysHistory?.[today];
   let total = dayStats?.totalSeconds || 0;
   const active = appSettings.dailyPlanner?.activeTimer;
-  if (active && active.startedAt) {
-    total += Math.max(0, Math.floor((Date.now() - active.startedAt) / 1000));
+  if (active && active.startedAt && (!active.date || active.date === today)) {
+    total += Math.max(0, Math.floor((getCanonicalNow() - active.startedAt) / 1000));
   }
   return total;
 }
@@ -1457,7 +1900,7 @@ function initDiscordIpc() {
     const clientId = appSettings.discordRpc?.clientId || '902536560539484202';
     try {
       client.write(encodeDiscordPayload(0, { v: 1, client_id: clientId }));
-    } catch (e) {}
+    } catch (e) { }
   });
 
   client.on('data', (data) => {
@@ -1479,7 +1922,7 @@ function initDiscordIpc() {
           syncDiscordPresenceFromActiveTimer(true);
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   });
 
   client.on('error', (err) => {
@@ -1504,7 +1947,7 @@ function scheduleDiscordReconnect() {
 
 function disconnectDiscordIpc() {
   if (discordIpcClient) {
-    try { discordIpcClient.destroy(); } catch (e) {}
+    try { discordIpcClient.destroy(); } catch (e) { }
     discordIpcClient = null;
   }
   discordIpcConnected = false;
@@ -1594,7 +2037,7 @@ function syncDiscordPresenceFromActiveTimer(immediate = false) {
       ? appSettings.discordRpc.studyTitle.trim()
       : (active.taskTitle || 'FOCUS');
     const taskObj = (appSettings.dailyPlanner?.tasks || []).find(t => t.id === active.taskId);
-    
+
     // Live elapsed time using canonical now:
     const canonicalNow = getCanonicalNow();
     const liveSessionSec = Math.max(0, Math.floor((canonicalNow - active.startedAt) / 1000));
@@ -1695,28 +2138,16 @@ const server = http.createServer(async (req, res) => {
       'Access-Control-Allow-Origin': '*'
     });
     // Send initial state immediately so client is in sync from the start
-    const filteredTasks = (appSettings.dailyPlanner?.tasks || []).filter(item => {
-      const delTime = appSettings.dailyPlanner?.deletedTasks?.[item.id];
-      if (!delTime) return true;
-      const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-      return taskUpdated > delTime;
-    });
-    const filteredGoals = (appSettings.dailyPlanner?.goals || []).filter(item => {
-      const delTime = appSettings.dailyPlanner?.deletedGoals?.[item.id];
-      if (!delTime) return true;
-      const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-      return goalUpdated > delTime;
-    });
     const initPayload = {
       type: 'PLANNER_UPDATE',
-      dailyPlanner: { ...appSettings.dailyPlanner, tasks: filteredTasks, goals: filteredGoals },
+      dailyPlanner: buildPlannerPayload(appSettings.dailyPlanner),
       habits: appSettings.habits,
       serverTime: getCanonicalNow()
     };
     res.write(`data: ${JSON.stringify(initPayload)}\n\n`);
     sseClients.add(res);
     // Send heartbeat every 30s to keep connection alive through proxies
-    const heartbeat = setInterval(() => { try { res.write(': heartbeat\n\n'); } catch(e) {} }, 30000);
+    const heartbeat = setInterval(() => { try { res.write(': heartbeat\n\n'); } catch (e) { } }, 30000);
     req.on('close', () => { sseClients.delete(res); clearInterval(heartbeat); });
     return;
   }
@@ -1727,7 +2158,7 @@ const server = http.createServer(async (req, res) => {
     try {
       const check = await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(600) });
       connected = check.ok;
-    } catch {}
+    } catch { }
 
     const items = getMergedItems();
     const mathFilesOnDisk = fs.existsSync(MATH_DIR) ? fs.readdirSync(MATH_DIR).filter(f => f.toLowerCase().endsWith('.pdf')).length : 0;
@@ -1760,7 +2191,10 @@ const server = http.createServer(async (req, res) => {
       verbalDir: VERBAL_DIR,
       mathDir: MATH_DIR,
       stats,
-      settings: appSettings,
+      settings: {
+        ...appSettings,
+        dailyPlanner: buildPlannerPayload(appSettings.dailyPlanner)
+      },
       items,
       serverTime: getCanonicalNow()
     }));
@@ -1785,7 +2219,7 @@ const server = http.createServer(async (req, res) => {
       try {
         const check = await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(600) });
         connected = check.ok;
-      } catch {}
+      } catch { }
 
       if (connected) {
         res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -1870,9 +2304,9 @@ const server = http.createServer(async (req, res) => {
     const id = parsedUrl.searchParams.get('id');
     const directUrl = parsedUrl.searchParams.get('url');
     const allItems = getMergedItems();
-    const item = (id ? allItems.find(p => p.id === id) : null) || 
-                 (id ? Array.from(pdfStore.values()).find(p => p.id === id) : null) ||
-                 (directUrl ? Array.from(pdfStore.values()).find(p => p.url === directUrl) : null);
+    const item = (id ? allItems.find(p => p.id === id) : null) ||
+      (id ? Array.from(pdfStore.values()).find(p => p.id === id) : null) ||
+      (directUrl ? Array.from(pdfStore.values()).find(p => p.url === directUrl) : null);
 
     const targetUrl = item?.url || directUrl;
     const rawName = (item?.title || item?.filename || 'tai_lieu_sat').replace(/\.pdf$/i, '').trim();
@@ -1902,9 +2336,9 @@ const server = http.createServer(async (req, res) => {
     const directUrl = parsedUrl.searchParams.get('url');
     const queryFilename = parsedUrl.searchParams.get('filename');
     const allItems = getMergedItems();
-    const item = (id ? allItems.find(p => p.id === id) : null) || 
-                 (id ? Array.from(pdfStore.values()).find(p => p.id === id) : null) ||
-                 (directUrl ? Array.from(pdfStore.values()).find(p => p.url === directUrl) : null);
+    const item = (id ? allItems.find(p => p.id === id) : null) ||
+      (id ? Array.from(pdfStore.values()).find(p => p.id === id) : null) ||
+      (directUrl ? Array.from(pdfStore.values()).find(p => p.url === directUrl) : null);
 
     const targetUrl = item?.url || directUrl;
     const rawName = (queryFilename || item?.title || item?.filename || 'tai_lieu_sat').replace(/\.pdf$/i, '').trim();
@@ -2172,29 +2606,29 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ success: true, id, customDeadline: item.customDeadline }));
   }
 
-// Global batch state for mass fetching safe homework
-let batchState = {
-  isRunning: false,
-  total: 0,
-  current: 0,
-  currentTitle: '',
-  successCount: 0,
-  skippedCount: 0,
-  errorCount: 0,
-  statusText: 'Sẵn sàng'
-};
+  // Global batch state for mass fetching safe homework
+  let batchState = {
+    isRunning: false,
+    total: 0,
+    current: 0,
+    currentTitle: '',
+    successCount: 0,
+    skippedCount: 0,
+    errorCount: 0,
+    statusText: 'Sẵn sàng'
+  };
 
 
-// Helper: Safely and reliably close ClassIn sub-window without closing main lobby or crashing ClassIn
-async function closeClassInSubWindow(ws, subTargetId) {
-  // CRITICAL: NEVER call fetch(`http://127.0.0.1:${CDP_PORT}/json/close/${subTargetId}`) or window.close()
-  // In CEF (ClassIn), /json/close kills CEF root process and crashes/closes the entire ClassIn application!
-  
-  // 1. If ws provided, execute internal clean close handlers
-  if (ws && ws.readyState === 1) {
-    try {
-      await cdpSend(ws, 'Runtime.evaluate', {
-        expression: `(() => {
+  // Helper: Safely and reliably close ClassIn sub-window without closing main lobby or crashing ClassIn
+  async function closeClassInSubWindow(ws, subTargetId) {
+    // CRITICAL: NEVER call fetch(`http://127.0.0.1:${CDP_PORT}/json/close/${subTargetId}`) or window.close()
+    // In CEF (ClassIn), /json/close kills CEF root process and crashes/closes the entire ClassIn application!
+
+    // 1. If ws provided, execute internal clean close handlers
+    if (ws && ws.readyState === 1) {
+      try {
+        await cdpSend(ws, 'Runtime.evaluate', {
+          expression: `(() => {
           // Method A: ClassIn LMS native module l2() (calls X.closeWindow() cleanly)
           try {
             let req;
@@ -2228,20 +2662,20 @@ async function closeClassInSubWindow(ws, subTargetId) {
 
           return 'none';
         })()`,
-        returnByValue: true
-      });
-    } catch (err) {}
-  } else if (subTargetId) {
-    // If ws was not passed, connect briefly via WebSocket and trigger clean close
-    try {
-      const targets = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(600) })).json();
-      const target = targets.find(t => t.id === subTargetId);
-      if (target && target.webSocketDebuggerUrl) {
-        const tempWs = new WebSocket(target.webSocketDebuggerUrl);
-        await new Promise(r => { tempWs.onopen = r; setTimeout(r, 600); });
-        if (tempWs.readyState === 1) {
-          await cdpSend(tempWs, 'Runtime.evaluate', {
-            expression: `(() => {
+          returnByValue: true
+        });
+      } catch (err) { }
+    } else if (subTargetId) {
+      // If ws was not passed, connect briefly via WebSocket and trigger clean close
+      try {
+        const targets = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(600) })).json();
+        const target = targets.find(t => t.id === subTargetId);
+        if (target && target.webSocketDebuggerUrl) {
+          const tempWs = new WebSocket(target.webSocketDebuggerUrl);
+          await new Promise(r => { tempWs.onopen = r; setTimeout(r, 600); });
+          if (tempWs.readyState === 1) {
+            await cdpSend(tempWs, 'Runtime.evaluate', {
+              expression: `(() => {
               try {
                 let req;
                 if (window.webpackChunklms) {
@@ -2263,89 +2697,89 @@ async function closeClassInSubWindow(ws, subTargetId) {
                 if (btn) { btn.click(); return 'btn.click'; }
               } catch(e) {}
             })()`
-          });
-          try { tempWs.close(); } catch(e) {}
+            });
+            try { tempWs.close(); } catch (e) { }
+          }
         }
-      }
-    } catch(e) {}
+      } catch (e) { }
+    }
+
+    // 2. Verify sub-window closed cleanly (NO /json/close!)
+    for (let attempt = 1; attempt <= 8; attempt++) {
+      await new Promise(r => setTimeout(r, 250));
+      try {
+        const t = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(600) })).json();
+        if (!t.some(x => x.id === subTargetId)) {
+          return true; // Target confirmed closed!
+        }
+      } catch (e) { }
+    }
+    return false;
   }
 
-  // 2. Verify sub-window closed cleanly (NO /json/close!)
-  for (let attempt = 1; attempt <= 8; attempt++) {
-    await new Promise(r => setTimeout(r, 250));
+  // Core: Safe single task PDF fetcher (4-layer safety shield against timed exams)
+  async function fetchSingleTaskSafe(todo) {
+    // LAYER 0: Skip non-downloadable assignment submission slots (Vở ghi, lớp học)
+    if (isNonDownloadableTask(todo)) {
+      return {
+        success: false,
+        isSkipped: true,
+        message: `BỎ QUA: Bài "${todo.title}" là bài nộp vở ghi / lớp học, không có file đề thi PDF để tải.`
+      };
+    }
+
+    // LAYER 1: Metadata & blacklist check (Zero tolerance for timed exams)
+    if (isTimedExam(todo)) {
+      return {
+        success: false,
+        isTimed: true,
+        timeLimit: todo.timeLimit || 80,
+        message: `BẢO VỆ TUYỆT ĐỐI: Bài "${todo.title}" là bài thi có tính giờ (${todo.timeLimit || 80} phút). Hệ thống đã khóa an toàn và tuyệt đối không mở để tránh bị tính giờ!`
+      };
+    }
+
+    let targets = [];
     try {
-      const t = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(600) })).json();
-      if (!t.some(x => x.id === subTargetId)) {
-        return true; // Target confirmed closed!
+      const r = await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(1000) });
+      targets = await r.json();
+    } catch {
+      return { success: false, message: 'ClassIn chưa bật Port 9222. Vui lòng mở lại bằng file Khoi_Dong_ClassIn_De_Tai_PDF.bat!' };
+    }
+
+    const targetActivityId = todo.activityId ? String(todo.activityId) : null;
+
+    // STEP 0: Check if any answersheet sub-windows are open.
+    // If an answersheet window is open for a DIFFERENT activity, safely close it using native handler
+    const openAnswersheets = targets.filter(t => t.url && t.url.includes('answersheet'));
+    for (const win of openAnswersheets) {
+      if (!targetActivityId || !win.url.includes(targetActivityId)) {
+        console.log(`[FetchSafe] Đóng cửa sổ phụ cũ (${win.id}) trước khi lấy bài "${todo.title}"...`);
+        await closeClassInSubWindow(null, win.id);
       }
-    } catch(e) {}
-  }
-  return false;
-}
-
-// Core: Safe single task PDF fetcher (4-layer safety shield against timed exams)
-async function fetchSingleTaskSafe(todo) {
-  // LAYER 0: Skip non-downloadable assignment submission slots (Vở ghi, lớp học)
-  if (isNonDownloadableTask(todo)) {
-    return {
-      success: false,
-      isSkipped: true,
-      message: `BỎ QUA: Bài "${todo.title}" là bài nộp vở ghi / lớp học, không có file đề thi PDF để tải.`
-    };
-  }
-
-  // LAYER 1: Metadata & blacklist check (Zero tolerance for timed exams)
-  if (isTimedExam(todo)) {
-    return {
-      success: false,
-      isTimed: true,
-      timeLimit: todo.timeLimit || 80,
-      message: `BẢO VỆ TUYỆT ĐỐI: Bài "${todo.title}" là bài thi có tính giờ (${todo.timeLimit || 80} phút). Hệ thống đã khóa an toàn và tuyệt đối không mở để tránh bị tính giờ!`
-    };
-  }
-
-  let targets = [];
-  try {
-    const r = await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(1000) });
-    targets = await r.json();
-  } catch {
-    return { success: false, message: 'ClassIn chưa bật Port 9222. Vui lòng mở lại bằng file Khoi_Dong_ClassIn_De_Tai_PDF.bat!' };
-  }
-
-  const targetActivityId = todo.activityId ? String(todo.activityId) : null;
-
-  // STEP 0: Check if any answersheet sub-windows are open.
-  // If an answersheet window is open for a DIFFERENT activity, safely close it using native handler
-  const openAnswersheets = targets.filter(t => t.url && t.url.includes('answersheet'));
-  for (const win of openAnswersheets) {
-    if (!targetActivityId || !win.url.includes(targetActivityId)) {
-      console.log(`[FetchSafe] Đóng cửa sổ phụ cũ (${win.id}) trước khi lấy bài "${todo.title}"...`);
-      await closeClassInSubWindow(null, win.id);
-    }
-  }
-
-  // Refresh targets after cleanup
-  try {
-    const rClean = await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(1000) });
-    targets = await rClean.json();
-  } catch {}
-
-  let answersheetTarget = targets.find(t => t.url && t.url.includes('answersheet') && (!targetActivityId || t.url.includes(targetActivityId)));
-
-  // 1. If not open, find and click card in main lobby
-  if (!answersheetTarget) {
-    const mainTarget = targets.find(t => !t.url.includes('answersheet') && t.webSocketDebuggerUrl);
-    if (!mainTarget) {
-      return { success: false, message: 'Không tìm thấy cửa sổ sảnh ClassIn To-do' };
     }
 
-    const wsMain = new WebSocket(mainTarget.webSocketDebuggerUrl);
-    await new Promise(r => wsMain.onopen = r);
+    // Refresh targets after cleanup
+    try {
+      const rClean = await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(1000) });
+      targets = await rClean.json();
+    } catch { }
 
-    const searchTarget = (todo.title || '').trim();
+    let answersheetTarget = targets.find(t => t.url && t.url.includes('answersheet') && (!targetActivityId || t.url.includes(targetActivityId)));
 
-    const clickEval = await cdpSend(wsMain, 'Runtime.evaluate', {
-      expression: `(() => {
+    // 1. If not open, find and click card in main lobby
+    if (!answersheetTarget) {
+      const mainTarget = targets.find(t => !t.url.includes('answersheet') && t.webSocketDebuggerUrl);
+      if (!mainTarget) {
+        return { success: false, message: 'Không tìm thấy cửa sổ sảnh ClassIn To-do' };
+      }
+
+      const wsMain = new WebSocket(mainTarget.webSocketDebuggerUrl);
+      await new Promise(r => wsMain.onopen = r);
+
+      const searchTarget = (todo.title || '').trim();
+
+      const clickEval = await cdpSend(wsMain, 'Runtime.evaluate', {
+        expression: `(() => {
         // Query only cards with base class to prevent duplicate matching
         const cards = Array.from(document.querySelectorAll('.baseTodoItem__D5dSs'));
         const target = ${JSON.stringify(searchTarget)}.trim().toLowerCase();
@@ -2380,47 +2814,47 @@ async function fetchSingleTaskSafe(todo) {
         }
         return { clicked: false };
       })()`,
-      returnByValue: true
+        returnByValue: true
+      });
+
+      wsMain.close();
+
+      if (!clickEval?.result?.value?.clicked) {
+        return { success: false, message: `Không tìm thấy thẻ bài tập "${todo.title}" trong sảnh ClassIn` };
+      }
+
+      // Poll up to 6 seconds for sub-window to open
+      for (let poll = 0; poll < 12; poll++) {
+        await new Promise(r => setTimeout(r, 500));
+        try {
+          const r2 = await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(800) });
+          const targets2 = await r2.json();
+          answersheetTarget = targets2.find(t => t.url && t.url.includes('answersheet') && (!targetActivityId || t.url.includes(targetActivityId)));
+          if (answersheetTarget) break;
+        } catch { }
+      }
+    }
+
+    if (!answersheetTarget || !answersheetTarget.webSocketDebuggerUrl) {
+      return { success: false, message: 'Không thể mở cửa sổ bài tập này trong ClassIn' };
+    }
+
+    // 2. Connect to sub-window
+    let detectedPdfUrl = null;
+    const wsAns = new WebSocket(answersheetTarget.webSocketDebuggerUrl);
+    await new Promise((resolve, reject) => {
+      wsAns.onopen = resolve;
+      wsAns.onerror = reject;
+      setTimeout(() => reject(new Error('WS timeout')), 3500);
     });
 
-    wsMain.close();
-
-    if (!clickEval?.result?.value?.clicked) {
-      return { success: false, message: `Không tìm thấy thẻ bài tập "${todo.title}" trong sảnh ClassIn` };
-    }
-
-    // Poll up to 6 seconds for sub-window to open
-    for (let poll = 0; poll < 12; poll++) {
-      await new Promise(r => setTimeout(r, 500));
-      try {
-        const r2 = await fetch(`http://127.0.0.1:${CDP_PORT}/json`, { signal: AbortSignal.timeout(800) });
-        const targets2 = await r2.json();
-        answersheetTarget = targets2.find(t => t.url && t.url.includes('answersheet') && (!targetActivityId || t.url.includes(targetActivityId)));
-        if (answersheetTarget) break;
-      } catch {}
-    }
-  }
-
-  if (!answersheetTarget || !answersheetTarget.webSocketDebuggerUrl) {
-    return { success: false, message: 'Không thể mở cửa sổ bài tập này trong ClassIn' };
-  }
-
-  // 2. Connect to sub-window
-  let detectedPdfUrl = null;
-  const wsAns = new WebSocket(answersheetTarget.webSocketDebuggerUrl);
-  await new Promise((resolve, reject) => {
-    wsAns.onopen = resolve;
-    wsAns.onerror = reject;
-    setTimeout(() => reject(new Error('WS timeout')), 3500);
-  });
-
-  try {
-    // Wait for React to render cover page or join page (up to 3.5 seconds)
-    let pageState = null;
-    for (let i = 0; i < 10; i++) {
-      await new Promise(r => setTimeout(r, 350));
-      const chk = await cdpSend(wsAns, 'Runtime.evaluate', {
-        expression: `(() => {
+    try {
+      // Wait for React to render cover page or join page (up to 3.5 seconds)
+      let pageState = null;
+      for (let i = 0; i < 10; i++) {
+        await new Promise(r => setTimeout(r, 350));
+        const chk = await cdpSend(wsAns, 'Runtime.evaluate', {
+          expression: `(() => {
           const text = (document.body.innerText || '').toLowerCase();
           const href = window.location.href.toLowerCase();
           const isJoinPage = href.includes('/join') || text.includes('đang làm bài thi') || text.includes('nộp');
@@ -2429,46 +2863,46 @@ async function fetchSingleTaskSafe(todo) {
           const isUntimed = isExplicitUntimed || (isJoinPage && !hasTimer) || (text.includes('tiếp tục') && !hasTimer);
           return { length: text.length, href, isJoinPage, isUntimed, hasTimer, isExplicitUntimed };
         })()`,
-        returnByValue: true
-      });
-      if (chk?.result?.value && (chk.result.value.isUntimed || chk.result.value.hasTimer || i >= 8)) {
-        pageState = chk.result.value;
-        break;
+          returnByValue: true
+        });
+        if (chk?.result?.value && (chk.result.value.isUntimed || chk.result.value.hasTimer || i >= 8)) {
+          pageState = chk.result.value;
+          break;
+        }
       }
-    }
 
-    // LAYER 3: Strict check for timed exam
-    if (pageState?.hasTimer || isTimedExam(todo)) {
-      // Abort immediately and close window safely!
-      await closeClassInSubWindow(wsAns, answersheetTarget.id);
-      try { wsAns.close(); } catch(e) {}
-      return {
-        success: false,
-        isTimed: true,
-        message: `BẢO VỆ TUYỆT ĐỐI: Bài tập "${todo.title}" phát hiện giới hạn thời gian! Đã đóng cửa sổ ngay lập tức để bảo vệ bạn 100%!`
-      };
-    }
+      // LAYER 3: Strict check for timed exam
+      if (pageState?.hasTimer || isTimedExam(todo)) {
+        // Abort immediately and close window safely!
+        await closeClassInSubWindow(wsAns, answersheetTarget.id);
+        try { wsAns.close(); } catch (e) { }
+        return {
+          success: false,
+          isTimed: true,
+          message: `BẢO VỆ TUYỆT ĐỐI: Bài tập "${todo.title}" phát hiện giới hạn thời gian! Đã đóng cửa sổ ngay lập tức để bảo vệ bạn 100%!`
+        };
+      }
 
-    // Verify it is untimed (either explicit text, join page without timer, or todo.timeLimit === 0)
-    const isSafeUntimed = pageState?.isUntimed || ((todo.timeLimit || 0) === 0 && !pageState?.hasTimer);
-    if (!isSafeUntimed) {
-      await closeClassInSubWindow(wsAns, answersheetTarget.id);
-      try { wsAns.close(); } catch(e) {}
-      return {
-        success: false,
-        isTimed: true,
-        message: 'BẢO VỆ TUYỆT ĐỐI: Không xác nhận được tính an toàn không giới hạn giờ! Đã đóng cửa sổ ngay lập tức!'
-      };
-    }
+      // Verify it is untimed (either explicit text, join page without timer, or todo.timeLimit === 0)
+      const isSafeUntimed = pageState?.isUntimed || ((todo.timeLimit || 0) === 0 && !pageState?.hasTimer);
+      if (!isSafeUntimed) {
+        await closeClassInSubWindow(wsAns, answersheetTarget.id);
+        try { wsAns.close(); } catch (e) { }
+        return {
+          success: false,
+          isTimed: true,
+          message: 'BẢO VỆ TUYỆT ĐỐI: Không xác nhận được tính an toàn không giới hạn giờ! Đã đóng cửa sổ ngay lập tức!'
+        };
+      }
 
-    // Safe! Enter assignment to trigger PDF loading
-    const originalUrl = answersheetTarget.url;
-    let currentUrl = pageState?.href || originalUrl;
+      // Safe! Enter assignment to trigger PDF loading
+      const originalUrl = answersheetTarget.url;
+      let currentUrl = pageState?.href || originalUrl;
 
-    // STEP: Look for and click the "Bắt đầu" / "Tiếp tục" / "Làm bài" button
-    if (!currentUrl.includes('/join')) {
-      const clickStart = await cdpSend(wsAns, 'Runtime.evaluate', {
-        expression: `(() => {
+      // STEP: Look for and click the "Bắt đầu" / "Tiếp tục" / "Làm bài" button
+      if (!currentUrl.includes('/join')) {
+        const clickStart = await cdpSend(wsAns, 'Runtime.evaluate', {
+          expression: `(() => {
           const btns = Array.from(document.querySelectorAll('button, .ant-btn-primary, .ant-btn, [role="button"]'));
           const targetBtn = btns.find(b => {
             const t = (b.innerText || '').trim().toLowerCase();
@@ -2482,140 +2916,140 @@ async function fetchSingleTaskSafe(todo) {
           }
           return { clicked: false };
         })()`,
-        returnByValue: true
-      });
+          returnByValue: true
+        });
 
-      console.log(`[FetchSafe] Bấm nút bắt đầu:`, clickStart?.result?.value);
+        console.log(`[FetchSafe] Bấm nút bắt đầu:`, clickStart?.result?.value);
 
-      // If button not clicked and still on /detail, fallback to SPA navigate
-      if (!clickStart?.result?.value?.clicked && currentUrl.includes('/detail')) {
-        const joinUrl = currentUrl.replace('/answersheet/detail', '/answersheet/join');
-        await cdpSend(wsAns, 'Page.navigate', { url: joinUrl });
+        // If button not clicked and still on /detail, fallback to SPA navigate
+        if (!clickStart?.result?.value?.clicked && currentUrl.includes('/detail')) {
+          const joinUrl = currentUrl.replace('/answersheet/detail', '/answersheet/join');
+          await cdpSend(wsAns, 'Page.navigate', { url: joinUrl });
+        }
       }
-    }
 
-    // Wait up to 8 seconds for PDF resource to load
-    for (let i = 0; i < 16; i++) {
-      await new Promise(r => setTimeout(r, 500));
-      const perfRes = await cdpSend(wsAns, 'Runtime.evaluate', {
-        expression: `(() => {
+      // Wait up to 8 seconds for PDF resource to load
+      for (let i = 0; i < 16; i++) {
+        await new Promise(r => setTimeout(r, 500));
+        const perfRes = await cdpSend(wsAns, 'Runtime.evaluate', {
+          expression: `(() => {
           const res = performance.getEntriesByType('resource').map(r => r.name);
           const pdfs = res.filter(url => url.toLowerCase().includes('.pdf') && !url.includes('.png'));
           if (pdfs.length > 0) return pdfs;
           const embeds = Array.from(document.querySelectorAll('iframe, embed, object')).map(e => e.src).filter(s => s && s.includes('.pdf'));
           return embeds;
         })()`,
-        returnByValue: true
-      });
+          returnByValue: true
+        });
 
-      const found = perfRes?.result?.value || [];
-      if (found.length > 0) {
-        detectedPdfUrl = found[0];
-        console.log(`[FetchSafe] Bắt được file PDF: ${detectedPdfUrl}`);
+        const found = perfRes?.result?.value || [];
+        if (found.length > 0) {
+          detectedPdfUrl = found[0];
+          console.log(`[FetchSafe] Bắt được file PDF: ${detectedPdfUrl}`);
+          break;
+        }
+      }
+
+      // AUTOMATICALLY & SAFELY CLOSE SUB-WINDOW USING NATIVE INTERNAL HANDLER (Never /json/close!)
+      await closeClassInSubWindow(wsAns, answersheetTarget.id);
+      try { wsAns.close(); } catch (e) { }
+    } catch (winErr) {
+      try { await closeClassInSubWindow(wsAns, answersheetTarget?.id); wsAns.close(); } catch { }
+      return { success: false, message: 'Lỗi nạp bài: ' + winErr.message };
+    }
+
+    if (detectedPdfUrl) {
+      const subj = detectSubject(todo.title);
+      const destDir = subj === 'MATH' ? MATH_DIR : VERBAL_DIR;
+      const deadlineTag = todo.deadlineTag || (subj === 'MATH' ? '[21.10]' : '[17.10]');
+      const filename = formatFilename(todo.title, deadlineTag, subj, false);
+      const destPath = path.join(destDir, filename);
+
+      await fetchFile(detectedPdfUrl, destPath);
+
+      const pdfId = crypto.createHash('md5').update(detectedPdfUrl).digest('hex');
+      pdfStore.set(pdfId, {
+        id: pdfId,
+        filename: filename,
+        title: todo.title,
+        url: detectedPdfUrl,
+        subject: subj,
+        recommendedSubject: subj,
+        deadlineTag: deadlineTag,
+        deadlineDate: todo.deadlineDate || '',
+        customDeadline: todo.customDeadline || null,
+        detectedAt: new Date().toLocaleTimeString('vi-VN'),
+        downloaded: true,
+        isDone: false,
+        localPath: destPath
+      });
+      indexLocalFolders();
+      matchAllTodos();
+      saveDatabase();
+
+      return { success: true, filename, path: destPath, url: detectedPdfUrl };
+    }
+
+    return { success: false, message: 'Không bắt được link PDF từ ClassIn' };
+  }
+
+  // Background Batch Mass Fetch runner (100% safe, skips all timed tests & submission slots)
+  async function runBatchFetchSafe() {
+    if (batchState.isRunning) return;
+
+    // STRICT FILTER: Only tasks that do NOT have a file AND are 100% NOT timed exams AND NOT non-downloadable AND NOT marked as noPdf!
+    const items = getMergedItems().filter(i => !i.hasFile && !isTimedExam(i) && !isNonDownloadableTask(i) && !i.noPdf);
+    batchState.isRunning = true;
+    batchState.total = items.length;
+    batchState.current = 0;
+    batchState.successCount = 0;
+    batchState.skippedCount = 0;
+    batchState.errorCount = 0;
+    batchState.statusText = `Đang bắt đầu lấy ${items.length} bài không tính giờ...`;
+
+    for (const item of items) {
+      if (!batchState.isRunning) {
+        batchState.statusText = 'Đã dừng tự động lấy theo yêu cầu';
         break;
       }
-    }
 
-    // AUTOMATICALLY & SAFELY CLOSE SUB-WINDOW USING NATIVE INTERNAL HANDLER (Never /json/close!)
-    await closeClassInSubWindow(wsAns, answersheetTarget.id);
-    try { wsAns.close(); } catch(e) {}
-  } catch (winErr) {
-    try { await closeClassInSubWindow(wsAns, answersheetTarget?.id); wsAns.close(); } catch {}
-    return { success: false, message: 'Lỗi nạp bài: ' + winErr.message };
-  }
+      batchState.current++;
+      batchState.currentTitle = item.title;
+      batchState.statusText = `[${batchState.current}/${batchState.total}] Đang xử lý: ${item.title}`;
 
-  if (detectedPdfUrl) {
-    const subj = detectSubject(todo.title);
-    const destDir = subj === 'MATH' ? MATH_DIR : VERBAL_DIR;
-    const deadlineTag = todo.deadlineTag || (subj === 'MATH' ? '[21.10]' : '[17.10]');
-    const filename = formatFilename(todo.title, deadlineTag, subj, false);
-    const destPath = path.join(destDir, filename);
-
-    await fetchFile(detectedPdfUrl, destPath);
-
-    const pdfId = crypto.createHash('md5').update(detectedPdfUrl).digest('hex');
-    pdfStore.set(pdfId, {
-      id: pdfId,
-      filename: filename,
-      title: todo.title,
-      url: detectedPdfUrl,
-      subject: subj,
-      recommendedSubject: subj,
-      deadlineTag: deadlineTag,
-      deadlineDate: todo.deadlineDate || '',
-      customDeadline: todo.customDeadline || null,
-      detectedAt: new Date().toLocaleTimeString('vi-VN'),
-      downloaded: true,
-      isDone: false,
-      localPath: destPath
-    });
-    indexLocalFolders();
-    matchAllTodos();
-    saveDatabase();
-
-    return { success: true, filename, path: destPath, url: detectedPdfUrl };
-  }
-
-  return { success: false, message: 'Không bắt được link PDF từ ClassIn' };
-}
-
-// Background Batch Mass Fetch runner (100% safe, skips all timed tests & submission slots)
-async function runBatchFetchSafe() {
-  if (batchState.isRunning) return;
-
-  // STRICT FILTER: Only tasks that do NOT have a file AND are 100% NOT timed exams AND NOT non-downloadable AND NOT marked as noPdf!
-  const items = getMergedItems().filter(i => !i.hasFile && !isTimedExam(i) && !isNonDownloadableTask(i) && !i.noPdf);
-  batchState.isRunning = true;
-  batchState.total = items.length;
-  batchState.current = 0;
-  batchState.successCount = 0;
-  batchState.skippedCount = 0;
-  batchState.errorCount = 0;
-  batchState.statusText = `Đang bắt đầu lấy ${items.length} bài không tính giờ...`;
-
-  for (const item of items) {
-    if (!batchState.isRunning) {
-      batchState.statusText = 'Đã dừng tự động lấy theo yêu cầu';
-      break;
-    }
-
-    batchState.current++;
-    batchState.currentTitle = item.title;
-    batchState.statusText = `[${batchState.current}/${batchState.total}] Đang xử lý: ${item.title}`;
-
-    try {
-      const res = await fetchSingleTaskSafe(item);
-      if (res.success) {
-        batchState.successCount++;
-        batchState.statusText = `[${batchState.current}/${batchState.total}] Đã lấy xong: ${item.title}`;
-      } else if (res.isTimed) {
+      try {
+        const res = await fetchSingleTaskSafe(item);
+        if (res.success) {
+          batchState.successCount++;
+          batchState.statusText = `[${batchState.current}/${batchState.total}] Đã lấy xong: ${item.title}`;
+        } else if (res.isTimed) {
+          batchState.skippedCount++;
+          batchState.statusText = `[${batchState.current}/${batchState.total}] Bỏ qua (bài thi tính giờ): ${item.title}`;
+        } else {
+          batchState.skippedCount++;
+          batchState.statusText = `[${batchState.current}/${batchState.total}] Bỏ qua (không có PDF): ${item.title}`;
+          if (!appSettings.skippedNoPdf) appSettings.skippedNoPdf = [];
+          const normKey = normalizeTitle(item.title);
+          if (!appSettings.skippedNoPdf.includes(normKey)) appSettings.skippedNoPdf.push(normKey);
+          if (item.todoId && !appSettings.skippedNoPdf.includes(item.todoId)) appSettings.skippedNoPdf.push(item.todoId);
+          saveDatabase();
+        }
+      } catch (e) {
         batchState.skippedCount++;
-        batchState.statusText = `[${batchState.current}/${batchState.total}] Bỏ qua (bài thi tính giờ): ${item.title}`;
-      } else {
-        batchState.skippedCount++;
-        batchState.statusText = `[${batchState.current}/${batchState.total}] Bỏ qua (không có PDF): ${item.title}`;
+        batchState.statusText = `[${batchState.current}/${batchState.total}] Lỗi & bỏ qua: ${item.title}`;
         if (!appSettings.skippedNoPdf) appSettings.skippedNoPdf = [];
         const normKey = normalizeTitle(item.title);
         if (!appSettings.skippedNoPdf.includes(normKey)) appSettings.skippedNoPdf.push(normKey);
-        if (item.todoId && !appSettings.skippedNoPdf.includes(item.todoId)) appSettings.skippedNoPdf.push(item.todoId);
         saveDatabase();
       }
-    } catch (e) {
-      batchState.skippedCount++;
-      batchState.statusText = `[${batchState.current}/${batchState.total}] Lỗi & bỏ qua: ${item.title}`;
-      if (!appSettings.skippedNoPdf) appSettings.skippedNoPdf = [];
-      const normKey = normalizeTitle(item.title);
-      if (!appSettings.skippedNoPdf.includes(normKey)) appSettings.skippedNoPdf.push(normKey);
-      saveDatabase();
+
+      // Pause 1.5s between tasks so ClassIn lobby is responsive and screen stays clean
+      await new Promise(r => setTimeout(r, 1500));
     }
 
-    // Pause 1.5s between tasks so ClassIn lobby is responsive and screen stays clean
-    await new Promise(r => setTimeout(r, 1500));
+    batchState.isRunning = false;
+    batchState.statusText = `Hoàn tất! Đã lấy ${batchState.successCount}/${batchState.total} bài an toàn.`;
   }
-
-  batchState.isRunning = false;
-  batchState.statusText = `Hoàn tất! Đã lấy ${batchState.successCount}/${batchState.total} bài an toàn.`;
-}
 
   // 9.1 API: Safe Single Task PDF Fetch
   if (parsedUrl.pathname === '/api/fetch-task-pdf') {
@@ -2914,231 +3348,150 @@ async function runBatchFetchSafe() {
 
   // 10.2 API: Daily Planner & YPT Focus Timer
   if (parsedUrl.pathname === '/api/daily-todos') {
-    if (!appSettings.dailyPlanner) {
-      appSettings.dailyPlanner = { tasks: [], goals: [], daysHistory: {}, activeTimer: null, deletedTasks: {}, deletedGoals: {} };
-    }
-    if (!appSettings.dailyPlanner.daysHistory) appSettings.dailyPlanner.daysHistory = {};
-    if (!appSettings.dailyPlanner.deletedTasks) appSettings.dailyPlanner.deletedTasks = {};
-    if (!Array.isArray(appSettings.dailyPlanner.goals)) appSettings.dailyPlanner.goals = [];
-    if (!appSettings.dailyPlanner.deletedGoals) appSettings.dailyPlanner.deletedGoals = {};
+    if (!appSettings.dailyPlanner) appSettings.dailyPlanner = {};
+    ensureDailyPlannerShape(appSettings.dailyPlanner);
 
     if (req.method === 'POST') {
       let body = '';
       req.on('data', chunk => body += chunk);
       req.on('end', () => {
         try {
-          const parsed = JSON.parse(body);
+          const parsed = JSON.parse(body || '{}');
           const { action, id, title, section, date, deadline, status } = parsed;
-
-          if (!Array.isArray(appSettings.dailyPlanner.tasks)) {
-            appSettings.dailyPlanner.tasks = [];
-          }
+          const now = getCanonicalNow();
+          const planner = appSettings.dailyPlanner;
 
           if (action === 'add' && title && title.trim()) {
+            const meta = inferPlannerSubjectAndColor(title.trim(), parsed.subject, parsed.color);
             const newTask = {
-              id: 'dp_' + getCanonicalNow() + '_' + Math.random().toString(36).slice(2, 6),
+              id: parsed.id || ('dp_' + now + '_' + Math.random().toString(36).slice(2, 6)),
               title: title.trim(),
               section: section || 'morning',
               date: date || getVnDateStr(),
               deadline: deadline || '',
+              subject: meta.subject,
+              color: meta.color,
               completed: false,
-              status: 'incomplete', // 'incomplete' | 'partial' | 'completed' | 'failed'
+              status: 'incomplete',
               spentSeconds: 0,
               createdAt: new Date().toISOString(),
-              updatedAt: getCanonicalNow()
+              updatedAt: now
             };
-            appSettings.dailyPlanner.tasks.push(newTask);
+            planner.tasks.push(newTask);
           } else if (action === 'set-status' && id) {
-            const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
+            const t = planner.tasks.find(item => item.id === id);
             if (t) {
-              const now = getCanonicalNow();
               t.status = status || 'incomplete';
               t.completed = (t.status === 'completed');
               t.updatedAt = now;
               if (t.completed) {
                 t.completedAt = new Date().toISOString();
-                if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
-                  const prev = appSettings.dailyPlanner.activeTimer;
-                  const sessionSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
-                  t.spentSeconds = (t.spentSeconds || 0) + sessionSec;
-                  if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
-                    appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
-                  }
-                  appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
-                  const origStart = prev.sessionStartedAt || prev.startedAt;
-                  const continuousSessionSec = Math.max(0, Math.floor((now - origStart) / 1000));
-                  appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
-                    appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                    continuousSessionSec,
-                    t.spentSeconds || 0
-                  );
-                  appSettings.dailyPlanner.activeTimer = null;
-                  appSettings.dailyPlanner.activeTimerChangedAt = now;
+                if (planner.activeTimer?.taskId === id) {
+                  applyActiveTimerDelta(planner, now, 'stop');
                 }
               } else {
                 t.completedAt = null;
               }
             }
           } else if (action === 'start-timer' && id) {
-            const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
+            const t = planner.tasks.find(item => item.id === id);
             if (t) {
               const taskDate = date || t.date || getVnDateStr();
-              const now = getCanonicalNow();
-
-              if (appSettings.dailyPlanner.activeTimer) {
-                const prev = appSettings.dailyPlanner.activeTimer;
-                const MAX_SESSION_SEC = 4 * 3600;
-                const rawSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
-                const sessionSec = Math.min(MAX_SESSION_SEC, rawSec);
-                const prevTask = appSettings.dailyPlanner.tasks.find(item => item.id === prev.taskId);
-                if (prevTask) {
-                  prevTask.spentSeconds = (prevTask.spentSeconds || 0) + sessionSec;
-                  prevTask.updatedAt = now;
-                }
-                if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
-                  appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
-                }
-                appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
-                const origStart = prev.sessionStartedAt || prev.startedAt;
-                const continuousSessionSec = Math.min(MAX_SESSION_SEC, Math.max(0, Math.floor((now - origStart) / 1000)));
-                appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
-                  appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                  continuousSessionSec,
-                  prevTask ? (prevTask.spentSeconds || 0) : 0
-                );
+              if (planner.activeTimer) {
+                applyActiveTimerDelta(planner, now, 'stop');
               }
 
               const clientStartedAtNum = Number(parsed.clientStartedAt);
               const useClientTime = !isNaN(clientStartedAtNum) && Math.abs(clientStartedAtNum - now) < 60000;
               const startedAtTime = useClientTime ? clientStartedAtNum : now;
+              const meta = inferPlannerSubjectAndColor(t.title, t.subject, t.color);
+              const sesId = (parsed.sessionId && /^ses_[a-zA-Z0-9_]+$/.test(String(parsed.sessionId)))
+                ? String(parsed.sessionId)
+                : ('ses_' + startedAtTime + '_' + Math.random().toString(36).slice(2, 6));
 
-              appSettings.dailyPlanner.activeTimer = {
+              planner.activeTimer = {
                 taskId: t.id,
                 taskTitle: t.title,
+                subject: meta.subject,
+                color: meta.color,
+                sessionId: sesId,
                 startedAt: startedAtTime,
                 sessionStartedAt: startedAtTime,
                 date: taskDate
               };
-              appSettings.dailyPlanner.activeTimerChangedAt = now;
+              planner.activeTimerChangedAt = now;
             }
           } else if (action === 'stop-timer') {
-            if (appSettings.dailyPlanner.activeTimer) {
-              const prev = appSettings.dailyPlanner.activeTimer;
-              const now = getCanonicalNow();
-              const MAX_SESSION_SEC = 4 * 3600;
-              const rawSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
-              const sessionSec = Math.min(MAX_SESSION_SEC, rawSec);
-              const targetTask = appSettings.dailyPlanner.tasks.find(item => item.id === prev.taskId);
-              if (targetTask) {
-                targetTask.spentSeconds = (targetTask.spentSeconds || 0) + sessionSec;
-                targetTask.updatedAt = now;
-              }
-              if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
-                appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
-              }
-              appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
-              const origStart = prev.sessionStartedAt || prev.startedAt;
-              const continuousSessionSec = Math.min(MAX_SESSION_SEC, Math.max(0, Math.floor((now - origStart) / 1000)));
-              appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
-                appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                continuousSessionSec,
-                targetTask ? (targetTask.spentSeconds || 0) : 0
-              );
-              appSettings.dailyPlanner.activeTimer = null;
-              appSettings.dailyPlanner.activeTimerChangedAt = now;
+            if (planner.activeTimer) {
+              applyActiveTimerDelta(planner, now, 'stop');
             }
           } else if (action === 'checkpoint-timer') {
-            if (appSettings.dailyPlanner.activeTimer) {
-              const prev = appSettings.dailyPlanner.activeTimer;
-              const now = getCanonicalNow();
-              const MAX_SESSION_SEC = 4 * 3600;
-              const rawSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
-              const sessionSec = Math.min(MAX_SESSION_SEC, rawSec);
-              if (sessionSec > 0) {
-                const targetTask = appSettings.dailyPlanner.tasks.find(item => item.id === prev.taskId);
-                if (targetTask) {
-                  targetTask.spentSeconds = (targetTask.spentSeconds || 0) + sessionSec;
-                  targetTask.updatedAt = now;
-                }
-                if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
-                  appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
-                }
-                appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
-                const origStart = prev.sessionStartedAt || prev.startedAt;
-                const continuousSessionSec = Math.min(MAX_SESSION_SEC, Math.max(0, Math.floor((now - origStart) / 1000)));
-                appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
-                  appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                  continuousSessionSec,
-                  targetTask ? (targetTask.spentSeconds || 0) : 0
-                );
-                // Advance timer startedAt for increment calculation, preserve sessionStartedAt for continuous focus duration
-                if (!prev.sessionStartedAt) prev.sessionStartedAt = origStart;
-                prev.startedAt = now;
-                appSettings.dailyPlanner.activeTimerChangedAt = now;
-              }
+            if (planner.activeTimer) {
+              applyActiveTimerDelta(planner, now, 'checkpoint');
             }
           } else if (action === 'toggle' && id) {
-            const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
+            const t = planner.tasks.find(item => item.id === id);
             if (t) {
-              const now = getCanonicalNow();
               t.completed = !t.completed;
               t.status = t.completed ? 'completed' : 'incomplete';
               t.updatedAt = now;
               if (t.completed) {
                 t.completedAt = new Date().toISOString();
-                if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
-                  const prev = appSettings.dailyPlanner.activeTimer;
-                  const sessionSec = Math.max(0, Math.floor((now - prev.startedAt) / 1000));
-                  t.spentSeconds = (t.spentSeconds || 0) + sessionSec;
-                  if (!appSettings.dailyPlanner.daysHistory[prev.date]) {
-                    appSettings.dailyPlanner.daysHistory[prev.date] = { totalSeconds: 0, maxFocusSeconds: 0 };
-                  }
-                  appSettings.dailyPlanner.daysHistory[prev.date].totalSeconds += sessionSec;
-                  const origStart = prev.sessionStartedAt || prev.startedAt;
-                  const continuousSessionSec = Math.max(0, Math.floor((now - origStart) / 1000));
-                  appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds = Math.max(
-                    appSettings.dailyPlanner.daysHistory[prev.date].maxFocusSeconds || 0,
-                    continuousSessionSec,
-                    t.spentSeconds || 0
-                  );
-                  appSettings.dailyPlanner.activeTimer = null;
-                  appSettings.dailyPlanner.activeTimerChangedAt = now;
+                if (planner.activeTimer?.taskId === id) {
+                  applyActiveTimerDelta(planner, now, 'stop');
                 }
               } else {
                 t.completedAt = null;
               }
             }
           } else if (action === 'edit' && id) {
-            const t = appSettings.dailyPlanner.tasks.find(item => item.id === id);
+            const t = planner.tasks.find(item => item.id === id);
             if (t) {
               if (title !== undefined) t.title = title.trim();
               if (section !== undefined) t.section = section;
               if (deadline !== undefined) t.deadline = deadline;
               if (date !== undefined) t.date = date;
+              if (parsed.subject !== undefined || parsed.color !== undefined || title !== undefined) {
+                const meta = inferPlannerSubjectAndColor(
+                  t.title,
+                  parsed.subject !== undefined ? parsed.subject : (title !== undefined ? '' : t.subject),
+                  parsed.color !== undefined ? parsed.color : t.color
+                );
+                t.subject = meta.subject;
+                if (parsed.color !== undefined || !t.color) t.color = meta.color;
+              }
               if (status !== undefined) {
                 t.status = status;
                 t.completed = (status === 'completed');
               }
-              t.updatedAt = getCanonicalNow();
+              t.updatedAt = now;
+              if (planner.activeTimer?.taskId === id && title !== undefined) {
+                planner.activeTimer.taskTitle = t.title;
+                if (t.subject) planner.activeTimer.subject = t.subject;
+                if (t.color) planner.activeTimer.color = t.color;
+                planner.activeTimerChangedAt = now;
+              }
             }
           } else if (action === 'delete' && id) {
-            const now = getCanonicalNow();
-            if (appSettings.dailyPlanner.activeTimer?.taskId === id) {
-              appSettings.dailyPlanner.activeTimer = null;
-              appSettings.dailyPlanner.activeTimerChangedAt = now;
+            if (planner.activeTimer?.taskId === id) {
+              applyActiveTimerDelta(planner, now, 'stop');
             }
-            if (!appSettings.dailyPlanner.deletedTasks) {
-              appSettings.dailyPlanner.deletedTasks = {};
+            planner.deletedTasks[id] = now;
+            planner.tasks = planner.tasks.filter(item => item.id !== id);
+            // Preserve sessions history on timeline while unlinking deleted task
+            for (const s of planner.sessions) {
+              if (s.taskId === id) {
+                s.taskId = null;
+                s.updatedAt = now;
+              }
             }
-            appSettings.dailyPlanner.deletedTasks[id] = now;
-            appSettings.dailyPlanner.tasks = appSettings.dailyPlanner.tasks.filter(item => item.id !== id);
           } else if (action === 'reorder' && Array.isArray(parsed.orderedIds)) {
-            const idMap = new Map((appSettings.dailyPlanner.tasks || []).map(t => [String(t.id), t]));
+            const idMap = new Map((planner.tasks || []).map(t => [String(t.id), t]));
             if (parsed.movedTaskId && parsed.newSection) {
               const moved = idMap.get(String(parsed.movedTaskId));
               if (moved) {
                 moved.section = parsed.newSection;
-                moved.updatedAt = getCanonicalNow();
+                moved.updatedAt = now;
               }
             }
             const newTasks = [];
@@ -3152,51 +3505,241 @@ async function runBatchFetchSafe() {
             for (const remaining of idMap.values()) {
               newTasks.push(remaining);
             }
-            appSettings.dailyPlanner.tasks = newTasks;
+            planner.tasks = newTasks;
+          } else if (action === 'add-session') {
+            let sStart = Number(parsed.startedAt);
+            let sEnd = Number(parsed.endedAt);
+            let sessDate = /^\d{4}-\d{2}-\d{2}$/.test(parsed.date || '') ? parsed.date : (Number.isFinite(sStart) ? getVnDateStr(sStart) : getVnDateStr());
+            if ((!Number.isFinite(sStart) || !Number.isFinite(sEnd)) && parsed.startTime && parsed.endTime) {
+              const [sh, sm] = normalizeHHMM(parsed.startTime, '00:00').split(':').map(Number);
+              const [eh, em] = normalizeHHMM(parsed.endTime, '00:00').split(':').map(Number);
+              const startAddDay = parsed.isOvernightStart ? 1 : 0;
+              const endAddDay = startAddDay + (((eh * 60 + em) <= (sh * 60 + sm)) ? 1 : 0);
+              sStart = vnDateTimeToMs(sessDate, sh, sm, startAddDay);
+              sEnd = vnDateTimeToMs(sessDate, eh, em, endAddDay);
+            }
+            const durSec = Number.isFinite(sStart) && Number.isFinite(sEnd) ? Math.floor((sEnd - sStart) / 1000) : 0;
+            if (!Number.isFinite(sStart) || !Number.isFinite(sEnd) || durSec < 1 || durSec > 16 * 3600) {
+              res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+              return res.end(JSON.stringify({ error: 'Thời gian phiên học không hợp lệ (1 giây đến 16 giờ)' }));
+            }
+            const linkedTask = parsed.taskId ? planner.tasks.find(t => t.id === parsed.taskId) : null;
+            const sessTitle = String(parsed.title || linkedTask?.title || 'Tự học').trim() || 'Tự học';
+            const meta = inferPlannerSubjectAndColor(sessTitle, parsed.subject || linkedTask?.subject, parsed.color || linkedTask?.color);
+            const sesId = parsed.id || ('ses_' + now + '_' + Math.random().toString(36).slice(2, 6));
+            const newSession = {
+              id: sesId,
+              taskId: linkedTask ? linkedTask.id : null,
+              title: sessTitle,
+              subject: meta.subject,
+              color: meta.color,
+              date: sessDate,
+              startedAt: sStart,
+              endedAt: sEnd,
+              durationSeconds: durSec,
+              source: parsed.source === 'timer' ? 'timer' : 'manual',
+              note: String(parsed.note || '').trim(),
+              updatedAt: now
+            };
+            upsertSessionRecord(planner, newSession);
+            if (!planner.daysHistory[sessDate]) {
+              planner.daysHistory[sessDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
+            }
+            planner.daysHistory[sessDate].totalSeconds = (planner.daysHistory[sessDate].totalSeconds || 0) + durSec;
+            planner.daysHistory[sessDate].maxFocusSeconds = Math.max(planner.daysHistory[sessDate].maxFocusSeconds || 0, durSec);
+            if (linkedTask) {
+              linkedTask.spentSeconds = (linkedTask.spentSeconds || 0) + durSec;
+              linkedTask.updatedAt = now;
+            }
+          } else if (action === 'update-session' && id) {
+            const s = planner.sessions.find(item => item.id === id);
+            if (!s) {
+              res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
+              return res.end(JSON.stringify({ error: 'Không tìm thấy phiên học' }));
+            }
+            const oldDate = s.date;
+            const oldDur = s.durationSeconds || 0;
+            const oldTaskId = s.taskId || null;
+
+            let newStart = parsed.startedAt !== undefined ? Number(parsed.startedAt) : s.startedAt;
+            let newEnd = parsed.endedAt !== undefined ? Number(parsed.endedAt) : s.endedAt;
+            const newDate = /^\d{4}-\d{2}-\d{2}$/.test(parsed.date || '') ? parsed.date : oldDate;
+            if (parsed.startTime && parsed.endTime) {
+              const [sh, sm] = normalizeHHMM(parsed.startTime, '00:00').split(':').map(Number);
+              const [eh, em] = normalizeHHMM(parsed.endTime, '00:00').split(':').map(Number);
+              const startAddDay = parsed.isOvernightStart ? 1 : 0;
+              const endAddDay = startAddDay + (((eh * 60 + em) <= (sh * 60 + sm)) ? 1 : 0);
+              newStart = vnDateTimeToMs(newDate, sh, sm, startAddDay);
+              newEnd = vnDateTimeToMs(newDate, eh, em, endAddDay);
+            }
+            const newDur = Math.floor((newEnd - newStart) / 1000);
+            if (!Number.isFinite(newStart) || !Number.isFinite(newEnd) || newDur < 1 || newDur > 16 * 3600) {
+              res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+              return res.end(JSON.stringify({ error: 'Khoảng thời gian phiên học không hợp lệ' }));
+            }
+
+            if (parsed.title !== undefined && String(parsed.title).trim()) s.title = String(parsed.title).trim();
+            if (parsed.note !== undefined) s.note = String(parsed.note).trim();
+            const newTaskId = parsed.taskId !== undefined ? (parsed.taskId || null) : oldTaskId;
+            const meta = inferPlannerSubjectAndColor(
+              s.title,
+              parsed.subject !== undefined ? parsed.subject : s.subject,
+              parsed.color !== undefined ? parsed.color : s.color
+            );
+            s.subject = meta.subject;
+            s.color = meta.color;
+            s.date = newDate;
+            s.startedAt = newStart;
+            s.endedAt = newEnd;
+            s.durationSeconds = newDur;
+            s.taskId = newTaskId;
+            s.updatedAt = now;
+
+            // Adjust day histories cleanly and stamp adjustedAt on reductions
+            if (oldDate === newDate) {
+              if (!planner.daysHistory[newDate]) planner.daysHistory[newDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
+              planner.daysHistory[newDate].totalSeconds = Math.max(0, (planner.daysHistory[newDate].totalSeconds || 0) - oldDur + newDur);
+              if (newDur < oldDur) planner.daysHistory[newDate].adjustedAt = now;
+              recomputeDayStatsFromSessions(planner, newDate);
+            } else {
+              if (!planner.daysHistory[oldDate]) planner.daysHistory[oldDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
+              planner.daysHistory[oldDate].totalSeconds = Math.max(0, (planner.daysHistory[oldDate].totalSeconds || 0) - oldDur);
+              planner.daysHistory[oldDate].adjustedAt = now;
+              recomputeDayStatsFromSessions(planner, oldDate);
+
+              if (!planner.daysHistory[newDate]) planner.daysHistory[newDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
+              planner.daysHistory[newDate].totalSeconds = (planner.daysHistory[newDate].totalSeconds || 0) + newDur;
+              recomputeDayStatsFromSessions(planner, newDate);
+            }
+
+            // Adjust linked task spentSeconds
+            if (oldTaskId === newTaskId && newTaskId) {
+              const t = planner.tasks.find(item => item.id === newTaskId);
+              if (t) {
+                t.spentSeconds = Math.max(0, (t.spentSeconds || 0) - oldDur + newDur);
+                if (newDur < oldDur) t.adjustedAt = now;
+                t.updatedAt = now;
+              }
+            } else {
+              if (oldTaskId) {
+                const ot = planner.tasks.find(item => item.id === oldTaskId);
+                if (ot) {
+                  ot.spentSeconds = Math.max(0, (ot.spentSeconds || 0) - oldDur);
+                  ot.adjustedAt = now;
+                  ot.updatedAt = now;
+                }
+              }
+              if (newTaskId) {
+                const nt = planner.tasks.find(item => item.id === newTaskId);
+                if (nt) {
+                  nt.spentSeconds = (nt.spentSeconds || 0) + newDur;
+                  nt.updatedAt = now;
+                }
+              }
+            }
+
+            // Sync if currently running timer owns this session
+            if (planner.activeTimer?.sessionId === id) {
+              planner.activeTimer.taskTitle = s.title;
+              planner.activeTimer.subject = s.subject;
+              planner.activeTimer.color = s.color;
+              planner.activeTimer.sessionStartedAt = newStart;
+              planner.activeTimerChangedAt = now;
+            }
+          } else if (action === 'delete-session' && id) {
+            if (planner.activeTimer?.sessionId === id) {
+              applyActiveTimerDelta(planner, now, 'stop');
+            }
+            const s = planner.sessions.find(item => item.id === id);
+            planner.deletedSessions[id] = now;
+            planner.sessions = planner.sessions.filter(item => item.id !== id);
+            if (s) {
+              const sDate = s.date || getVnDateStr(s.startedAt);
+              const oldDur = s.durationSeconds || 0;
+              if (!planner.daysHistory[sDate]) planner.daysHistory[sDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
+              planner.daysHistory[sDate].totalSeconds = Math.max(0, (planner.daysHistory[sDate].totalSeconds || 0) - oldDur);
+              planner.daysHistory[sDate].adjustedAt = now;
+              recomputeDayStatsFromSessions(planner, sDate);
+              if (s.taskId) {
+                const t = planner.tasks.find(item => item.id === s.taskId);
+                if (t) {
+                  t.spentSeconds = Math.max(0, (t.spentSeconds || 0) - oldDur);
+                  t.adjustedAt = now;
+                  t.updatedAt = now;
+                }
+              }
+            }
+          } else if (action === 'add-cal-event' && parsed.title && String(parsed.title).trim()) {
+            const evDate = /^\d{4}-\d{2}-\d{2}$/.test(parsed.date || '') ? parsed.date : getVnDateStr();
+            const evColor = /^#[0-9a-f]{3,8}$/i.test(String(parsed.color || '').trim()) ? String(parsed.color).trim() : '#2563EB';
+            const evId = parsed.id || ('cal_' + now + '_' + Math.random().toString(36).slice(2, 6));
+            if (!planner.calendarEvents.some(e => e.id === evId)) {
+              planner.calendarEvents.push({
+                id: evId,
+                date: evDate,
+                title: String(parsed.title).trim(),
+                color: evColor,
+                updatedAt: now
+              });
+            }
+          } else if (action === 'update-cal-event' && id) {
+            const ev = planner.calendarEvents.find(item => item.id === id);
+            if (ev) {
+              if (parsed.title !== undefined && String(parsed.title).trim()) ev.title = String(parsed.title).trim();
+              if (parsed.color !== undefined && /^#[0-9a-f]{3,8}$/i.test(String(parsed.color).trim())) ev.color = String(parsed.color).trim();
+              if (parsed.date !== undefined && /^\d{4}-\d{2}-\d{2}$/.test(parsed.date)) ev.date = parsed.date;
+              ev.updatedAt = now;
+            }
+          } else if (action === 'delete-cal-event' && id) {
+            planner.deletedCalendarEvents[id] = now;
+            planner.calendarEvents = planner.calendarEvents.filter(item => item.id !== id);
+          } else if (action === 'update-schedule-settings') {
+            planner.scheduleSettings = normalizeScheduleSettings({
+              ...planner.scheduleSettings,
+              ...(parsed.scheduleSettings || parsed),
+              updatedAt: now
+            });
           } else if (action === 'add-goal' && parsed.text && parsed.text.trim()) {
-            if (!Array.isArray(appSettings.dailyPlanner.goals)) appSettings.dailyPlanner.goals = [];
-            const goalId = parsed.id || ('goal_' + getCanonicalNow() + '_' + Math.random().toString(36).slice(2, 6));
-            const existing = appSettings.dailyPlanner.goals.find(item => item.id === goalId);
+            const goalId = parsed.id || ('goal_' + now + '_' + Math.random().toString(36).slice(2, 6));
+            const existing = planner.goals.find(item => item.id === goalId);
             if (!existing) {
               const newGoal = {
                 id: goalId,
-                type: parsed.type || 'day', // 'day' | 'week' | 'month'
+                type: parsed.type || 'day',
                 scopeKey: parsed.scopeKey || (parsed.type === 'month' ? getVnDateStr().slice(0, 7) : getVnDateStr()),
                 text: parsed.text.trim(),
-                priority: parsed.priority || 'medium', // 'high' | 'medium' | 'low' | 'none'
+                priority: parsed.priority || 'medium',
                 completed: false,
                 createdAt: parsed.createdAt || new Date().toISOString(),
-                updatedAt: parsed.updatedAt || getCanonicalNow()
+                updatedAt: parsed.updatedAt || now
               };
-              appSettings.dailyPlanner.goals.push(newGoal);
+              planner.goals.push(newGoal);
             }
           } else if (action === 'toggle-goal' && id) {
-            const g = (appSettings.dailyPlanner.goals || []).find(item => item.id === id);
+            const g = planner.goals.find(item => item.id === id);
             if (g) {
               g.completed = !g.completed;
-              g.updatedAt = getCanonicalNow();
+              g.updatedAt = now;
             }
           } else if (action === 'update-goal' && id) {
-            const g = (appSettings.dailyPlanner.goals || []).find(item => item.id === id);
+            const g = planner.goals.find(item => item.id === id);
             if (g) {
               if (parsed.text !== undefined) g.text = parsed.text.trim();
               if (parsed.priority !== undefined) g.priority = parsed.priority;
               if (parsed.completed !== undefined) g.completed = !!parsed.completed;
-              g.updatedAt = getCanonicalNow();
+              g.updatedAt = now;
             }
           } else if (action === 'delete-goal' && id) {
-            const now = getCanonicalNow();
-            if (!appSettings.dailyPlanner.deletedGoals) appSettings.dailyPlanner.deletedGoals = {};
-            appSettings.dailyPlanner.deletedGoals[id] = now;
-            appSettings.dailyPlanner.goals = (appSettings.dailyPlanner.goals || []).filter(item => item.id !== id);
+            planner.deletedGoals[id] = now;
+            planner.goals = planner.goals.filter(item => item.id !== id);
           } else if (action === 'reorder-goals' && Array.isArray(parsed.orderedIds)) {
-            const idMap = new Map((appSettings.dailyPlanner.goals || []).map(g => [String(g.id), g]));
+            const idMap = new Map((planner.goals || []).map(g => [String(g.id), g]));
             if (parsed.movedGoalId && parsed.newType) {
               const moved = idMap.get(String(parsed.movedGoalId));
               if (moved) {
                 moved.type = parsed.newType;
                 if (parsed.newScopeKey) moved.scopeKey = parsed.newScopeKey;
-                moved.updatedAt = getCanonicalNow();
+                moved.updatedAt = now;
               }
             }
             const newGoals = [];
@@ -3210,7 +3753,7 @@ async function runBatchFetchSafe() {
             for (const remaining of idMap.values()) {
               newGoals.push(remaining);
             }
-            appSettings.dailyPlanner.goals = newGoals;
+            planner.goals = newGoals;
           }
 
           syncDiscordPresenceFromActiveTimer(true);
@@ -3218,27 +3761,10 @@ async function runBatchFetchSafe() {
           broadcastPlannerUpdate();
           if (typeof triggerCloudSync === 'function') triggerCloudSync();
 
-          const filteredTasks = (appSettings.dailyPlanner.tasks || []).filter(item => {
-            const delTime = appSettings.dailyPlanner.deletedTasks?.[item.id];
-            if (!delTime) return true;
-            const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-            return taskUpdated > delTime;
-          });
-          const filteredGoals = (appSettings.dailyPlanner.goals || []).filter(item => {
-            const delTime = appSettings.dailyPlanner.deletedGoals?.[item.id];
-            if (!delTime) return true;
-            const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-            return goalUpdated > delTime;
-          });
-
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({
             success: true,
-            dailyPlanner: {
-              ...appSettings.dailyPlanner,
-              tasks: filteredTasks,
-              goals: filteredGoals
-            },
+            dailyPlanner: buildPlannerPayload(planner),
             serverTime: getCanonicalNow()
           }));
         } catch (e) {
@@ -3249,25 +3775,38 @@ async function runBatchFetchSafe() {
       return;
     }
 
-    const filteredTasks = (appSettings.dailyPlanner.tasks || []).filter(item => {
-      const delTime = appSettings.dailyPlanner.deletedTasks?.[item.id];
-      if (!delTime) return true;
-      const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-      return taskUpdated > delTime;
-    });
-    const filteredGoals = (appSettings.dailyPlanner.goals || []).filter(item => {
-      const delTime = appSettings.dailyPlanner.deletedGoals?.[item.id];
-      if (!delTime) return true;
-      const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-      return goalUpdated > delTime;
-    });
-
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     return res.end(JSON.stringify({
-      ...appSettings.dailyPlanner,
-      tasks: filteredTasks,
-      goals: filteredGoals,
+      ...buildPlannerPayload(appSettings.dailyPlanner),
       serverTime: getCanonicalNow()
+    }));
+  }
+
+  // 10.2.0 API: Timeline Range & Break Analytics
+  if (parsedUrl.pathname === '/api/daily-timeline') {
+    if (!appSettings.dailyPlanner) appSettings.dailyPlanner = {};
+    ensureDailyPlannerShape(appSettings.dailyPlanner);
+    const now = getCanonicalNow();
+    const baseDate = /^\d{4}-\d{2}-\d{2}$/.test(parsedUrl.searchParams.get('date') || '')
+      ? parsedUrl.searchParams.get('date')
+      : getVnDateStr(now);
+    const startParam = parsedUrl.searchParams.get('startDate');
+    const daysCount = Math.max(1, Math.min(35, parseInt(parsedUrl.searchParams.get('days') || '1', 10) || 1));
+    const effectiveStart = /^\d{4}-\d{2}-\d{2}$/.test(startParam || '') ? startParam : baseDate;
+
+    const days = [];
+    for (let i = 0; i < daysCount; i++) {
+      const targetDate = msToVnParts(vnDateTimeToMs(effectiveStart, 12, 0, i)).dateStr;
+      days.push(buildDayTimelineSummary(appSettings.dailyPlanner, targetDate, now));
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    return res.end(JSON.stringify({
+      success: true,
+      serverTime: now,
+      startDate: effectiveStart,
+      daysCount,
+      scheduleSettings: normalizeScheduleSettings(appSettings.dailyPlanner.scheduleSettings),
+      days
     }));
   }
 
@@ -3279,14 +3818,8 @@ async function runBatchFetchSafe() {
       req.on('end', () => {
         try {
           const incoming = JSON.parse(body || '{}');
-          if (!appSettings.dailyPlanner) {
-            appSettings.dailyPlanner = { tasks: [], goals: [], daysHistory: {}, activeTimer: null, activeTimerChangedAt: 0, deletedTasks: {}, deletedGoals: {} };
-          }
-          if (!Array.isArray(appSettings.dailyPlanner.tasks)) appSettings.dailyPlanner.tasks = [];
-          if (!Array.isArray(appSettings.dailyPlanner.goals)) appSettings.dailyPlanner.goals = [];
-          if (!appSettings.dailyPlanner.daysHistory) appSettings.dailyPlanner.daysHistory = {};
-          if (!appSettings.dailyPlanner.deletedTasks) appSettings.dailyPlanner.deletedTasks = {};
-          if (!appSettings.dailyPlanner.deletedGoals) appSettings.dailyPlanner.deletedGoals = {};
+          if (!appSettings.dailyPlanner) appSettings.dailyPlanner = {};
+          ensureDailyPlannerShape(appSettings.dailyPlanner);
 
           const incomingChangedAt = incoming.activeTimerChangedAt || 0;
           const localChangedAt = appSettings.dailyPlanner.activeTimerChangedAt || 0;
@@ -3313,27 +3846,10 @@ async function runBatchFetchSafe() {
             saveDatabase();
           }
 
-          const filteredTasks = (appSettings.dailyPlanner.tasks || []).filter(item => {
-            const delTime = appSettings.dailyPlanner.deletedTasks?.[item.id];
-            if (!delTime) return true;
-            const taskUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-            return taskUpdated > delTime;
-          });
-          const filteredGoals = (appSettings.dailyPlanner.goals || []).filter(item => {
-            const delTime = appSettings.dailyPlanner.deletedGoals?.[item.id];
-            if (!delTime) return true;
-            const goalUpdated = item.updatedAt || (item.createdAt ? new Date(item.createdAt).getTime() : 0);
-            return goalUpdated > delTime;
-          });
-
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify({
             success: true,
-            dailyPlanner: {
-              ...appSettings.dailyPlanner,
-              tasks: filteredTasks,
-              goals: filteredGoals
-            },
+            dailyPlanner: buildPlannerPayload(appSettings.dailyPlanner),
             habits: appSettings.habits,
             discordRpc: appSettings.discordRpc,
             serverTime: getCanonicalNow()
@@ -3529,7 +4045,7 @@ async function runBatchFetchSafe() {
     else if (target === 'MATH') folderToOpen = path.join(base, 'MATH');
 
     if (!fs.existsSync(folderToOpen)) {
-      try { fs.mkdirSync(folderToOpen, { recursive: true }); } catch (e) {}
+      try { fs.mkdirSync(folderToOpen, { recursive: true }); } catch (e) { }
     }
 
     let cmd = `powershell.exe -NoProfile -Command "Start-Process explorer.exe '${folderToOpen}'"`;
@@ -3578,7 +4094,7 @@ async function runBatchFetchSafe() {
             fs.writeFileSync(startupVbs, vbsContent, 'utf8');
           } else {
             if (fs.existsSync(startupVbs)) {
-              try { fs.unlinkSync(startupVbs); } catch (e) {}
+              try { fs.unlinkSync(startupVbs); } catch (e) { }
             }
           }
           const isEnabled = fs.existsSync(startupVbs);
@@ -3698,8 +4214,13 @@ async function triggerCloudSync() {
     const payload = {
       tasks: appSettings.dailyPlanner?.tasks || [],
       goals: appSettings.dailyPlanner?.goals || [],
+      sessions: appSettings.dailyPlanner?.sessions || [],
+      calendarEvents: appSettings.dailyPlanner?.calendarEvents || [],
+      scheduleSettings: normalizeScheduleSettings(appSettings.dailyPlanner?.scheduleSettings),
       deletedTasks: appSettings.dailyPlanner?.deletedTasks || {},
       deletedGoals: appSettings.dailyPlanner?.deletedGoals || {},
+      deletedSessions: appSettings.dailyPlanner?.deletedSessions || {},
+      deletedCalendarEvents: appSettings.dailyPlanner?.deletedCalendarEvents || {},
       daysHistory: appSettings.dailyPlanner?.daysHistory || {},
       habits: appSettings.habits || {},
       activeTimer: appSettings.dailyPlanner?.activeTimer || null,
