@@ -447,12 +447,12 @@ const DEFAULT_SCHEDULE_SETTINGS = {
   updatedAt: 0
 };
 const SUBJECT_COLORS = {
-  MATH: '#2563EB',
-  VERBAL: '#7C3AED',
-  PHYSICS: '#0EA5E9',
-  CHEM: '#F59E0B',
-  WORKOUT: '#10B981',
-  OTHER: '#10B981'
+  MATH: '#38BDF8',
+  VERBAL: '#7DD3FC',
+  PHYSICS: '#60A5FA',
+  CHEM: '#93C5FD',
+  WORKOUT: '#BAE6FD',
+  OTHER: '#38BDF8'
 };
 
 function normalizeHHMM(val, fallback = '22:35') {

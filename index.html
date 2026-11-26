@@ -53,6 +53,40 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body, header, nav, button, svg,
+    .mobile-ypt-header, .mob-ypt-title, .mob-ypt-dday,
+    .mobile-ypt-dock, .mob-ypt-dock-item, .mob-ypt-dock-circle,
+    .tl-day-canvas, .tl-week-body, .tl-month-grid-full,
+    .tl-session-block, .tl-sleep-block, .tl-floating-bar,
+    .ypt-dashboard-card, .planner-top-nav, .notion-goals-card,
+    .planner-task-item, .modal-card, .cluster-sheet-card,
+    .ypt-picker-subject-row, .ypt-picker-subtask-row {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    input, textarea, select, [contenteditable="true"] {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+      -webkit-touch-callout: default !important;
+    }
+
+    /* Hide visible scrollbar tracks while preserving native scroll */
+    .tl-day-scroll, .tl-week-scroll, .ypt-picker-groups,
+    .cluster-sheet-list, #plannerMonthViewPanel {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .tl-day-scroll::-webkit-scrollbar, .tl-week-scroll::-webkit-scrollbar,
+    .ypt-picker-groups::-webkit-scrollbar, .cluster-sheet-list::-webkit-scrollbar,
+    #plannerMonthViewPanel::-webkit-scrollbar {
+      width: 0 !important;
+      height: 0 !important;
+      display: none !important;
     }
 
     body {
@@ -3470,7 +3504,7 @@
     }
 
     .ypt-digital-clock.running {
-      color: #EA580C;
+      color: #0284C7;
     }
 
     .ypt-status-indicator {
@@ -3481,52 +3515,21 @@
       color: var(--text-secondary);
     }
 
-    .ypt-flame-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #D1D5DB;
-      transition: all 0.2s ease;
-    }
-
-    .ypt-flame-dot.running {
-      background: #EA580C;
-      box-shadow: 0 0 6px rgba(234, 88, 12, 0.6);
-      animation: yptPulse 1.5s infinite;
-    }
-
-    @keyframes yptPulse {
-      0% {
-        transform: scale(0.95);
-        opacity: 0.8;
-      }
-
-      50% {
-        transform: scale(1.25);
-        opacity: 1;
-      }
-
-      100% {
-        transform: scale(0.95);
-        opacity: 0.8;
-      }
-    }
-
     .ypt-active-task-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #FFF7ED;
-      border: 1px solid #FFEDD5;
+      background: #E0F2FE;
+      border: 1px solid #BAE6FD;
       border-radius: 6px;
       padding: 2px 8px;
       font-size: 12px;
-      color: #C2410C;
+      color: #0369A1;
       font-weight: 550;
     }
 
     .ypt-btn-pause-inline {
-      background: #EA580C;
+      background: #0EA5E9;
       border: none;
       color: #FFFFFF;
       border-radius: 4px;
@@ -3542,7 +3545,7 @@
     }
 
     .ypt-btn-pause-inline:hover {
-      background: #C2410C;
+      background: #0284C7;
     }
 
     .ypt-dashboard-metrics {
@@ -4093,9 +4096,9 @@
       font-weight: 600;
       padding: 1px 5px;
       border-radius: 4px;
-      background: #FFF7ED;
-      color: #C2410C;
-      border: 1px solid #FFEDD5;
+      background: #E0F2FE;
+      color: #0369A1;
+      border: 1px solid #BAE6FD;
       line-height: 1.2;
     }
 
@@ -4208,9 +4211,9 @@
     }
 
     .ypt-task-timer-badge.running {
-      background: #FFF7ED;
-      border-color: #FDBA74;
-      color: #EA580C;
+      background: #E0F2FE;
+      border-color: #7DD3FC;
+      color: #0284C7;
       font-weight: 700;
     }
 
@@ -4439,7 +4442,7 @@
     }
     .tl-axis-hour span sup {
       font-size: 9px;
-      color: #EA580C;
+      color: #0284C7;
       font-weight: 700;
       margin-left: 1px;
     }
@@ -4556,7 +4559,7 @@
       z-index: 8;
     }
     .tl-session-block.is-live {
-      box-shadow: 0 2px 12px rgba(234, 88, 12, 0.18);
+      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.22);
     }
     .tl-session-left {
       display: flex;
@@ -4579,12 +4582,12 @@
     .tl-session-time {
       font-family: 'SF Mono', monospace;
       font-size: 11px;
-      color: #475569;
+      color: #0369A1;
     }
     .tl-session-dur {
       font-size: 12px;
       font-weight: 600;
-      color: #334155;
+      color: #0284C7;
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -4607,14 +4610,6 @@
     }
     .tl-session-block.compact .tl-session-time {
       display: none;
-    }
-    .tl-live-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #EA580C;
-      animation: yptPulse 1.4s infinite;
-      flex-shrink: 0;
     }
 
     /* Current Time Line & Sleep Countdown */
@@ -4721,12 +4716,15 @@
       background: #EFF6FF;
     }
     .tl-week-day-total {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
       font-family: 'SF Mono', monospace;
       font-size: 10.5px;
       font-weight: 650;
-      color: #EA580C;
-      background: #FFF7ED;
-      border: 1px solid #FFEDD5;
+      color: #0284C7;
+      background: #E0F2FE;
+      border: 1px solid #BAE6FD;
       padding: 0 5px;
       border-radius: 4px;
       white-space: nowrap;
@@ -4983,7 +4981,7 @@
       transition: transform 0.12s ease, background 0.12s ease;
     }
     .tl-floating-play-btn.running {
-      background: #EA580C;
+      background: #0284C7;
     }
     .tl-floating-play-btn:hover {
       transform: scale(1.06);
@@ -5001,7 +4999,7 @@
       line-height: 1.15;
     }
     .tl-floating-clock.running {
-      color: #EA580C;
+      color: #0284C7;
     }
     .tl-floating-sub {
       font-size: 11px;
@@ -5083,8 +5081,8 @@
       transform: scale(1.07);
     }
     .ypt-picker-play-circle.running {
-      background: #EA580C;
-      color: #FFFFFF;
+      background: #38BDF8;
+      color: #0F172A;
     }
     .ypt-picker-subj-name {
       font-size: 16px;
@@ -5131,7 +5129,7 @@
       background: rgba(15, 23, 42, 0.045);
     }
     .ypt-picker-subtask-row.is-running {
-      color: #EA580C;
+      color: #0284C7;
       font-weight: 600;
     }
     .ypt-picker-subtask-left {
@@ -5289,19 +5287,20 @@
        CLUSTERED OVERLAPPING SESSIONS (+ N BADGE) & MOBILE YPT MODE
        ======================================================== */
     .tl-cluster-block {
-      border-width: 1.5px !important;
-      border-left-width: 4px !important;
+      border: 1.5px solid #38BDF8 !important;
+      border-left: 3px solid #0EA5E9 !important;
+      background: #F0F9FF !important;
     }
     .tl-cluster-badge {
-      font-weight: 750;
+      font-weight: 700;
       opacity: 0.92;
-      margin-left: 2px;
+      margin-left: 3px;
     }
     .tl-week-cluster {
-      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.14);
+      box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.35);
     }
 
-    /* Cluster Detail Modal / Sheet (Image 6) */
+    /* Cluster Detail Modal / Sheet (Exact YPT Mini-Timeline - Image 2) */
     .cluster-sheet-overlay {
       position: fixed;
       inset: 0;
@@ -5315,11 +5314,11 @@
     }
     .cluster-sheet-card {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       background: #FFFFFF;
       border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 16px;
+      border-radius: 18px;
+      padding: 16px 18px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
       color: var(--text-primary);
     }
@@ -5328,57 +5327,110 @@
       height: 4px;
       border-radius: 999px;
       background: #CBD5E1;
-      margin: 0 auto 10px;
+      margin: 0 auto 12px;
       display: none;
     }
     .cluster-sheet-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin: 12px 0;
-      max-height: 280px;
+      margin: 14px 0 10px;
+      max-height: 290px;
       overflow-y: auto;
     }
-    .cluster-row {
+    .ypt-cl-timeline {
+      display: flex;
+      align-items: stretch;
+      position: relative;
+      min-height: 76px;
+    }
+    .ypt-cl-axis {
+      width: 68px;
+      flex-shrink: 0;
+      position: relative;
+      font-family: 'SF Mono', monospace;
+      font-size: 11px;
+      color: #64748B;
+      padding-right: 10px;
+    }
+    .ypt-cl-tick {
+      position: absolute;
+      left: 0;
+      right: 4px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
+      justify-content: flex-end;
+      gap: 4px;
+      line-height: 1;
+      transform: translateY(-50%);
+      white-space: nowrap;
     }
-    .cluster-row-time {
-      width: 58px;
-      flex-shrink: 0;
-      font-size: 11px;
-      font-family: 'SF Mono', monospace;
-      color: #64748B;
-      text-align: right;
+    .ypt-cl-tick::after {
+      content: '';
+      width: 8px;
+      border-top: 1px dashed rgba(100, 116, 139, 0.45);
     }
-    .cluster-row-bar {
+    .ypt-cl-bars {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      border-left: 1px dashed rgba(148, 163, 184, 0.35);
+      padding-left: 2px;
+    }
+    .ypt-cl-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      padding: 7px 10px;
-      border-radius: 6px;
-      border-left: 3px solid #2563EB;
-      background: rgba(37, 99, 235, 0.1);
-      min-width: 0;
+      min-height: 28px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      border-left: 3px solid #38BDF8;
+      background: #F0F9FF;
+      cursor: pointer;
+      transition: filter 0.12s ease;
     }
-    .cluster-row-title {
+    .ypt-cl-bar:hover {
+      filter: brightness(0.96);
+    }
+    .ypt-cl-bar-title {
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 550;
+      color: #0F172A;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-width: 0;
     }
-    .cluster-row-dur {
-      font-size: 12px;
-      color: #475569;
-      flex-shrink: 0;
+    .ypt-cl-bar-right {
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      font-size: 12px;
+      font-weight: 550;
+      color: #0284C7;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .ypt-cl-legend {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #64748B;
+      margin: 10px 0 8px;
+    }
+    .ypt-cl-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .ypt-cl-legend-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
 
     /* Hidden on Desktop (>768px) */
@@ -5539,13 +5591,15 @@
       body.mobile-ypt-planner .tl-axis-col {
         background: #0A0B0D !important;
         border-right: 1px dashed rgba(255, 255, 255, 0.12) !important;
-        width: 52px !important;
+        width: 58px !important;
       }
       body.mobile-ypt-planner .tl-axis-hour {
         color: #6B7280 !important;
+        white-space: nowrap !important;
       }
       body.mobile-ypt-planner .tl-axis-hour span {
         background: #0A0B0D !important;
+        white-space: nowrap !important;
       }
       body.mobile-ypt-planner .tl-track-col {
         border-right: 1px dashed rgba(255, 255, 255, 0.1);
@@ -5569,9 +5623,9 @@
         background: #1C2327 !important;
       }
       body.mobile-ypt-planner .tl-session-block.tl-cluster-block {
-        background: #232B30 !important;
+        background: #222B31 !important;
         border: 1.5px solid #E5E7EB !important;
-        border-left-width: 3px !important;
+        border-left: 3px solid #7DD3FC !important;
       }
       body.mobile-ypt-planner .tl-session-title {
         color: #F3F4F6 !important;
@@ -5617,7 +5671,7 @@
       body.mobile-ypt-planner .tl-now-axis-pill {
         background: #FFFFFF !important;
         color: #0A0B0D !important;
-        left: -49px !important;
+        left: -55px !important;
       }
       body.mobile-ypt-planner .tl-sleep-countdown {
         background: rgba(10, 11, 13, 0.88) !important;
@@ -5690,7 +5744,7 @@
         color: #6B7280 !important;
       }
 
-      /* Month View Mobile YPT Dark Styling */
+      /* Month View Mobile YPT Dark Styling — Calendar ONLY (Exact YPT) */
       body.mobile-ypt-planner .tl-month-weekdays {
         background: #0A0B0D !important;
         color: #6B7280 !important;
@@ -5701,6 +5755,8 @@
       }
       body.mobile-ypt-planner .tl-month-cell {
         background: #0A0B0D !important;
+        min-height: 92px !important;
+        padding: 8px 3px !important;
       }
       body.mobile-ypt-planner .tl-month-cell.is-outside {
         background: #07080A !important;
@@ -5708,7 +5764,7 @@
       }
       body.mobile-ypt-planner .tl-month-cell.is-selected {
         background: #14171C !important;
-        box-shadow: inset 0 0 0 1px rgba(147, 197, 253, 0.6) !important;
+        box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.65) !important;
       }
       body.mobile-ypt-planner .tl-month-day-num {
         color: #E5E7EB !important;
@@ -5720,32 +5776,15 @@
       body.mobile-ypt-planner .ypt-cal-time-pill {
         background: #1B2428 !important;
         border: none !important;
-        color: #93C5FD !important;
+        color: #7DD3FC !important;
       }
       body.mobile-ypt-planner #plannerMonthViewPanel {
         max-height: calc(100dvh - 52px);
         overflow-y: auto;
+        padding-bottom: 130px;
       }
-      body.mobile-ypt-planner .tl-month-detail-session-row {
-        background: #1C1E23 !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
-        color: #F3F4F6 !important;
-      }
-      body.mobile-ypt-planner .tl-month-detail-session-row .tl-month-ses-dur {
-        color: #93C5FD !important;
-      }
-      body.mobile-ypt-planner .tl-month-event-add-box {
-        background: #1C1E23 !important;
-        border-color: rgba(255, 255, 255, 0.12) !important;
-      }
-      body.mobile-ypt-planner #tlMonthEventInput {
-        color: #F3F4F6 !important;
-      }
-      body.mobile-ypt-planner .tl-month-detail-card {
-        background: #121316 !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-        color: #E5E7EB !important;
-        padding-bottom: 145px !important;
+      body.mobile-ypt-planner #tlMonthDetailCard {
+        display: none !important;
       }
       body.mobile-ypt-planner .tl-stat-chip {
         background: #1C1E22 !important;
@@ -5788,12 +5827,12 @@
         color: #93C5FD !important;
       }
       body.mobile-ypt-planner .ypt-task-timer-badge.running {
-        background: rgba(234, 88, 12, 0.2) !important;
-        border-color: #EA580C !important;
-        color: #FB923C !important;
+        background: rgba(125, 211, 252, 0.16) !important;
+        border-color: #7DD3FC !important;
+        color: #7DD3FC !important;
       }
 
-      /* Floating Focus / Break Pill above Dock (Exact YPT Images 3, 4, 5) */
+      /* Floating Focus / Break Pill above Dock (Exact YPT) */
       body.mobile-ypt-planner .tl-floating-bar {
         bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
         background: rgba(230, 232, 236, 0.94) !important;
@@ -5805,7 +5844,7 @@
         color: #111827 !important;
       }
       body.mobile-ypt-planner .tl-floating-clock.running {
-        color: #EA580C !important;
+        color: #0284C7 !important;
       }
       body.mobile-ypt-planner .tl-floating-sub {
         color: #4B5563 !important;
@@ -5941,7 +5980,7 @@
         background: rgba(255, 255, 255, 0.055) !important;
       }
       body.mobile-ypt-planner .ypt-picker-subtask-row.is-running {
-        color: #FB923C !important;
+        color: #7DD3FC !important;
       }
       body.mobile-ypt-planner .ypt-picker-add-trigger {
         color: #9CA3AF !important;
@@ -5950,15 +5989,27 @@
         border-color: rgba(255, 255, 255, 0.32) !important;
         color: #9CA3AF !important;
       }
-      body.mobile-ypt-planner .cluster-row-time {
-        color: #9CA3AF !important;
+      body.mobile-ypt-planner .ypt-cl-axis {
+        color: #6B7280 !important;
       }
-      body.mobile-ypt-planner .cluster-row-bar {
-        background: #252B31 !important;
+      body.mobile-ypt-planner .ypt-cl-tick::after {
+        border-top-color: rgba(156, 163, 175, 0.35) !important;
+      }
+      body.mobile-ypt-planner .ypt-cl-bars {
+        border-left-color: rgba(255, 255, 255, 0.1) !important;
+      }
+      body.mobile-ypt-planner .ypt-cl-bar {
+        background: #222B31 !important;
+        border-left-color: #7DD3FC !important;
+      }
+      body.mobile-ypt-planner .ypt-cl-bar-title {
         color: #F3F4F6 !important;
       }
-      body.mobile-ypt-planner .cluster-row-dur {
-        color: #93C5FD !important;
+      body.mobile-ypt-planner .ypt-cl-bar-right {
+        color: #7DD3FC !important;
+      }
+      body.mobile-ypt-planner .ypt-cl-legend {
+        color: #D1D5DB !important;
       }
       body.mobile-ypt-planner .modal-input,
       body.mobile-ypt-planner select.modal-input {
@@ -5973,6 +6024,19 @@
       body.mobile-ypt-planner #sesReadonlyCard {
         background: #121316 !important;
         border-color: rgba(255, 255, 255, 0.1) !important;
+      }
+      body.mobile-ypt-planner #mobileYptMenuSheet .tl-btn-small,
+      body.mobile-ypt-planner #clusterDetailModal .tl-btn-small,
+      body.mobile-ypt-planner #mobileYptMenuSheet .btn-outline,
+      body.mobile-ypt-planner #sessionEditorModal .btn-outline,
+      body.mobile-ypt-planner #scheduleSettingsModal .btn-outline {
+        background: #262930 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner #mobileYptMenuSheet .tl-btn-small:hover,
+      body.mobile-ypt-planner #clusterDetailModal .tl-btn-small:hover {
+        background: #2F333C !important;
       }
     }
 
@@ -6011,7 +6075,7 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      background: #EA580C;
+      background: #0284C7;
       color: #FFFFFF;
       display: flex;
       align-items: center;
@@ -6020,7 +6084,7 @@
     }
 
     .ypt-pop-play-icon.pause {
-      background: #DC2626;
+      background: #0369A1;
     }
 
     .ypt-pop-timer-text {
@@ -7064,11 +7128,10 @@
 
         <div class="planner-date-controls" style="flex-wrap: wrap;">
           <div class="planner-view-switcher" id="plannerViewSwitcher">
-            <button type="button" class="planner-view-tab active" data-view="tasks" onclick="switchPlannerSubView('tasks')">Kế hoạch</button>
             <button type="button" class="planner-view-tab" data-view="day" onclick="switchPlannerSubView('day')">Ngày</button>
             <button type="button" class="planner-view-tab" data-view="week" onclick="switchPlannerSubView('week')">Tuần</button>
             <button type="button" class="planner-view-tab" data-view="month" onclick="switchPlannerSubView('month')">Tháng</button>
-            <button type="button" class="planner-view-tab" data-view="split" onclick="switchPlannerSubView('split')" title="Xem Kế hoạch + Timeline Ngày song song">Chia đôi</button>
+            <button type="button" class="planner-view-tab active" data-view="split" onclick="switchPlannerSubView('split')" title="Xem Kế hoạch + Timeline Ngày song song">Chia đôi</button>
           </div>
           <button class="btn-ghost btn-outline" style="padding: 4px 8px;" onclick="changePlannerDate(-1)"
             title="Ngày trước">
@@ -7095,7 +7158,6 @@
             <div class="ypt-digital-clock" id="yptDigitalClock">00:00:00</div>
 
             <div class="ypt-status-indicator" id="yptStatusIndicator" style="display: none;">
-              <span class="ypt-flame-dot" id="yptFlameDot"></span>
               <span class="ypt-active-task-pill" id="yptActiveTaskPill" style="display: none;">
                 <span id="yptActiveTaskName">Nhiệm vụ</span>
                 <button class="ypt-btn-pause-inline" onclick="stopCurrentYptTimer()" title="Tạm dừng">Tạm dừng</button>
@@ -7349,17 +7411,17 @@
     </button>
   </div>
 
-  <!-- CLUSTER DETAIL BOTTOM SHEET / MODAL (Image 6: Click on "+ N" group) -->
+  <!-- CLUSTER DETAIL BOTTOM SHEET / MODAL (Exact YPT Mini-Timeline - Image 2) -->
   <div id="clusterDetailModal" class="cluster-sheet-overlay" onclick="if(event.target === this) closeClusterSheet()">
     <div class="cluster-sheet-card">
       <div class="cluster-sheet-handle"></div>
       <div style="text-align: center;">
-        <div id="clusterModalTitle" style="font-size: 16px; font-weight: 700;">SAT math và 1 khác</div>
-        <div id="clusterModalRange" style="font-size: 12.5px; color: #9CA3AF; font-family: monospace; margin-top: 2px;">21:06-21:06</div>
+        <div id="clusterModalTitle" style="font-size: 16px; font-weight: 700;">SAT Verbal và 2 khác</div>
+        <div id="clusterModalRange" style="font-size: 12.5px; color: #9CA3AF; font-family: 'SF Mono', monospace; margin-top: 2px;">21:49-21:50</div>
       </div>
       <div id="clusterModalList" class="cluster-sheet-list"></div>
-      <div id="clusterModalLegend" style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-size:11.5px;color:#9CA3AF;margin-bottom:10px;"></div>
-      <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;">
+      <div id="clusterModalLegend" class="ypt-cl-legend"></div>
+      <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:6px;">
         <button type="button" class="tl-btn-small" style="border-radius:999px;padding:6px 16px;" onclick="closeClusterSheet()">Đóng</button>
       </div>
     </div>
@@ -7371,11 +7433,14 @@
       <div class="cluster-sheet-handle"></div>
       <div class="modal-title" style="margin-bottom: 10px;">Tùy chọn Daily Plan</div>
       <div style="display:flex;flex-direction:column;gap:8px;">
-        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); resetPlannerDateToToday();">📅 Về hôm nay</button>
-        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); openExamModal();">🎯 Chỉnh Ngày thi SAT (D-Day)</button>
-        <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0;"></div>
-        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); navigateToPage('sat');">📚 Mở Tài liệu SAT</button>
-        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); navigateToPage('habits');">⚡ Mở Thói quen (Habits)</button>
+        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;gap:10px;" onclick="closeMobileYptMenu(); resetPlannerDateToToday();">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <span>Về hôm nay</span>
+        </button>
+        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;gap:10px;" onclick="closeMobileYptMenu(); openExamModal();">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>
+          <span>Chỉnh Ngày thi SAT (D-Day)</span>
+        </button>
       </div>
       <div class="modal-actions" style="margin-top:12px;">
         <button type="button" class="btn-ghost btn-outline" onclick="closeMobileYptMenu()">Đóng</button>
@@ -9430,16 +9495,17 @@
 
     let currentPlannerSubView = isMobileViewport()
       ? (localStorage.getItem('elias_planner_subview_mobile') || 'day')
-      : (localStorage.getItem('elias_planner_subview') || 'tasks');
-    if (currentPlannerSubView === 'split' && window.innerWidth <= 960) currentPlannerSubView = isMobileViewport() ? 'day' : 'tasks';
+      : (localStorage.getItem('elias_planner_subview') || 'split');
+    if (!isMobileViewport() && currentPlannerSubView === 'tasks') currentPlannerSubView = 'split';
+    if (currentPlannerSubView === 'split' && window.innerWidth <= 960) currentPlannerSubView = isMobileViewport() ? 'day' : 'day';
     let weekColsCount = parseInt(localStorage.getItem('elias_planner_week_cols') || (window.innerWidth <= 768 ? '5' : '7'), 10);
     if (![3, 5, 7].includes(weekColsCount)) weekColsCount = 5;
     let weekCursorDate = getLocalDateStr();
     let fullMonthYear = new Date().getFullYear();
     let fullMonthIdx = new Date().getMonth();
     let selectedMonthDate = getLocalDateStr();
-    let selectedEventColor = '#2563EB';
-    let selectedSessionModalColor = '#2563EB';
+    let selectedEventColor = '#38BDF8';
+    let selectedSessionModalColor = '#38BDF8';
     let _dayTimelineAutoScrolledKey = '';
     let _weekTimelineAutoScrolled = false;
 
@@ -9514,13 +9580,19 @@
       return `rgba(37, 99, 235, ${alpha})`;
     }
 
+    const YPT_SKY_SHADES = ['#7DD3FC', '#38BDF8', '#93C5FD', '#BAE6FD', '#60A5FA'];
+
+    function getYptMiniStopwatchSvg(size = 11) {
+      return `<svg width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="12" cy="13" r="8"/><path stroke-linecap="round" d="M12 9v4l2.5 1.5M9 2h6"/></svg>`;
+    }
+
     const YPT_SUBJECT_DEFS = {
-      MATH: { key: 'MATH', label: 'SAT math', color: '#2563EB' },
-      VERBAL: { key: 'VERBAL', label: 'SAT Verbal', color: '#7C3AED' },
-      PHYSICS: { key: 'PHYSICS', label: 'Vật Lý', color: '#0EA5E9' },
-      CHEM: { key: 'CHEM', label: 'Hóa Học', color: '#F59E0B' },
-      WORKOUT: { key: 'WORKOUT', label: 'Workout', color: '#10B981' },
-      OTHER: { key: 'OTHER', label: 'Khác', color: '#10B981' }
+      MATH: { key: 'MATH', label: 'SAT math', color: '#38BDF8' },
+      VERBAL: { key: 'VERBAL', label: 'SAT Verbal', color: '#7DD3FC' },
+      PHYSICS: { key: 'PHYSICS', label: 'Vật Lý', color: '#60A5FA' },
+      CHEM: { key: 'CHEM', label: 'Hóa Học', color: '#93C5FD' },
+      WORKOUT: { key: 'WORKOUT', label: 'Workout', color: '#BAE6FD' },
+      OTHER: { key: 'OTHER', label: 'Khác', color: '#38BDF8' }
     };
 
     function getYptSubjectMetaFE(title = '', explicitSubject = '', explicitColor = '') {
@@ -9542,12 +9614,12 @@
         }
       }
       const def = YPT_SUBJECT_DEFS[key] || YPT_SUBJECT_DEFS.OTHER;
-      const cleanColor = (explicitColor && /^#[0-9a-f]{3,8}$/i.test(explicitColor.trim())) ? explicitColor.trim() : def.color;
-      return { key, label: def.label, color: cleanColor };
+      return { key, label: def.label, color: def.color };
     }
 
-    function inferSessionColorFE(title = '', explicitSubject = '', explicitColor = '') {
-      return getYptSubjectMetaFE(title, explicitSubject, explicitColor).color;
+    // Unified single YPT bright sky-blue palette on Daily Plan timeline (ignores legacy random colors)
+    function inferSessionColorFE() {
+      return isMobileViewport() ? '#7DD3FC' : '#38BDF8';
     }
 
     function formatAxisHourLabel(hourInt) {
@@ -9715,7 +9787,8 @@
     }
 
     function switchPlannerSubView(viewId) {
-      if (viewId === 'split' && window.innerWidth <= 960) viewId = isMobileViewport() ? 'day' : 'tasks';
+      if (!isMobileViewport() && viewId === 'tasks') viewId = 'split';
+      if (viewId === 'split' && window.innerWidth <= 960) viewId = 'day';
       currentPlannerSubView = viewId;
       try {
         if (isMobileViewport()) localStorage.setItem('elias_planner_subview_mobile', viewId);
@@ -9879,6 +9952,15 @@
       return clusters;
     }
 
+    function formatTickAmPmFE(relMin) {
+      const dayMin = Math.max(0, Math.round(relMin)) % 1440;
+      const h24 = Math.floor(dayMin / 60);
+      const m = dayMin % 60;
+      const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+      const suffix = h24 < 12 ? 'AM' : 'PM';
+      return `${h12}:${String(m).padStart(2, '0')} ${suffix}`;
+    }
+
     function openClusterSheet(dateStr, idsJson) {
       const modal = document.getElementById('clusterDetailModal');
       const titleEl = document.getElementById('clusterModalTitle');
@@ -9898,23 +9980,48 @@
       if (titleEl) titleEl.innerText = items.length > 1 ? `${first.title} và ${items.length - 1} khác` : first.title;
       if (rangeEl) rangeEl.innerText = `${minStart}-${maxEnd}`;
 
-      listEl.innerHTML = items.map(it => {
-        const bgTint = hexToRgbaTint(it.color, 0.14);
+      // Build YPT mini-timeline tick labels spanning cluster interval cleanly
+      const startFloor = Math.floor(Math.min(...items.map(i => i.startRelMin)));
+      const endCeil = Math.max(startFloor + 1, Math.ceil(Math.max(...items.map(i => i.endRelMin))));
+      const spanMin = Math.max(1, endCeil - startFloor);
+      const maxTicks = Math.min(4, Math.max(2, items.length));
+      let ticksHtml = '';
+      for (let t = 0; t < maxTicks; t++) {
+        const pct = maxTicks === 1 ? 0 : (t / (maxTicks - 1)) * 86 + 6;
+        const mVal = startFloor + Math.round((t / Math.max(1, maxTicks - 1)) * spanMin);
+        ticksHtml += `<div class="ypt-cl-tick" style="top: ${pct}%;">${formatTickAmPmFE(mVal)}</div>`;
+      }
+
+      const dotsSvg = `<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24" style="opacity:0.65;"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>`;
+      const shadePalette = ['#7DD3FC', '#38BDF8', '#93C5FD', '#BAE6FD', '#60A5FA'];
+
+      const barsHtml = items.map((it, idx) => {
+        const shade = shadePalette[idx % shadePalette.length];
+        const bgTint = isMobileViewport() ? 'rgba(125, 211, 252, 0.14)' : hexToRgbaTint(shade, 0.16);
         return `
-          <div class="cluster-row" onclick="closeClusterSheet(); openSessionModal('${it.id}');">
-            <div class="cluster-row-time">${it.startLabel}</div>
-            <div class="cluster-row-bar" style="border-left-color: ${it.color}; background: ${bgTint};">
-              <span class="cluster-row-title">${it.isLive ? '● ' : ''}${escapeHtml(it.title)}</span>
-              <span class="cluster-row-dur">${it.isLive ? formatHMS(it.durationSeconds) : formatVnDuration(it.durationSeconds)} <span style="opacity:0.65;">⋮</span></span>
-            </div>
+          <div class="ypt-cl-bar" onclick="closeClusterSheet(); openSessionModal('${it.id}');"
+               style="border-left-color: ${shade}; background: ${bgTint};">
+            <span class="ypt-cl-bar-title">${escapeHtml(it.title)}</span>
+            <span class="ypt-cl-bar-right">
+              <span>${it.isLive ? formatHMS(it.durationSeconds) : formatVnDuration(it.durationSeconds)}</span>
+              ${dotsSvg}
+            </span>
           </div>
         `;
       }).join('');
 
+      listEl.innerHTML = `
+        <div class="ypt-cl-timeline">
+          <div class="ypt-cl-axis">${ticksHtml}</div>
+          <div class="ypt-cl-bars">${barsHtml}</div>
+        </div>
+      `;
+
       if (legendEl) {
-        legendEl.innerHTML = items.map(it =>
-          `<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:${it.color};"></span>${escapeHtml(it.title)}: ${formatVnDuration(it.durationSeconds)}</span>`
-        ).join('');
+        legendEl.innerHTML = items.map((it, idx) => {
+          const shade = shadePalette[idx % shadePalette.length];
+          return `<span class="ypt-cl-legend-item"><span class="ypt-cl-legend-dot" style="background:${shade};"></span><span>${escapeHtml(it.title)}: ${formatVnDuration(it.durationSeconds)}</span></span>`;
+        }).join('');
       }
 
       modal.style.display = 'flex';
@@ -9998,8 +10105,9 @@
         const isCluster = cl.items.length > 1;
         const extraCount = cl.items.length - 1;
         const isCompact = sHeight < 42;
-        const bgTint = hexToRgbaTint(first.color, 0.14);
-        const borderTint = hexToRgbaTint(first.color, 0.25);
+        const skyAccent = inferSessionColorFE();
+        const bgTint = hexToRgbaTint(skyAccent, 0.14);
+        const borderTint = hexToRgbaTint(skyAccent, 0.28);
         const titleText = isCluster
           ? `${escapeHtml(first.title)} <span class="tl-cluster-badge">+ ${extraCount}</span>`
           : escapeHtml(first.title);
@@ -10014,12 +10122,11 @@
         return `
           <div class="tl-session-block ${isCompact ? 'compact' : ''} ${cl.hasLive ? 'is-live' : ''} ${isCluster ? 'tl-cluster-block' : ''}"
                id="${cl.hasLive ? 'tlLiveSessionBlock' : ''}"
-               style="top: ${sTop}px; height: ${sHeight}px; border-left-color: ${first.color}; background: ${bgTint}; border-top-color: ${borderTint}; border-right-color: ${borderTint}; border-bottom-color: ${borderTint};"
+               style="top: ${sTop}px; height: ${sHeight}px; border-left-color: ${skyAccent}; background: ${bgTint}; border-top-color: ${borderTint}; border-right-color: ${borderTint}; border-bottom-color: ${borderTint};"
                onclick="${clickHandler}"
                title="${escapeHtml(first.title)}${isCluster ? ` (+${extraCount})` : ''} (${rangeText})">
             <div class="tl-session-left">
               <div class="tl-session-title">
-                ${cl.hasLive ? '<span class="tl-live-dot"></span>' : ''}
                 <span>${titleText}</span>
               </div>
               <div class="tl-session-time">${rangeText}</div>
@@ -10180,7 +10287,7 @@
                title="Mở Timeline chi tiết ngày ${dd.dateStr}">
             <span class="tl-week-dow">${dowMap[dowIdx]}</span>
             <span class="tl-week-date-num">${parseInt(dNum, 10)}</span>
-            ${dd.dayTotalSeconds > 0 ? `<span class="tl-week-day-total">⏱ ${formatHM(dd.dayTotalSeconds)}</span>` : '<span style="font-size:10px;color:#CBD5E1;">-</span>'}
+            ${dd.dayTotalSeconds > 0 ? `<span class="tl-week-day-total">${getYptMiniStopwatchSvg(10)} ${formatHM(dd.dayTotalSeconds)}</span>` : '<span style="font-size:10px;color:#CBD5E1;">-</span>'}
           </div>
         `;
       }).join('');
@@ -10296,7 +10403,7 @@
     function getMilestonesForDate(dateStr) {
       const tags = [];
       if (appSettings?.examDate && String(appSettings.examDate).slice(0, 10) === dateStr) {
-        tags.push({ title: '🎯 ' + (appSettings.examTitle || 'Thi SAT'), color: '#DC2626', isExam: true });
+        tags.push({ title: appSettings.examTitle || 'Thi SAT', color: '#38BDF8', isExam: true });
       }
       const deletedEvs = plannerData.deletedCalendarEvents || {};
       (plannerData.calendarEvents || []).forEach(ev => {
@@ -10344,7 +10451,7 @@
           <div class="tl-month-cell ${isOutside ? 'is-outside' : ''} ${ds === todayStr ? 'is-today' : ''} ${ds === selectedMonthDate ? 'is-selected' : ''}"
                onclick="selectMonthViewDay('${ds}')">
             <span class="tl-month-day-num">${dayNum}</span>
-            ${sec > 0 ? `<span class="ypt-cal-time-pill">⏱ ${formatHM(sec)}</span>` : ''}
+            ${sec > 0 ? `<span class="ypt-cal-time-pill">${getYptMiniStopwatchSvg(9)} ${formatHM(sec)}</span>` : ''}
             <div class="tl-month-milestones">${msHtml}</div>
           </div>
         `;
@@ -10902,7 +11009,6 @@
       const active = plannerData.activeTimer;
       const clockEl = document.getElementById('yptDigitalClock');
       const statusIndEl = document.getElementById('yptStatusIndicator');
-      const dotEl = document.getElementById('yptFlameDot');
       const pillEl = document.getElementById('yptActiveTaskPill');
       const taskNameEl = document.getElementById('yptActiveTaskName');
       const todayTotalSec = getDayTotalSeconds(currentPlannerDate);
@@ -10918,13 +11024,10 @@
           clockEl.innerText = formatHMS(todayTotalSec);
         }
         if (statusIndEl) statusIndEl.style.display = 'none';
-        if (dotEl) dotEl.classList.remove('running');
         if (pillEl) pillEl.style.display = 'none';
 
         document.querySelectorAll('.ypt-task-timer-badge.running').forEach(b => {
           b.classList.remove('running');
-          const icon = b.querySelector('.ypt-timer-icon');
-          if (icon) icon.innerText = '⏱';
         });
 
         document.title = 'YPT - Study Planner';
@@ -10941,7 +11044,6 @@
         clockEl.innerText = formatHMS(taskCumulativeSec);
       }
       if (statusIndEl) statusIndEl.style.display = 'inline-flex';
-      if (dotEl) dotEl.classList.add('running');
       if (pillEl) pillEl.style.display = 'inline-flex';
       if (taskNameEl) taskNameEl.innerText = active.taskTitle || 'Nhiệm vụ';
 
@@ -10949,19 +11051,14 @@
       const badgeValEl = document.getElementById('taskTimerVal_' + active.taskId);
       if (badgeValEl) badgeValEl.innerText = formatHMS(taskCumulativeSec);
 
-      // Ensure the active task badge has glowing running class and flame icon
       document.querySelectorAll('.ypt-task-timer-badge.running').forEach(b => {
         if (b.id !== 'taskTimerBadge_' + active.taskId) {
           b.classList.remove('running');
-          const icon = b.querySelector('.ypt-timer-icon');
-          if (icon) icon.innerText = '⏱';
         }
       });
       const activeBadge = document.getElementById('taskTimerBadge_' + active.taskId);
       if (activeBadge) {
         activeBadge.classList.add('running');
-        const icon = activeBadge.querySelector('.ypt-timer-icon');
-        if (icon) icon.innerText = '🔥';
       }
 
       // Update popover if open for this task
@@ -11826,7 +11923,7 @@
                         id="taskTimerBadge_${t.id}"
                         onclick="toggleYptTimerFromBadge(event, '${t.id}')"
                         data-tooltip="${isRunning ? 'Đang bấm giờ! Bấm để tạm dừng' : 'Bấm để bắt đầu đếm giờ nhiệm vụ này'}">
-                    <span class="ypt-timer-icon">${isRunning ? '🔥' : '⏱'}</span>
+                    <span class="ypt-timer-icon" style="display:inline-flex;align-items:center;">${getYptMiniStopwatchSvg(11)}</span>
                     <span id="taskTimerVal_${t.id}">${formatHMS(taskTime)}</span>
                   </span>
 
@@ -15480,9 +15577,9 @@
     });
 
 
-    // On Cloud / Mobile: default to Daily Plan so user lands directly on tasks
+    // On Mobile / Cloud: always default directly into YPT Daily Plan
     const defaultPage = isCloudHost ? 'planner' : 'sat';
-    const savedPage = localStorage.getItem('elias_active_page') || defaultPage;
+    const savedPage = isMobileViewport() ? 'planner' : (localStorage.getItem('elias_active_page') || defaultPage);
     navigateToPage(savedPage);
   </script>
 
