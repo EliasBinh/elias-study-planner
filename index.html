@@ -4451,11 +4451,7 @@
     .tl-hour-line {
       border-top: 1px solid #F1F1EF;
       box-sizing: border-box;
-      cursor: pointer;
-      transition: background 0.1s ease;
-    }
-    .tl-hour-line:hover {
-      background: rgba(35, 131, 226, 0.03);
+      cursor: default;
     }
 
     /* Planned Sleep Block (Dashed box - Images 3 & 4) */
@@ -4478,11 +4474,12 @@
       align-items: flex-start;
       color: #64748B;
       cursor: pointer;
-      z-index: 2;
+      z-index: 4;
       transition: border-color 0.12s ease, background 0.12s ease;
     }
     .tl-sleep-block:hover {
-      border-color: #94A3B8;
+      border-color: #64748B;
+      background: rgba(241, 245, 249, 0.85);
     }
     .tl-sleep-left {
       display: flex;
@@ -4770,10 +4767,7 @@
     .tl-week-hour-cell {
       border-top: 1px solid #F4F4F2;
       box-sizing: border-box;
-      cursor: pointer;
-    }
-    .tl-week-hour-cell:hover {
-      background: rgba(35, 131, 226, 0.03);
+      cursor: default;
     }
     .tl-week-session {
       position: absolute;
@@ -4954,7 +4948,7 @@
       opacity: 1;
     }
 
-    /* Floating Focus & Break Pill Bar (Images 3 & 4) */
+    /* Floating Rest / Focus Pill Bar */
     .tl-floating-bar {
       position: fixed;
       bottom: 20px;
@@ -4963,22 +4957,23 @@
       z-index: 95;
       display: none;
       align-items: center;
-      gap: 12px;
+      gap: 11px;
       background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border: 1px solid #E2E8F0;
       border-radius: 999px;
       padding: 6px 18px 6px 8px;
       box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
       max-width: calc(100vw - 24px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
     .tl-floating-play-btn {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: none;
-      background: #1F2937;
+      background: #0F172A;
       color: #FFFFFF;
       display: flex;
       align-items: center;
@@ -5000,22 +4995,192 @@
     }
     .tl-floating-clock {
       font-family: 'SF Mono', monospace;
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 750;
       color: var(--text-primary);
-      line-height: 1.1;
+      line-height: 1.15;
     }
     .tl-floating-clock.running {
       color: #EA580C;
     }
     .tl-floating-sub {
-      font-size: 11.5px;
-      font-weight: 550;
-      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748B;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 240px;
+    }
+
+    @keyframes yptPopupSpringIn {
+      0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.94);
+      }
+      65% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.006);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* YPT Grouped Subject Picker Card & Rows */
+    #quickTimerPickerModal.show .modal-card {
+      animation: yptPopupSpringIn 0.28s cubic-bezier(0.22, 1.28, 0.36, 1);
+    }
+    .ypt-picker-groups {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 52vh;
+      overflow-y: auto;
+      padding: 4px 2px;
+    }
+    .ypt-picker-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .ypt-picker-subject-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 6px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.14s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ypt-picker-subject-row:hover {
+      background: rgba(15, 23, 42, 0.04);
+    }
+    .ypt-picker-subj-left {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+      flex: 1;
+    }
+    .ypt-picker-play-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: #B8E1FF;
+      color: #0F172A;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.14s ease, background 0.14s ease;
+    }
+    .ypt-picker-play-circle:hover {
+      transform: scale(1.07);
+    }
+    .ypt-picker-play-circle.running {
+      background: #EA580C;
+      color: #FFFFFF;
+    }
+    .ypt-picker-subj-name {
+      font-size: 16px;
+      font-weight: 550;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -0.01em;
+    }
+    .ypt-picker-subj-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .ypt-picker-subj-time {
+      font-family: 'SF Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .ypt-picker-subtasks {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin: -2px 0 6px 46px;
+      padding-left: 4px;
+    }
+    .ypt-picker-subtask-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 9px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 13px;
+      transition: background 0.12s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ypt-picker-subtask-row:hover {
+      background: rgba(15, 23, 42, 0.045);
+    }
+    .ypt-picker-subtask-row.is-running {
+      color: #EA580C;
+      font-weight: 600;
+    }
+    .ypt-picker-subtask-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+    .ypt-picker-subtask-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ypt-picker-subtask-title.done {
+      text-decoration: line-through;
+      opacity: 0.52;
+    }
+    .ypt-picker-subtask-time {
+      font-family: 'SF Mono', monospace;
+      font-size: 12px;
+      opacity: 0.78;
+      flex-shrink: 0;
+    }
+    .ypt-picker-add-trigger {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      width: 100%;
+      padding: 10px 6px 6px;
+      margin-top: 4px;
+      border: none;
+      background: transparent;
+      color: #64748B;
+      font-size: 14.5px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ypt-picker-dashed-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1.5px dashed #94A3B8;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     /* Color Swatches for Session & Event Pickers */
@@ -5713,16 +5878,22 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       }
 
-      /* Dark Bottom Sheets & Modals on Mobile (Exact Images 6 & 7) */
+      /* Dark Floating Cards & Bottom Sheets on Mobile (Exact YPT Popup Image 3) */
       body.mobile-ypt-planner .cluster-sheet-overlay,
-      body.mobile-ypt-planner #quickTimerPickerModal,
       body.mobile-ypt-planner #mobileYptMenuSheet {
         align-items: flex-end !important;
         padding: 0 !important;
         background: rgba(0, 0, 0, 0.65) !important;
       }
+      body.mobile-ypt-planner #quickTimerPickerModal {
+        align-items: flex-end !important;
+        justify-content: center !important;
+        padding: 0 14px calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+        background: rgba(0, 0, 0, 0.56) !important;
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+      }
       body.mobile-ypt-planner .cluster-sheet-card,
-      body.mobile-ypt-planner #quickTimerPickerModal .modal-card,
       body.mobile-ypt-planner #mobileYptMenuSheet .modal-card,
       body.mobile-ypt-planner #sessionEditorModal .modal-card,
       body.mobile-ypt-planner #scheduleSettingsModal .modal-card {
@@ -5730,16 +5901,54 @@
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         color: #F3F4F6 !important;
       }
+      body.mobile-ypt-planner #quickTimerPickerModal .modal-card {
+        width: 100% !important;
+        max-width: 440px !important;
+        background: rgba(31, 33, 38, 0.88) !important;
+        backdrop-filter: blur(28px) saturate(165%) !important;
+        -webkit-backdrop-filter: blur(28px) saturate(165%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 26px !important;
+        padding: 12px 18px 18px !important;
+        box-shadow: 0 22px 54px rgba(0, 0, 0, 0.65) !important;
+        color: #F3F4F6 !important;
+        animation: yptPopupSpringIn 0.28s cubic-bezier(0.22, 1.28, 0.36, 1) !important;
+      }
       body.mobile-ypt-planner .cluster-sheet-card,
-      body.mobile-ypt-planner #quickTimerPickerModal .modal-card,
       body.mobile-ypt-planner #mobileYptMenuSheet .modal-card {
         max-width: 100% !important;
         border-radius: 22px 22px 0 0 !important;
         padding: 12px 18px calc(22px + env(safe-area-inset-bottom, 0px)) !important;
+        animation: yptPopupSpringIn 0.25s cubic-bezier(0.22, 1.2, 0.36, 1);
       }
       body.mobile-ypt-planner .cluster-sheet-handle {
         display: block !important;
-        background: #4B5563 !important;
+        background: rgba(255, 255, 255, 0.24) !important;
+      }
+      body.mobile-ypt-planner .ypt-picker-subject-row:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+      }
+      body.mobile-ypt-planner .ypt-picker-subj-name {
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .ypt-picker-subj-time {
+        color: #D1D5DB !important;
+      }
+      body.mobile-ypt-planner .ypt-picker-subtask-row {
+        color: #A1A7B3 !important;
+      }
+      body.mobile-ypt-planner .ypt-picker-subtask-row:hover {
+        background: rgba(255, 255, 255, 0.055) !important;
+      }
+      body.mobile-ypt-planner .ypt-picker-subtask-row.is-running {
+        color: #FB923C !important;
+      }
+      body.mobile-ypt-planner .ypt-picker-add-trigger {
+        color: #9CA3AF !important;
+      }
+      body.mobile-ypt-planner .ypt-picker-dashed-circle {
+        border-color: rgba(255, 255, 255, 0.32) !important;
+        color: #9CA3AF !important;
       }
       body.mobile-ypt-planner .cluster-row-time {
         color: #9CA3AF !important;
@@ -5761,14 +5970,9 @@
       body.mobile-ypt-planner .modal-title {
         color: #F3F4F6 !important;
       }
-      body.mobile-ypt-planner .quick-task-pick-btn {
-        background: transparent !important;
-        border: none !important;
-        padding: 10px 6px !important;
-        color: #F3F4F6 !important;
-      }
-      body.mobile-ypt-planner .quick-task-pick-btn:hover {
-        background: rgba(255, 255, 255, 0.05) !important;
+      body.mobile-ypt-planner #sesReadonlyCard {
+        background: #121316 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
       }
     }
 
@@ -6883,89 +7087,20 @@
         </div>
       </div>
 
-      <!-- YPT FOCUS TIMER DASHBOARD (Clean Notion Minimalist) -->
+      <!-- YPT FOCUS TIMER DASHBOARD (Ultra-Clean Minimalist) -->
       <div class="ypt-dashboard-card" id="yptDashboardCard">
         <div class="ypt-dashboard-main">
-          <!-- Left: Digital Clock & Active Task / Break Status -->
+          <!-- Digital Clock & Active Focus Pill (only shown when actively running) -->
           <div class="ypt-clock-section">
             <div class="ypt-digital-clock" id="yptDigitalClock">00:00:00</div>
 
-            <div class="ypt-status-indicator">
+            <div class="ypt-status-indicator" id="yptStatusIndicator" style="display: none;">
               <span class="ypt-flame-dot" id="yptFlameDot"></span>
-              <span id="yptTimerStatusLabel">Tổng hôm nay</span>
               <span class="ypt-active-task-pill" id="yptActiveTaskPill" style="display: none;">
                 <span id="yptActiveTaskName">Nhiệm vụ</span>
                 <button class="ypt-btn-pause-inline" onclick="stopCurrentYptTimer()" title="Tạm dừng">Tạm dừng</button>
               </span>
-              <span class="ypt-break-inline-pill" id="yptBreakInlinePill" style="display: none;">
-                <span id="yptBreakInlineText">Giải lao 0 phút</span>
-              </span>
             </div>
-          </div>
-
-          <!-- Right: Max Focus Stat & Calendar Toggle -->
-          <div class="ypt-dashboard-metrics">
-            <div class="ypt-metric-box">
-              <span class="ypt-metric-label">Max Focus:</span>
-              <span class="ypt-metric-val highlight" id="yptMaxFocusVal">00:00:00</span>
-            </div>
-
-
-            <button class="btn-ypt-toggle-cal" id="btnToggleYptCal" onclick="toggleYptCalendar()">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span>Lịch học</span>
-            </button>
-
-            <button class="btn-ypt-toggle-cal" id="btnDiscordRpcModal" onclick="openDiscordRpcModal()"
-              title="Cài đặt kết nối Discord Rich Presence">
-              <span class="discord-status-dot offline" id="discordDotStatus"></span>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#5865F2" style="flex-shrink: 0;">
-                <path
-                  d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-              </svg>
-              <span>Discord RPC</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Collapsible Study Calendar (Screenshot 5 Style) -->
-        <div class="ypt-calendar-panel" id="yptCalendarPanel" style="display: none;">
-          <div class="ypt-cal-header">
-            <div class="ypt-cal-title-row">
-              <span class="ypt-cal-title" id="yptCalMonthTitle">Tháng 10, 2026</span>
-              <div class="ypt-cal-nav-buttons">
-                <button class="btn-cal-nav" onclick="changeYptCalMonth(-1)">‹</button>
-                <button class="btn-cal-nav" onclick="resetYptCalMonth()">Hôm nay</button>
-                <button class="btn-cal-nav" onclick="changeYptCalMonth(1)">›</button>
-              </div>
-            </div>
-            <button class="btn-cal-close" onclick="toggleYptCalendar(false)">✕</button>
-          </div>
-
-          <div class="ypt-cal-weekdays">
-            <span>Th 2</span><span>Th 3</span><span>Th 4</span><span>Th 5</span><span>Th 6</span><span>Th
-              7</span><span>CN</span>
-          </div>
-
-          <div class="ypt-cal-grid" id="yptCalGrid">
-            <!-- Dynamic calendar tiles -->
-          </div>
-
-          <div class="ypt-cal-day-detail" id="yptCalDayDetail">
-            <div class="ypt-detail-date-row">
-              <span class="ypt-detail-date" id="yptDetailDateText">Hôm nay</span>
-              <div class="ypt-detail-stats">
-                <span>Tổng: <b id="yptDetailTotalVal" class="ypt-stat-val">00:00:00</b></span>
-                <span>Max Focus: <b id="yptDetailMaxFocusVal" class="ypt-stat-val"
-                    style="color: #EA580C;">00:00:00</b></span>
-              </div>
-            </div>
-            <button class="btn-ypt-jump-day" id="btnYptJumpDay" onclick="jumpPlannerToCalSelectedDate()">
-              Xem ngày này
-            </button>
           </div>
         </div>
       </div>
@@ -7118,17 +7253,6 @@
               <span class="tl-stat-chip">Học: <strong id="tlDayStudyStat">00:00:00</strong></span>
               <span class="tl-stat-chip">Nghỉ: <strong id="tlDayBreakStat">0 phút</strong></span>
             </div>
-            <div class="tl-toolbar-right">
-              <button type="button" class="tl-btn-small primary" onclick="openSessionModal()">+ Thêm phiên</button>
-              <button type="button" class="tl-btn-small" onclick="openScheduleSettingsModal()" title="Cài đặt giờ ngủ & ngày bắt đầu">
-                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-                <span>Giờ ngủ</span>
-              </button>
-            </div>
-          </div>
-          <div id="tlDayLegacyBanner" class="tl-legacy-banner" style="display: none;">
-            <span id="tlDayLegacyText">Đã học trước đó: 0 phút (chưa chia block giờ)</span>
-            <button type="button" class="tl-btn-small" onclick="openSessionModal()">+ Ghi block giờ</button>
           </div>
           <div id="tlDayScrollContainer" class="tl-day-scroll">
             <!-- Rendered dynamically by renderDayTimelineView() -->
@@ -7153,7 +7277,6 @@
               <button type="button" class="planner-view-tab active" id="btnWeekCols5" onclick="setWeekColumnsCount(5)">5 ngày</button>
               <button type="button" class="planner-view-tab" id="btnWeekCols7" onclick="setWeekColumnsCount(7)">7 ngày</button>
             </div>
-            <button type="button" class="tl-btn-small primary" onclick="openSessionModal()">+ Thêm phiên</button>
           </div>
         </div>
         <div id="tlWeekScrollContainer" class="tl-week-scroll">
@@ -7236,9 +7359,8 @@
       </div>
       <div id="clusterModalList" class="cluster-sheet-list"></div>
       <div id="clusterModalLegend" style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-size:11.5px;color:#9CA3AF;margin-bottom:10px;"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <button type="button" class="tl-btn-small" style="border-radius:999px;padding:6px 12px;" onclick="closeClusterSheet(); openSessionModal();">+ Thêm phiên</button>
-        <button type="button" class="tl-btn-small" style="border-radius:999px;padding:6px 14px;" onclick="closeClusterSheet()">Đóng</button>
+      <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;">
+        <button type="button" class="tl-btn-small" style="border-radius:999px;padding:6px 16px;" onclick="closeClusterSheet()">Đóng</button>
       </div>
     </div>
   </div>
@@ -7250,8 +7372,6 @@
       <div class="modal-title" style="margin-bottom: 10px;">Tùy chọn Daily Plan</div>
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); resetPlannerDateToToday();">📅 Về hôm nay</button>
-        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); openSessionModal();">➕ Thêm phiên học thủ công</button>
-        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); openScheduleSettingsModal();">🛏 Cài đặt Giờ ngủ & Ngày bắt đầu</button>
         <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); openExamModal();">🎯 Chỉnh Ngày thi SAT (D-Day)</button>
         <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0;"></div>
         <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); navigateToPage('sat');">📚 Mở Tài liệu SAT</button>
@@ -7263,58 +7383,26 @@
     </div>
   </div>
 
-  <!-- STUDY SESSION CREATE / EDIT MODAL -->
+  <!-- STUDY SESSION READ-ONLY DETAIL & DELETE MODAL (Zero manual fake edits) -->
   <div id="sessionEditorModal" class="modal-overlay" onclick="if(event.target === this) closeSessionModal()">
-    <div class="modal-card" style="max-width: 440px;">
-      <div class="modal-title" id="sessionModalTitle">Thêm phiên học</div>
+    <div class="modal-card" style="max-width: 400px;">
+      <div class="cluster-sheet-handle"></div>
+      <div class="modal-title" id="sessionModalTitle">Chi tiết phiên học</div>
       <input type="hidden" id="sesEditId" value="">
-
-      <label class="rpc-group-label">Nội dung / Môn học:</label>
-      <input id="sesInputTitle" class="modal-input" type="text" placeholder="Ví dụ: SAT math, SAT Verbal, Full test..." style="margin-bottom: 10px;">
-
-      <label class="rpc-group-label">Liên kết với Task trong ngày (tùy chọn):</label>
-      <select id="sesSelectTask" class="modal-input" style="margin-bottom: 10px;" onchange="onSessionTaskSelectChange()">
-        <option value="">-- Không liên kết task --</option>
-      </select>
-
-      <label class="rpc-group-label">Màu hiển thị trên Timeline:</label>
-      <div class="color-swatch-row" id="sesColorSwatches">
-        <button type="button" class="color-swatch-dot active" data-color="#2563EB" style="background: #2563EB;" onclick="selectSessionColor('#2563EB')" title="Math (Xanh dương)"></button>
-        <button type="button" class="color-swatch-dot" data-color="#7C3AED" style="background: #7C3AED;" onclick="selectSessionColor('#7C3AED')" title="Verbal (Tím)"></button>
-        <button type="button" class="color-swatch-dot" data-color="#0EA5E9" style="background: #0EA5E9;" onclick="selectSessionColor('#0EA5E9')" title="Xanh ngọc"></button>
-        <button type="button" class="color-swatch-dot" data-color="#10B981" style="background: #10B981;" onclick="selectSessionColor('#10B981')" title="Khác / Gym (Xanh lá)"></button>
-        <button type="button" class="color-swatch-dot" data-color="#F59E0B" style="background: #F59E0B;" onclick="selectSessionColor('#F59E0B')" title="Cam"></button>
-        <button type="button" class="color-swatch-dot" data-color="#EF4444" style="background: #EF4444;" onclick="selectSessionColor('#EF4444')" title="Đỏ"></button>
+      <div id="sesReadonlyCard" style="background:#F8FAFC;border:1px solid var(--border-subtle);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
+          <div id="sesViewTitle" style="font-size:15px;font-weight:700;">Phiên học</div>
+          <span id="sesViewBadge" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(37,99,235,0.12);color:#2563EB;">SAT Math</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--text-secondary);">
+          <span id="sesViewRange" style="font-family:'SF Mono',monospace;">00:00 - 00:00</span>
+          <strong id="sesViewDuration" style="color:var(--text-primary);">0 giây</strong>
+        </div>
+        <div id="sesViewNote" style="font-size:12px;color:var(--text-muted);margin-top:6px;display:none;"></div>
       </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-        <div>
-          <label class="rpc-group-label">Ngày:</label>
-          <input id="sesInputDate" class="modal-input" type="date" style="margin-bottom: 0;">
-        </div>
-        <div>
-          <label class="rpc-group-label">Bắt đầu:</label>
-          <input id="sesInputStart" class="modal-input" type="time" value="14:00" style="margin-bottom: 0;">
-        </div>
-        <div>
-          <label class="rpc-group-label">Kết thúc:</label>
-          <input id="sesInputEnd" class="modal-input" type="time" value="15:30" style="margin-bottom: 0;">
-        </div>
-      </div>
-
-      <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; cursor: pointer;">
-        <input type="checkbox" id="sesChkOvernight"> Bắt đầu sau nửa đêm (+1 ngày tiếp theo, ví dụ 00:30+1)
-      </label>
-
-      <label class="rpc-group-label">Ghi chú (tùy chọn):</label>
-      <input id="sesInputNote" class="modal-input" type="text" placeholder="Ví dụ: Đúng 28/30 câu..." style="margin-bottom: 12px;">
-
       <div class="modal-actions" style="justify-content: space-between;">
-        <button type="button" id="btnDeleteSessionModal" class="btn-ghost" style="color: #DC2626; display: none;" onclick="deleteCurrentEditingSession()">Xóa phiên</button>
-        <div style="display: flex; gap: 8px; margin-left: auto;">
-          <button type="button" class="btn-ghost btn-outline" onclick="closeSessionModal()">Hủy</button>
-          <button type="button" class="btn-ghost" style="background: var(--notion-blue); color: #fff;" onclick="saveSessionFromModal()">Lưu phiên</button>
-        </div>
+        <button type="button" id="btnDeleteSessionModal" class="btn-ghost" style="color: #EF4444;" onclick="deleteCurrentEditingSession()">Xóa phiên này</button>
+        <button type="button" class="btn-ghost btn-outline" onclick="closeSessionModal()">Đóng</button>
       </div>
     </div>
   </div>
@@ -7361,22 +7449,26 @@
     </div>
   </div>
 
-  <!-- QUICK TIMER PICKER MODAL (When clicking Play on Floating Pill - Image 7) -->
+  <!-- QUICK TIMER PICKER POPUP CARD (Exact YPT Frosted Subject Picker - Image 3) -->
   <div id="quickTimerPickerModal" class="modal-overlay" onclick="if(event.target === this) closeQuickTimerPicker()">
-    <div class="modal-card" style="max-width: 400px;">
+    <div class="modal-card" style="max-width: 410px;">
       <div class="cluster-sheet-handle"></div>
-      <div class="modal-title" style="font-size:15px;">Chọn việc để bắt đầu bấm giờ</div>
-      <div id="quickTaskPickList" class="quick-task-pick-list" style="margin-bottom: 10px;"></div>
-      <div style="display: flex; gap: 6px; margin-bottom: 12px; align-items: center;">
-        <input id="quickStartNewTaskInput" class="modal-input" type="text" placeholder="+ Thêm việc mới & bấm giờ ngay..." style="margin-bottom: 0; flex: 1;" onkeydown="if(event.key==='Enter'){ quickCreateAndStartTask(); }">
-        <button type="button" class="btn-ghost" style="background: #38BDF8; color: #0F172A; font-weight: 700;" onclick="quickCreateAndStartTask()">Học</button>
-      </div>
-      <div class="modal-actions" style="justify-content: space-between; margin-top: 4px;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button type="button" class="tl-btn-small" style="border-radius:999px;" onclick="closeQuickTimerPicker(); openSessionModal();">+ Ghi phiên</button>
-          <button type="button" class="tl-btn-small" style="border-radius:999px;" onclick="closeQuickTimerPicker(); openScheduleSettingsModal();">🛏 Giờ ngủ</button>
-        </div>
-        <button type="button" class="btn-ghost btn-outline" onclick="closeQuickTimerPicker()">Đóng</button>
+      <div id="quickTaskPickList" class="ypt-picker-groups"></div>
+      <button type="button" id="btnToggleQuickAddRow" class="ypt-picker-add-trigger" onclick="toggleQuickAddRow()">
+        <span class="ypt-picker-dashed-circle">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+        </span>
+        <span>Thêm việc mới</span>
+      </button>
+      <div id="quickAddRowBox" style="display: none; margin-top: 8px; gap: 6px; align-items: center;">
+        <input id="quickStartNewTaskInput" class="modal-input" type="text" placeholder="Tên bài học..." style="margin-bottom: 0; flex: 1; border-radius: 12px;" onkeydown="if(event.key==='Enter'){ quickCreateAndStartTask(); }">
+        <select id="quickAddSubjectSelect" class="modal-input" style="margin-bottom: 0; width: 108px; border-radius: 12px; padding: 8px 6px; font-size: 12.5px;">
+          <option value="MATH">SAT Math</option>
+          <option value="VERBAL">SAT Verbal</option>
+          <option value="PHYSICS">Vật Lý</option>
+          <option value="OTHER">Khác</option>
+        </select>
+        <button type="button" class="btn-ghost" style="background: #B8E1FF; color: #0F172A; font-weight: 700; border-radius: 12px; padding: 8px 12px;" onclick="quickCreateAndStartTask()">Học</button>
       </div>
     </div>
   </div>
@@ -8322,6 +8414,7 @@
         daysHistory: mergedHistory,
         activeTimer: finalActiveTimer,
         activeTimerChangedAt: Math.max(localTimerChangedAt, serverTimerChangedAt),
+        lastTimerStoppedAt: Math.max(local.lastTimerStoppedAt || 0, server.lastTimerStoppedAt || 0),
         deletedTasks: mergedDeleted,
         deletedGoals: mergedDeletedGoals,
         deletedSessions: mergedDeletedSessions,
@@ -9211,6 +9304,8 @@
     /* ========================================================
        DAILY PLANNER & YPT FOCUS TIMER CONTROLLER
        ======================================================== */
+    const APP_BOOT_WALL_MS = Date.now();
+
     let plannerData = loadPlannerFromLocal() || {
       tasks: [],
       goals: [],
@@ -9221,7 +9316,8 @@
       deletedSessions: {},
       deletedCalendarEvents: {},
       daysHistory: {},
-      activeTimer: null
+      activeTimer: null,
+      lastTimerStoppedAt: 0
     };
     if (!Array.isArray(plannerData.goals)) plannerData.goals = [];
     if (!Array.isArray(plannerData.sessions)) plannerData.sessions = [];
@@ -9229,6 +9325,7 @@
     if (!plannerData.deletedGoals) plannerData.deletedGoals = {};
     if (!plannerData.deletedSessions) plannerData.deletedSessions = {};
     if (!plannerData.deletedCalendarEvents) plannerData.deletedCalendarEvents = {};
+    if (!plannerData.lastTimerStoppedAt) plannerData.lastTimerStoppedAt = 0;
     let currentPlannerDate = getLocalDateStr();
     let currentPopoverTaskId = null;
     let activeDraftSection = null;
@@ -9417,16 +9514,40 @@
       return `rgba(37, 99, 235, ${alpha})`;
     }
 
+    const YPT_SUBJECT_DEFS = {
+      MATH: { key: 'MATH', label: 'SAT math', color: '#2563EB' },
+      VERBAL: { key: 'VERBAL', label: 'SAT Verbal', color: '#7C3AED' },
+      PHYSICS: { key: 'PHYSICS', label: 'Vật Lý', color: '#0EA5E9' },
+      CHEM: { key: 'CHEM', label: 'Hóa Học', color: '#F59E0B' },
+      WORKOUT: { key: 'WORKOUT', label: 'Workout', color: '#10B981' },
+      OTHER: { key: 'OTHER', label: 'Khác', color: '#10B981' }
+    };
+
+    function getYptSubjectMetaFE(title = '', explicitSubject = '', explicitColor = '') {
+      let key = String(explicitSubject || '').toUpperCase();
+      if (!YPT_SUBJECT_DEFS[key]) {
+        const t = String(title || '').toLowerCase();
+        if (/\b(math|toán|algebra|geo|geometry|adv|advance|advanced|polynomial|equation|calculus|prob|probability|statistic|statistics|trig|trigonometry|function|graph|ratio|percent|angle|quadratic|linear|problem\s*solving|data\s*analysis)\b|toán|câu\s*(geo|adv|prob|alg)/i.test(t)) {
+          key = 'MATH';
+        } else if (/\b(verbal|ebrw|reading|writing|grammar|vocab|vocabulary|passage|transition|synthesis|inference|details|detail|main idea|structure|rhetoric|wic|word|english|critical)\b|tiếng anh/i.test(t)) {
+          key = 'VERBAL';
+        } else if (/\b(physics|vật\s*lý|l[ýy]\b)/i.test(t)) {
+          key = 'PHYSICS';
+        } else if (/\b(chem|chemistry|h[óo]a\b)/i.test(t)) {
+          key = 'CHEM';
+        } else if (/\b(workout|gym|chạy\s*bộ|tập\s*thể|cardio)\b/i.test(t)) {
+          key = 'WORKOUT';
+        } else {
+          key = 'OTHER';
+        }
+      }
+      const def = YPT_SUBJECT_DEFS[key] || YPT_SUBJECT_DEFS.OTHER;
+      const cleanColor = (explicitColor && /^#[0-9a-f]{3,8}$/i.test(explicitColor.trim())) ? explicitColor.trim() : def.color;
+      return { key, label: def.label, color: cleanColor };
+    }
+
     function inferSessionColorFE(title = '', explicitSubject = '', explicitColor = '') {
-      if (explicitColor && /^#[0-9a-f]{3,8}$/i.test(explicitColor.trim())) return explicitColor.trim();
-      const subj = String(explicitSubject || '').toUpperCase();
-      if (subj === 'MATH') return '#2563EB';
-      if (subj === 'VERBAL') return '#7C3AED';
-      if (subj === 'OTHER') return '#10B981';
-      const t = String(title || '').toLowerCase();
-      if (/\b(math|toán|algebra|geo|geometry|adv|advance|polynomial|equation|calculus|prob|statistic|function|graph)\b|toán|câu\s*(geo|adv|prob|alg)/i.test(t)) return '#2563EB';
-      if (/\b(verbal|ebrw|reading|writing|grammar|vocab|passage|transition|synthesis|inference|details|main idea|structure|english)\b/i.test(t)) return '#7C3AED';
-      return '#10B981';
+      return getYptSubjectMetaFE(title, explicitSubject, explicitColor).color;
     }
 
     function formatAxisHourLabel(hourInt) {
@@ -9529,14 +9650,21 @@
       }
 
       let ongoingBreakSeconds = 0;
-      if (dateStr === todayStr && !active && merged.length > 0) {
-        const lastEnd = merged[merged.length - 1].endedAt;
-        if (nowMs > lastEnd) {
-          ongoingBreakSeconds = Math.floor((nowMs - lastEnd) / 1000);
-          if (ongoingBreakSeconds >= minBreak) {
-            const sr = (lastEnd - dayMidnightMs) / 60000;
-            const er = (nowMs - dayMidnightMs) / 60000;
-            breaks.push({ startedAt: lastEnd, endedAt: nowMs, durationSeconds: ongoingBreakSeconds, startRelMin: sr, endRelMin: er, startLabel: formatRelMinTime(sr), endLabel: formatRelMinTime(er), isOngoing: true });
+      let restAnchorMs = null;
+      if (!active) {
+        const lastSesEnd = merged.length > 0 ? merged[merged.length - 1].endedAt : 0;
+        const lastStopLocal = (plannerData.lastTimerStoppedAt || 0) >= dayMidnightMs ? plannerData.lastTimerStoppedAt : 0;
+        const bestStop = Math.max(lastSesEnd, lastStopLocal);
+        if (bestStop > 0 && nowMs >= bestStop) {
+          restAnchorMs = bestStop;
+          ongoingBreakSeconds = Math.floor((nowMs - bestStop) / 1000);
+          if (dateStr === todayStr && lastSesEnd > 0 && nowMs > lastSesEnd) {
+            const visualBreakDur = Math.floor((nowMs - lastSesEnd) / 1000);
+            if (visualBreakDur >= minBreak) {
+              const sr = (lastSesEnd - dayMidnightMs) / 60000;
+              const er = (nowMs - dayMidnightMs) / 60000;
+              breaks.push({ startedAt: lastSesEnd, endedAt: nowMs, durationSeconds: visualBreakDur, startRelMin: sr, endRelMin: er, startLabel: formatRelMinTime(sr), endLabel: formatRelMinTime(er), isOngoing: true });
+            }
           }
         }
       }
@@ -9569,6 +9697,7 @@
         sessions,
         breaks,
         ongoingBreakSeconds,
+        restAnchorMs,
         sleep: {
           enabled: !!sch.sleepEnabled,
           bedRelMin,
@@ -9630,9 +9759,7 @@
 
       if (floatingEl) {
         const showFloating = (currentPage === 'planner') && (
-          currentPlannerSubView === 'day' ||
-          currentPlannerSubView === 'week' ||
-          (isMobileViewport() && currentPlannerSubView === 'tasks')
+          isMobileViewport() || !plannerData.activeTimer
         );
         floatingEl.style.display = showFloating ? 'flex' : 'none';
       }
@@ -9815,17 +9942,6 @@
       const breakStat = document.getElementById('tlDayBreakStat');
       if (breakStat) breakStat.innerText = data.totalBreakSeconds > 0 ? formatVnDuration(data.totalBreakSeconds) : '0 phút';
 
-      const legBanner = document.getElementById('tlDayLegacyBanner');
-      const legText = document.getElementById('tlDayLegacyText');
-      if (legBanner && legText) {
-        if (data.unloggedLegacySeconds >= 60) {
-          legBanner.style.display = 'flex';
-          legText.innerText = `Đã ghi nhận trước đó: ${formatVnDuration(data.unloggedLegacySeconds)} (chưa chia block mốc giờ)`;
-        } else {
-          legBanner.style.display = 'none';
-        }
-      }
-
       // Compute visible hour span cleanly
       const minSesStart = data.sessions.length ? Math.min(...data.sessions.map(s => s.startRelMin)) : null;
       const maxSesEnd = data.sessions.length ? Math.max(...data.sessions.map(s => s.endRelMin)) : null;
@@ -9850,7 +9966,7 @@
       let gridHtml = '';
       for (let h = startHour; h < endHour; h++) {
         axisHtml += `<div class="tl-axis-hour" style="height: ${PX_PER_HOUR}px;"><span>${formatAxisHourLabel(h)}</span></div>`;
-        gridHtml += `<div class="tl-hour-line" style="height: ${PX_PER_HOUR}px;" onclick="openSessionModalForHour('${currentPlannerDate}', ${h})" title="Bấm để thêm phiên lúc ${formatRelMinTime(h * 60)}"></div>`;
+        gridHtml += `<div class="tl-hour-line" style="height: ${PX_PER_HOUR}px;"></div>`;
       }
 
       // Planned sleep block
@@ -10078,7 +10194,7 @@
       const colsHtml = dayDatas.map(dd => {
         let gridCells = '';
         for (let h = startHour; h < endHour; h++) {
-          gridCells += `<div class="tl-week-hour-cell" style="height: ${PX_PER_HOUR}px;" onclick="openSessionModalForHour('${dd.dateStr}', ${h})"></div>`;
+          gridCells += `<div class="tl-week-hour-cell" style="height: ${PX_PER_HOUR}px;"></div>`;
         }
         const clusters = clusterTimelineSessions(dd.sessions, toY, totalHeight, 18);
         const sesHtml = clusters.map(cl => {
@@ -10292,7 +10408,6 @@
             <strong style="font-size:14px;">Ngày ${dd}/${mm}/${yyyy}</strong>
             ${dDay ? `<span class="planner-dday-pill ${dDay.urgent ? 'urgent' : ''}">${dDay.label}</span>` : ''}
             <span class="tl-stat-chip">Tổng: <strong>${formatHMS(dayData.dayTotalSeconds)}</strong></span>
-            <span class="tl-stat-chip">Max Focus: <strong style="color:#EA580C;">${formatHMS(maxFocus)}</strong></span>
           </div>
           <div style="display:flex;gap:6px;">
             <button type="button" class="tl-btn-small primary" onclick="currentPlannerDate='${ds}'; switchPlannerSubView('day');">Mở Timeline ngày</button>
@@ -10366,87 +10481,49 @@
       }
     }
 
-    /* SESSION MODAL & SCHEDULE SETTINGS MODAL */
-    function selectSessionColor(colorHex) {
-      selectedSessionModalColor = colorHex;
-      document.querySelectorAll('#sesColorSwatches .color-swatch-dot').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-color') === colorHex);
-      });
-    }
-
-    function openSessionModalForHour(dateStr, hourInt) {
-      const isOvernight = hourInt >= 24;
-      const normH = hourInt % 24;
-      const startStr = `${String(normH).padStart(2, '0')}:00`;
-      const endStr = `${String((normH + 1) % 24).padStart(2, '0')}:00`;
-      openSessionModal(null, { date: dateStr, startTime: startStr, endTime: endStr, isOvernight });
-    }
-
-    function openSessionModal(sessionId = null, prefill = null) {
+    /* SESSION READ-ONLY INSPECTOR + DELETE & SCHEDULE SETTINGS */
+    function openSessionModal(sessionId = null) {
+      if (!sessionId) return;
       const modal = document.getElementById('sessionEditorModal');
       if (!modal) return;
-      const titleEl = document.getElementById('sessionModalTitle');
-      const idInp = document.getElementById('sesEditId');
-      const nameInp = document.getElementById('sesInputTitle');
-      const taskSel = document.getElementById('sesSelectTask');
-      const dateInp = document.getElementById('sesInputDate');
-      const startInp = document.getElementById('sesInputStart');
-      const endInp = document.getElementById('sesInputEnd');
-      const overnightChk = document.getElementById('sesChkOvernight');
-      const noteInp = document.getElementById('sesInputNote');
-      const delBtn = document.getElementById('btnDeleteSessionModal');
+      const ses = computeDayTimelineClient(currentPlannerDate).sessions.find(s => s.id === sessionId)
+        || (plannerData.sessions || []).find(s => s.id === sessionId);
+      if (!ses) return;
 
-      const targetDate = prefill?.date || currentPlannerDate || getLocalDateStr();
-      const dayTasks = (plannerData.tasks || []).filter(t => (t.date || targetDate) === targetDate);
-      taskSel.innerHTML = `<option value="">-- Không liên kết task --</option>` + dayTasks.map(t =>
-        `<option value="${t.id}">${escapeHtml(t.title)}</option>`
-      ).join('');
+      const meta = getYptSubjectMetaFE(ses.title, ses.subject, ses.color);
+      document.getElementById('sesEditId').value = ses.id;
+      document.getElementById('sessionModalTitle').innerText = ses.isLive ? 'Đang bấm giờ (Phiên trực tiếp)' : 'Chi tiết phiên học';
+      document.getElementById('sesViewTitle').innerText = ses.title || 'Focus';
 
-      if (sessionId) {
-        const ses = computeDayTimelineClient(currentPlannerDate).sessions.find(s => s.id === sessionId)
-          || (plannerData.sessions || []).find(s => s.id === sessionId);
-        if (!ses) return;
-        titleEl.innerText = ses.isLive ? 'Đang bấm giờ (Chỉnh sửa phiên)' : 'Chỉnh sửa phiên học';
-        idInp.value = ses.id;
-        nameInp.value = ses.title || '';
-        taskSel.value = ses.taskId || '';
-        dateInp.value = ses.date || targetDate;
-        const sParts = msToVnPartsFE(ses.startedAt);
-        const eParts = msToVnPartsFE(ses.endedAt);
-        startInp.value = sParts.hhmm;
-        endInp.value = eParts.hhmm;
-        overnightChk.checked = sParts.dateStr > (ses.date || targetDate);
-        noteInp.value = ses.note || '';
-        selectSessionColor(ses.color || inferSessionColorFE(ses.title, ses.subject));
-        delBtn.style.display = 'inline-flex';
-      } else {
-        titleEl.innerText = 'Thêm phiên học mới';
-        idInp.value = '';
-        nameInp.value = '';
-        taskSel.value = '';
-        dateInp.value = targetDate;
-        startInp.value = prefill?.startTime || '14:00';
-        endInp.value = prefill?.endTime || '15:30';
-        overnightChk.checked = !!prefill?.isOvernight;
-        noteInp.value = '';
-        selectSessionColor('#2563EB');
-        delBtn.style.display = 'none';
+      const badge = document.getElementById('sesViewBadge');
+      if (badge) {
+        badge.innerText = meta.label;
+        badge.style.color = meta.color;
+        badge.style.background = hexToRgbaTint(meta.color, 0.14);
       }
+
+      const sLabel = ses.startLabel || msToVnPartsFE(ses.startedAt).hhmm;
+      const eLabel = ses.endLabel || msToVnPartsFE(ses.endedAt).hhmm;
+      document.getElementById('sesViewRange').innerText = `${ses.date || currentPlannerDate} • ${sLabel} - ${eLabel}`;
+      document.getElementById('sesViewDuration').innerText = ses.isLive
+        ? `${formatHMS(ses.durationSeconds)} (đang chạy)`
+        : formatVnDuration(ses.durationSeconds);
+
+      const noteEl = document.getElementById('sesViewNote');
+      if (noteEl) {
+        if (ses.note) {
+          noteEl.style.display = 'block';
+          noteEl.innerText = ses.note;
+        } else {
+          noteEl.style.display = 'none';
+        }
+      }
+
+      const delBtn = document.getElementById('btnDeleteSessionModal');
+      if (delBtn) delBtn.style.display = ses.isLive ? 'none' : 'inline-flex';
 
       modal.style.display = 'flex';
       modal.classList.add('active', 'show');
-      setTimeout(() => nameInp.focus(), 40);
-    }
-
-    function onSessionTaskSelectChange() {
-      const sel = document.getElementById('sesSelectTask');
-      const nameInp = document.getElementById('sesInputTitle');
-      if (!sel || !sel.value) return;
-      const t = (plannerData.tasks || []).find(item => item.id === sel.value);
-      if (t) {
-        if (!nameInp.value.trim()) nameInp.value = t.title;
-        selectSessionColor(inferSessionColorFE(t.title, t.subject, t.color));
-      }
     }
 
     function closeSessionModal() {
@@ -10457,51 +10534,22 @@
       }
     }
 
-    async function saveSessionFromModal() {
-      const editId = document.getElementById('sesEditId').value.trim();
-      const title = document.getElementById('sesInputTitle').value.trim() || 'Tự học';
-      const taskId = document.getElementById('sesSelectTask').value || null;
-      const dateStr = document.getElementById('sesInputDate').value || currentPlannerDate;
-      const startTime = document.getElementById('sesInputStart').value || '14:00';
-      const endTime = document.getElementById('sesInputEnd').value || '15:00';
-      const isOvernightStart = !!document.getElementById('sesChkOvernight').checked;
-      const note = document.getElementById('sesInputNote').value.trim();
-
-      const payload = editId
-        ? { action: 'update-session', id: editId, title, taskId, color: selectedSessionModalColor, date: dateStr, startTime, endTime, isOvernightStart, note }
-        : { action: 'add-session', title, taskId, color: selectedSessionModalColor, date: dateStr, startTime, endTime, isOvernightStart, note };
-
-      isTaskMutating++;
-      try {
-        const res = await fetch('/api/daily-todos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          toast(data.error || 'Khoảng thời gian phiên học không hợp lệ');
-          return;
-        }
-        if (data.dailyPlanner) reconcilePlannerWithServer(data.dailyPlanner);
-        closeSessionModal();
-        renderDailyPlannerPage();
-        updateYptLiveTimers();
-        toast(editId ? 'Đã cập nhật phiên học' : 'Đã lưu phiên học');
-      } catch (e) {
-        toast('Lỗi kết nối khi lưu phiên học');
-      } finally {
-        isTaskMutating--;
-      }
-    }
-
     async function deleteCurrentEditingSession() {
       const editId = document.getElementById('sesEditId').value.trim();
       if (!editId) return;
+      const targetSes = (plannerData.sessions || []).find(s => s.id === editId);
       closeSessionModal();
       if (!plannerData.deletedSessions) plannerData.deletedSessions = {};
       plannerData.deletedSessions[editId] = Date.now();
       plannerData.sessions = (plannerData.sessions || []).filter(s => s.id !== editId);
+      if (targetSes && targetSes.taskId) {
+        const linked = (plannerData.tasks || []).find(t => t.id === targetSes.taskId);
+        if (linked) {
+          linked.spentSeconds = Math.max(0, (linked.spentSeconds || 0) - (targetSes.durationSeconds || 0));
+          linked.adjustedAt = Date.now();
+          linked.updatedAt = Date.now();
+        }
+      }
       savePlannerToLocal();
       renderDailyPlannerPage();
 
@@ -10583,7 +10631,18 @@
       }
     }
 
-    /* FLOATING BAR & QUICK TIMER PICKER */
+    /* FLOATING REST / FOCUS BAR & YPT GROUPED SUBJECT PICKER */
+    let quickPickerExpandedGroups = new Set(['MATH', 'VERBAL']);
+
+    function getRestElapsedSeconds(nowMs = getSyncedServerNow()) {
+      const todayStr = getLocalDateStr(new Date(nowMs));
+      const todayData = computeDayTimelineClient(todayStr, nowMs);
+      if (todayData.restAnchorMs !== null) {
+        return Math.max(0, Math.floor((nowMs - todayData.restAnchorMs) / 1000));
+      }
+      return Math.max(0, Math.floor((Date.now() - APP_BOOT_WALL_MS) / 1000));
+    }
+
     function handleFloatingPlayClick() {
       if (plannerData.activeTimer) {
         stopCurrentYptTimer();
@@ -10592,34 +10651,120 @@
       }
     }
 
-    function openQuickTimerPicker() {
-      const modal = document.getElementById('quickTimerPickerModal');
-      const listEl = document.getElementById('quickTaskPickList');
-      if (!modal || !listEl) return;
+    function toggleQuickPickerGroup(subjKey) {
+      if (quickPickerExpandedGroups.has(subjKey)) quickPickerExpandedGroups.delete(subjKey);
+      else quickPickerExpandedGroups.add(subjKey);
+      renderQuickTimerPickerList();
+    }
+
+    function toggleQuickAddRow(forceShow) {
+      const box = document.getElementById('quickAddRowBox');
+      if (!box) return;
+      const shouldShow = (forceShow !== undefined) ? !!forceShow : (box.style.display === 'none' || !box.style.display);
+      box.style.display = shouldShow ? 'flex' : 'none';
+      if (shouldShow) {
+        setTimeout(() => { document.getElementById('quickStartNewTaskInput')?.focus(); }, 30);
+      }
+    }
+
+    async function startQuickSubjectTimer(subjKey) {
       const targetDate = currentPlannerDate || getLocalDateStr();
       const dayTasks = (plannerData.tasks || []).filter(t => (t.date || targetDate) === targetDate);
+      const groupTasks = dayTasks.filter(t => getYptSubjectMetaFE(t.title, t.subject, t.color).key === subjKey);
       const activeId = plannerData.activeTimer?.taskId;
-      if (dayTasks.length === 0) {
-        listEl.innerHTML = `<div style="font-size:12.5px;color:#9CA3AF;padding:12px;text-align:center;">Chưa có việc nào hôm nay. Nhập tên bên trên để bấm giờ ngay!</div>`;
-      } else {
-        listEl.innerHTML = dayTasks.map(t => {
-          const isRunning = activeId === t.id;
-          const playBg = isRunning ? '#EA580C' : '#BAE6FD';
-          const playFg = isRunning ? '#FFFFFF' : '#0F172A';
-          const iconSvg = isRunning
-            ? `<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>`
-            : `<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24" style="margin-left:2px;"><polygon points="6 4 20 12 6 20 6 4"/></svg>`;
-          return `
-            <button type="button" class="quick-task-pick-btn" onclick="closeQuickTimerPicker(); ${isRunning ? 'stopCurrentYptTimer()' : `startTaskYptTimer('${t.id}')`};">
-              <span style="display:flex;align-items:center;gap:12px;min-width:0;">
-                <span style="width:32px;height:32px;border-radius:50%;background:${playBg};color:${playFg};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${iconSvg}</span>
-                <span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14.5px;${t.completed ? 'text-decoration:line-through;opacity:0.55;' : ''}">${escapeHtml(t.title)}</span>
-              </span>
-              <span style="font-family:monospace;font-size:13px;opacity:0.8;">${formatHMS(t.spentSeconds || 0)}</span>
-            </button>
-          `;
-        }).join('');
+      const runningInGroup = groupTasks.find(t => t.id === activeId);
+      closeQuickTimerPicker();
+      if (runningInGroup) {
+        await stopCurrentYptTimer();
+        return;
       }
+      const nextTask = groupTasks.find(t => !t.completed && t.status !== 'completed') || groupTasks[0];
+      if (nextTask) {
+        await startTaskYptTimer(nextTask.id);
+        return;
+      }
+      const def = YPT_SUBJECT_DEFS[subjKey] || YPT_SUBJECT_DEFS.OTHER;
+      await createAndStartQuickTask(def.label, subjKey, targetDate);
+    }
+
+    function renderQuickTimerPickerList() {
+      const listEl = document.getElementById('quickTaskPickList');
+      if (!listEl) return;
+      const nowMs = getSyncedServerNow();
+      const targetDate = currentPlannerDate || getLocalDateStr(new Date(nowMs));
+      const dayTasks = (plannerData.tasks || []).filter(t => (t.date || targetDate) === targetDate);
+      const activeId = plannerData.activeTimer?.taskId;
+
+      const buckets = new Map();
+      ['MATH', 'VERBAL'].forEach(k => buckets.set(k, { def: YPT_SUBJECT_DEFS[k], tasks: [] }));
+      for (const t of dayTasks) {
+        const meta = getYptSubjectMetaFE(t.title, t.subject, t.color);
+        if (!buckets.has(meta.key)) buckets.set(meta.key, { def: meta, tasks: [] });
+        buckets.get(meta.key).tasks.push(t);
+      }
+
+      const groups = Array.from(buckets.values());
+      listEl.innerHTML = groups.map(g => {
+        const k = g.def.key;
+        const isRunningGroup = g.tasks.some(t => t.id === activeId);
+        let groupTotalSec = 0;
+        g.tasks.forEach(t => {
+          const liveAdd = (activeId === t.id && plannerData.activeTimer)
+            ? Math.max(0, Math.floor((nowMs - plannerData.activeTimer.startedAt) / 1000))
+            : 0;
+          groupTotalSec += (t.spentSeconds || 0) + liveAdd;
+        });
+        const isExpanded = quickPickerExpandedGroups.has(k) && g.tasks.length > 0;
+        const playSvg = isRunningGroup
+          ? `<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>`
+          : `<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24" style="margin-left:2px;"><polygon points="6 4 20 12 6 20 6 4"/></svg>`;
+
+        const subHtml = isExpanded ? `
+          <div class="ypt-picker-subtasks">
+            ${g.tasks.map(t => {
+              const isRun = t.id === activeId;
+              const liveAdd = isRun ? Math.max(0, Math.floor((nowMs - plannerData.activeTimer.startedAt) / 1000)) : 0;
+              const sec = (t.spentSeconds || 0) + liveAdd;
+              return `
+                <div class="ypt-picker-subtask-row ${isRun ? 'is-running' : ''}"
+                     onclick="closeQuickTimerPicker(); ${isRun ? 'stopCurrentYptTimer()' : `startTaskYptTimer('${t.id}')`};">
+                  <span class="ypt-picker-subtask-left">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="opacity:0.65;flex-shrink:0;"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 12l2.5 2.5L16 9"/></svg>
+                    <span class="ypt-picker-subtask-title ${t.completed ? 'done' : ''}">${escapeHtml(t.title)}</span>
+                  </span>
+                  <span class="ypt-picker-subtask-time">${formatHMS(sec)}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        ` : '';
+
+        return `
+          <div class="ypt-picker-group">
+            <div class="ypt-picker-subject-row" onclick="${g.tasks.length ? `toggleQuickPickerGroup('${k}')` : `startQuickSubjectTimer('${k}')`}">
+              <div class="ypt-picker-subj-left">
+                <button type="button" class="ypt-picker-play-circle ${isRunningGroup ? 'running' : ''}"
+                        onclick="event.stopPropagation(); startQuickSubjectTimer('${k}')"
+                        title="${isRunningGroup ? 'Tạm dừng' : `Bắt đầu ${g.def.label}`}">
+                  ${playSvg}
+                </button>
+                <span class="ypt-picker-subj-name">${escapeHtml(g.def.label)}</span>
+              </div>
+              <div class="ypt-picker-subj-right">
+                <span class="ypt-picker-subj-time">${formatHMS(groupTotalSec)}</span>
+              </div>
+            </div>
+            ${subHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openQuickTimerPicker() {
+      const modal = document.getElementById('quickTimerPickerModal');
+      if (!modal) return;
+      toggleQuickAddRow(false);
+      renderQuickTimerPickerList();
       modal.style.display = 'flex';
       modal.classList.add('active', 'show');
     }
@@ -10632,26 +10777,22 @@
       }
     }
 
-    async function quickCreateAndStartTask() {
-      const inp = document.getElementById('quickStartNewTaskInput');
-      if (!inp || !inp.value.trim()) return;
-      const title = inp.value.trim();
-      inp.value = '';
-      closeQuickTimerPicker();
-      const targetDate = currentPlannerDate || getLocalDateStr();
-
+    async function createAndStartQuickTask(title, subjectKey, targetDate) {
+      const cleanTitle = String(title || '').trim();
+      if (!cleanTitle) return;
+      const meta = getYptSubjectMetaFE(cleanTitle, subjectKey);
       isTaskMutating++;
       let createdId = null;
       try {
         const res = await fetch('/api/daily-todos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'add', title, section: 'morning', date: targetDate })
+          body: JSON.stringify({ action: 'add', title: cleanTitle, section: 'morning', date: targetDate, subject: meta.key, color: meta.color })
         });
         if (res.ok) {
           const data = await res.json();
           if (data.dailyPlanner) reconcilePlannerWithServer(data.dailyPlanner);
-          const created = (plannerData.tasks || []).slice().reverse().find(t => t.title === title && t.date === targetDate);
+          const created = (plannerData.tasks || []).slice().reverse().find(t => t.title === cleanTitle && t.date === targetDate);
           if (created) createdId = created.id;
         }
       } catch (e) {
@@ -10664,30 +10805,34 @@
       }
     }
 
+    async function quickCreateAndStartTask() {
+      const inp = document.getElementById('quickStartNewTaskInput');
+      const sel = document.getElementById('quickAddSubjectSelect');
+      if (!inp || !inp.value.trim()) return;
+      const title = inp.value.trim();
+      const subjKey = sel ? sel.value : '';
+      inp.value = '';
+      closeQuickTimerPicker();
+      await createAndStartQuickTask(title, subjKey, currentPlannerDate || getLocalDateStr());
+    }
+
     function updateTimelineLiveTick() {
       const nowMs = getSyncedServerNow();
-      const todayStr = getLocalDateStr(new Date(nowMs));
       const data = computeDayTimelineClient(currentPlannerDate, nowMs);
+      const restSec = getRestElapsedSeconds(nowMs);
+      const active = plannerData.activeTimer;
 
-      // Update break inline pill in dashboard card
-      const breakPill = document.getElementById('yptBreakInlinePill');
-      const breakText = document.getElementById('yptBreakInlineText');
-      if (breakPill && breakText) {
-        if (!plannerData.activeTimer && currentPlannerDate === todayStr && data.ongoingBreakSeconds >= 60) {
-          breakPill.style.display = 'inline-flex';
-          breakText.innerText = `Giải lao ${formatVnDuration(data.ongoingBreakSeconds)}`;
-        } else {
-          breakPill.style.display = 'none';
-        }
-      }
-
-      // Update floating pill bar
+      // Update floating Rest / Focus pill bar
+      const floatingBar = document.getElementById('tlFloatingBar');
       const fClock = document.getElementById('tlFloatingClock');
       const fSub = document.getElementById('tlFloatingSub');
       const fBtn = document.getElementById('tlFloatingPlayBtn');
       const fIcon = document.getElementById('tlFloatingPlayIcon');
+      if (floatingBar) {
+        const shouldShow = (currentPage === 'planner') && (isMobileViewport() || !active);
+        floatingBar.style.display = shouldShow ? 'flex' : 'none';
+      }
       if (fClock && fSub && fBtn && fIcon) {
-        const active = plannerData.activeTimer;
         if (active) {
           const liveSessionSec = Math.max(0, Math.floor((nowMs - active.startedAt) / 1000));
           const targetTask = (plannerData.tasks || []).find(t => t.id === active.taskId);
@@ -10698,17 +10843,11 @@
           fIcon.innerHTML = `<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>`;
           fSub.innerText = `Đang học: ${active.taskTitle || 'Focus'} • Tổng ${formatHM(data.dayTotalSeconds)}`;
         } else {
-          fClock.innerText = formatHMS(data.dayTotalSeconds);
+          fClock.innerText = formatHMS(restSec);
           fClock.classList.remove('running');
           fBtn.classList.remove('running');
           fIcon.innerHTML = `<polygon points="6 4 20 12 6 20 6 4"/>`;
-          if (currentPlannerDate === todayStr && data.ongoingBreakSeconds >= 60) {
-            fSub.innerText = `Giải lao ${formatVnDuration(data.ongoingBreakSeconds)}`;
-          } else if (data.countdownToSleepSeconds !== null) {
-            fSub.innerText = `Còn ${formatVnDuration(data.countdownToSleepSeconds)} đến giờ ngủ`;
-          } else {
-            fSub.innerText = 'Nhấn Play để bắt đầu bấm giờ';
-          }
+          fSub.innerText = 'Thời gian nghỉ';
         }
       }
 
@@ -10734,7 +10873,6 @@
           const nowLineEl = document.getElementById('tlDayNowLine');
           const startHour = parseInt(nowLineEl?.getAttribute('data-start-hour') || String(getScheduleSettingsFE().dayStartHour), 10);
           const pxPerHour = parseFloat(nowLineEl?.getAttribute('data-px-per-hour') || '64');
-          const topY = ((liveSes.startRelMin - startHour * 60) / 60) * pxPerHour;
           const hPx = Math.max(20, ((liveSes.endRelMin - liveSes.startRelMin) / 60) * pxPerHour);
           liveEl.style.height = `${hPx}px`;
           liveEl.classList.toggle('compact', hPx < 38);
@@ -10763,20 +10901,12 @@
     function updateYptLiveTimers() {
       const active = plannerData.activeTimer;
       const clockEl = document.getElementById('yptDigitalClock');
+      const statusIndEl = document.getElementById('yptStatusIndicator');
       const dotEl = document.getElementById('yptFlameDot');
-      const statusLabel = document.getElementById('yptTimerStatusLabel');
       const pillEl = document.getElementById('yptActiveTaskPill');
       const taskNameEl = document.getElementById('yptActiveTaskName');
-      const todayTotalEl = document.getElementById('yptTodayTotalVal');
-      const maxFocusEl = document.getElementById('yptMaxFocusVal');
-
       const todayTotalSec = getDayTotalSeconds(currentPlannerDate);
-      const todayMaxFocusSec = getDayMaxFocusSeconds(currentPlannerDate);
 
-      if (todayTotalEl) todayTotalEl.innerText = formatHMS(todayTotalSec);
-      if (maxFocusEl) maxFocusEl.innerText = formatHMS(todayMaxFocusSec);
-
-      // Cập nhật màu sắc deadline theo thời gian thực (chuyển sang đỏ ngay khi quá giờ)
       if (currentPage === 'planner') {
         updateLiveDeadlines();
       }
@@ -10787,11 +10917,10 @@
           clockEl.classList.remove('running');
           clockEl.innerText = formatHMS(todayTotalSec);
         }
+        if (statusIndEl) statusIndEl.style.display = 'none';
         if (dotEl) dotEl.classList.remove('running');
-        if (statusLabel) statusLabel.innerText = 'Tổng hôm nay';
         if (pillEl) pillEl.style.display = 'none';
 
-        // Remove running class from all badges
         document.querySelectorAll('.ypt-task-timer-badge.running').forEach(b => {
           b.classList.remove('running');
           const icon = b.querySelector('.ypt-timer-icon');
@@ -10811,8 +10940,8 @@
         clockEl.classList.add('running');
         clockEl.innerText = formatHMS(taskCumulativeSec);
       }
+      if (statusIndEl) statusIndEl.style.display = 'inline-flex';
       if (dotEl) dotEl.classList.add('running');
-      if (statusLabel) statusLabel.innerText = 'Đang tập trung:';
       if (pillEl) pillEl.style.display = 'inline-flex';
       if (taskNameEl) taskNameEl.innerText = active.taskTitle || 'Nhiệm vụ';
 
@@ -11616,13 +11745,10 @@
       // Filter tasks for the selected date
       const dateTasks = tasks.filter(t => (t.date || todayStr) === currentPlannerDate);
 
-      // Update YPT top summary values
+      // Update YPT top clock silently (maxFocus saved in daysHistory background)
       const todayTotalSec = getDayTotalSeconds(currentPlannerDate);
-      const todayMaxFocusSec = getDayMaxFocusSeconds(currentPlannerDate);
       const clockEl = document.getElementById('yptDigitalClock');
-      const maxFocusEl = document.getElementById('yptMaxFocusVal');
       if (clockEl && !plannerData.activeTimer) clockEl.innerText = formatHMS(todayTotalSec);
-      if (maxFocusEl) maxFocusEl.innerText = formatHMS(todayMaxFocusSec);
 
       // Sessions: only Morning, Afternoon, Evening
       const sections = ['morning', 'afternoon', 'evening'];
@@ -12210,6 +12336,7 @@
       }
       plannerData.activeTimer = null;
       plannerData.activeTimerChangedAt = Date.now();
+      plannerData.lastTimerStoppedAt = now;
       savePlannerToLocal();
 
       document.title = 'YPT - Study Planner';

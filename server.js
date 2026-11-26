@@ -119,7 +119,9 @@ let appSettings = {
       updatedAt: 0
     },
     daysHistory: {},
-    activeTimer: null
+    activeTimer: null,
+    activeTimerChangedAt: 0,
+    lastTimerStoppedAt: 0
   },
   discordRpc: {
     enabled: true,
@@ -272,6 +274,7 @@ function loadDatabase() {
             deletedGoals: (typeof data.settings?.dailyPlanner?.deletedGoals === 'object' && data.settings.dailyPlanner.deletedGoals !== null) ? data.settings.dailyPlanner.deletedGoals : {},
             activeTimer: data.settings?.dailyPlanner?.activeTimer || null,
             activeTimerChangedAt: data.settings?.dailyPlanner?.activeTimerChangedAt || 0,
+            lastTimerStoppedAt: data.settings?.dailyPlanner?.lastTimerStoppedAt || 0,
             deletedSessions: (typeof data.settings?.dailyPlanner?.deletedSessions === 'object' && data.settings?.dailyPlanner?.deletedSessions !== null) ? data.settings.dailyPlanner.deletedSessions : {},
             deletedCalendarEvents: (typeof data.settings?.dailyPlanner?.deletedCalendarEvents === 'object' && data.settings?.dailyPlanner?.deletedCalendarEvents !== null) ? data.settings.dailyPlanner.deletedCalendarEvents : {}
           },
@@ -446,6 +449,9 @@ const DEFAULT_SCHEDULE_SETTINGS = {
 const SUBJECT_COLORS = {
   MATH: '#2563EB',
   VERBAL: '#7C3AED',
+  PHYSICS: '#0EA5E9',
+  CHEM: '#F59E0B',
+  WORKOUT: '#10B981',
   OTHER: '#10B981'
 };
 
@@ -475,11 +481,17 @@ function normalizeScheduleSettings(raw = {}) {
 function inferPlannerSubjectAndColor(title = '', explicitSubject = '', explicitColor = '') {
   const t = String(title || '').toLowerCase();
   let subject = String(explicitSubject || '').toUpperCase();
-  if (!['MATH', 'VERBAL', 'OTHER'].includes(subject)) {
-    const mathRe = /\b(math|toán|algebra|geo|geometry|adv|advance|polynomial|equation|calculus|prob|probability|statistic|trigonometry|function|graph|ratio|percent|angle|quadratic|linear)\b|câu\s*(geo|adv|prob|alg)/i;
+  if (!['MATH', 'VERBAL', 'PHYSICS', 'CHEM', 'WORKOUT', 'OTHER'].includes(subject)) {
+    const mathRe = /\b(math|toán|algebra|geo|geometry|adv|advance|advanced|polynomial|equation|calculus|prob|probability|statistic|statistics|trig|trigonometry|function|graph|ratio|percent|angle|quadratic|linear|problem\s*solving|data\s*analysis)\b|câu\s*(geo|adv|prob|alg)/i;
     const verbalRe = /\b(verbal|ebrw|reading|writing|grammar|vocab|vocabulary|passage|transition|synthesis|inference|details|detail|main idea|structure|rhetoric|wic|word|english|critical)\b/i;
+    const physRe = /\b(physics|vật\s*lý|l[ýy]\b)/i;
+    const chemRe = /\b(chem|chemistry|h[óo]a\b)/i;
+    const workoutRe = /\b(workout|gym|chạy\s*bộ|tập\s*thể|cardio)\b/i;
     if (mathRe.test(t) || t.includes('toán')) subject = 'MATH';
     else if (verbalRe.test(t) || t.includes('tiếng anh')) subject = 'VERBAL';
+    else if (physRe.test(t)) subject = 'PHYSICS';
+    else if (chemRe.test(t)) subject = 'CHEM';
+    else if (workoutRe.test(t)) subject = 'WORKOUT';
     else subject = 'OTHER';
   }
   const cleanColor = /^#[0-9a-f]{3,8}$/i.test(String(explicitColor || '').trim()) ? String(explicitColor).trim() : '';
@@ -526,6 +538,7 @@ function ensureDailyPlannerShape(planner) {
   if (!planner.deletedCalendarEvents || typeof planner.deletedCalendarEvents !== 'object') planner.deletedCalendarEvents = {};
   planner.scheduleSettings = normalizeScheduleSettings(planner.scheduleSettings);
   if (planner.activeTimerChangedAt === undefined) planner.activeTimerChangedAt = 0;
+  if (planner.lastTimerStoppedAt === undefined) planner.lastTimerStoppedAt = 0;
 }
 
 function filterDeletedEntities(list, deletedMap) {
@@ -638,6 +651,7 @@ function applyActiveTimerDelta(planner, now, mode = 'checkpoint') {
   if (mode === 'stop') {
     planner.activeTimer = null;
     planner.activeTimerChangedAt = now;
+    planner.lastTimerStoppedAt = now;
   } else if (sessionSec > 0) {
     prev.sessionId = sessionId;
     prev.sessionStartedAt = origStart;
@@ -1007,6 +1021,12 @@ function mergePlannerTasks(localPlanner, incomingPlanner) {
         }
       }
     }
+  }
+
+  // 7. Merge lastTimerStoppedAt (Newest stop wins cleanly)
+  if ((incomingPlanner.lastTimerStoppedAt || 0) > (localPlanner.lastTimerStoppedAt || 0)) {
+    localPlanner.lastTimerStoppedAt = incomingPlanner.lastTimerStoppedAt;
+    changed = true;
   }
 
   return changed;
@@ -3506,146 +3526,9 @@ const server = http.createServer(async (req, res) => {
               newTasks.push(remaining);
             }
             planner.tasks = newTasks;
-          } else if (action === 'add-session') {
-            let sStart = Number(parsed.startedAt);
-            let sEnd = Number(parsed.endedAt);
-            let sessDate = /^\d{4}-\d{2}-\d{2}$/.test(parsed.date || '') ? parsed.date : (Number.isFinite(sStart) ? getVnDateStr(sStart) : getVnDateStr());
-            if ((!Number.isFinite(sStart) || !Number.isFinite(sEnd)) && parsed.startTime && parsed.endTime) {
-              const [sh, sm] = normalizeHHMM(parsed.startTime, '00:00').split(':').map(Number);
-              const [eh, em] = normalizeHHMM(parsed.endTime, '00:00').split(':').map(Number);
-              const startAddDay = parsed.isOvernightStart ? 1 : 0;
-              const endAddDay = startAddDay + (((eh * 60 + em) <= (sh * 60 + sm)) ? 1 : 0);
-              sStart = vnDateTimeToMs(sessDate, sh, sm, startAddDay);
-              sEnd = vnDateTimeToMs(sessDate, eh, em, endAddDay);
-            }
-            const durSec = Number.isFinite(sStart) && Number.isFinite(sEnd) ? Math.floor((sEnd - sStart) / 1000) : 0;
-            if (!Number.isFinite(sStart) || !Number.isFinite(sEnd) || durSec < 1 || durSec > 16 * 3600) {
-              res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
-              return res.end(JSON.stringify({ error: 'Thời gian phiên học không hợp lệ (1 giây đến 16 giờ)' }));
-            }
-            const linkedTask = parsed.taskId ? planner.tasks.find(t => t.id === parsed.taskId) : null;
-            const sessTitle = String(parsed.title || linkedTask?.title || 'Tự học').trim() || 'Tự học';
-            const meta = inferPlannerSubjectAndColor(sessTitle, parsed.subject || linkedTask?.subject, parsed.color || linkedTask?.color);
-            const sesId = parsed.id || ('ses_' + now + '_' + Math.random().toString(36).slice(2, 6));
-            const newSession = {
-              id: sesId,
-              taskId: linkedTask ? linkedTask.id : null,
-              title: sessTitle,
-              subject: meta.subject,
-              color: meta.color,
-              date: sessDate,
-              startedAt: sStart,
-              endedAt: sEnd,
-              durationSeconds: durSec,
-              source: parsed.source === 'timer' ? 'timer' : 'manual',
-              note: String(parsed.note || '').trim(),
-              updatedAt: now
-            };
-            upsertSessionRecord(planner, newSession);
-            if (!planner.daysHistory[sessDate]) {
-              planner.daysHistory[sessDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
-            }
-            planner.daysHistory[sessDate].totalSeconds = (planner.daysHistory[sessDate].totalSeconds || 0) + durSec;
-            planner.daysHistory[sessDate].maxFocusSeconds = Math.max(planner.daysHistory[sessDate].maxFocusSeconds || 0, durSec);
-            if (linkedTask) {
-              linkedTask.spentSeconds = (linkedTask.spentSeconds || 0) + durSec;
-              linkedTask.updatedAt = now;
-            }
-          } else if (action === 'update-session' && id) {
-            const s = planner.sessions.find(item => item.id === id);
-            if (!s) {
-              res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
-              return res.end(JSON.stringify({ error: 'Không tìm thấy phiên học' }));
-            }
-            const oldDate = s.date;
-            const oldDur = s.durationSeconds || 0;
-            const oldTaskId = s.taskId || null;
-
-            let newStart = parsed.startedAt !== undefined ? Number(parsed.startedAt) : s.startedAt;
-            let newEnd = parsed.endedAt !== undefined ? Number(parsed.endedAt) : s.endedAt;
-            const newDate = /^\d{4}-\d{2}-\d{2}$/.test(parsed.date || '') ? parsed.date : oldDate;
-            if (parsed.startTime && parsed.endTime) {
-              const [sh, sm] = normalizeHHMM(parsed.startTime, '00:00').split(':').map(Number);
-              const [eh, em] = normalizeHHMM(parsed.endTime, '00:00').split(':').map(Number);
-              const startAddDay = parsed.isOvernightStart ? 1 : 0;
-              const endAddDay = startAddDay + (((eh * 60 + em) <= (sh * 60 + sm)) ? 1 : 0);
-              newStart = vnDateTimeToMs(newDate, sh, sm, startAddDay);
-              newEnd = vnDateTimeToMs(newDate, eh, em, endAddDay);
-            }
-            const newDur = Math.floor((newEnd - newStart) / 1000);
-            if (!Number.isFinite(newStart) || !Number.isFinite(newEnd) || newDur < 1 || newDur > 16 * 3600) {
-              res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
-              return res.end(JSON.stringify({ error: 'Khoảng thời gian phiên học không hợp lệ' }));
-            }
-
-            if (parsed.title !== undefined && String(parsed.title).trim()) s.title = String(parsed.title).trim();
-            if (parsed.note !== undefined) s.note = String(parsed.note).trim();
-            const newTaskId = parsed.taskId !== undefined ? (parsed.taskId || null) : oldTaskId;
-            const meta = inferPlannerSubjectAndColor(
-              s.title,
-              parsed.subject !== undefined ? parsed.subject : s.subject,
-              parsed.color !== undefined ? parsed.color : s.color
-            );
-            s.subject = meta.subject;
-            s.color = meta.color;
-            s.date = newDate;
-            s.startedAt = newStart;
-            s.endedAt = newEnd;
-            s.durationSeconds = newDur;
-            s.taskId = newTaskId;
-            s.updatedAt = now;
-
-            // Adjust day histories cleanly and stamp adjustedAt on reductions
-            if (oldDate === newDate) {
-              if (!planner.daysHistory[newDate]) planner.daysHistory[newDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
-              planner.daysHistory[newDate].totalSeconds = Math.max(0, (planner.daysHistory[newDate].totalSeconds || 0) - oldDur + newDur);
-              if (newDur < oldDur) planner.daysHistory[newDate].adjustedAt = now;
-              recomputeDayStatsFromSessions(planner, newDate);
-            } else {
-              if (!planner.daysHistory[oldDate]) planner.daysHistory[oldDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
-              planner.daysHistory[oldDate].totalSeconds = Math.max(0, (planner.daysHistory[oldDate].totalSeconds || 0) - oldDur);
-              planner.daysHistory[oldDate].adjustedAt = now;
-              recomputeDayStatsFromSessions(planner, oldDate);
-
-              if (!planner.daysHistory[newDate]) planner.daysHistory[newDate] = { totalSeconds: 0, maxFocusSeconds: 0 };
-              planner.daysHistory[newDate].totalSeconds = (planner.daysHistory[newDate].totalSeconds || 0) + newDur;
-              recomputeDayStatsFromSessions(planner, newDate);
-            }
-
-            // Adjust linked task spentSeconds
-            if (oldTaskId === newTaskId && newTaskId) {
-              const t = planner.tasks.find(item => item.id === newTaskId);
-              if (t) {
-                t.spentSeconds = Math.max(0, (t.spentSeconds || 0) - oldDur + newDur);
-                if (newDur < oldDur) t.adjustedAt = now;
-                t.updatedAt = now;
-              }
-            } else {
-              if (oldTaskId) {
-                const ot = planner.tasks.find(item => item.id === oldTaskId);
-                if (ot) {
-                  ot.spentSeconds = Math.max(0, (ot.spentSeconds || 0) - oldDur);
-                  ot.adjustedAt = now;
-                  ot.updatedAt = now;
-                }
-              }
-              if (newTaskId) {
-                const nt = planner.tasks.find(item => item.id === newTaskId);
-                if (nt) {
-                  nt.spentSeconds = (nt.spentSeconds || 0) + newDur;
-                  nt.updatedAt = now;
-                }
-              }
-            }
-
-            // Sync if currently running timer owns this session
-            if (planner.activeTimer?.sessionId === id) {
-              planner.activeTimer.taskTitle = s.title;
-              planner.activeTimer.subject = s.subject;
-              planner.activeTimer.color = s.color;
-              planner.activeTimer.sessionStartedAt = newStart;
-              planner.activeTimerChangedAt = now;
-            }
+          } else if (action === 'add-session' || action === 'update-session') {
+            res.writeHead(403, { 'Content-Type': 'application/json; charset=utf-8' });
+            return res.end(JSON.stringify({ error: 'Đã tắt tính năng thêm hoặc sửa giờ học thủ công để đảm bảo dữ liệu thực tế.' }));
           } else if (action === 'delete-session' && id) {
             if (planner.activeTimer?.sessionId === id) {
               applyActiveTimerDelta(planner, now, 'stop');
