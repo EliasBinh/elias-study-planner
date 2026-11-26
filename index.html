@@ -5120,6 +5120,658 @@
       }
     }
 
+    /* ========================================================
+       CLUSTERED OVERLAPPING SESSIONS (+ N BADGE) & MOBILE YPT MODE
+       ======================================================== */
+    .tl-cluster-block {
+      border-width: 1.5px !important;
+      border-left-width: 4px !important;
+    }
+    .tl-cluster-badge {
+      font-weight: 750;
+      opacity: 0.92;
+      margin-left: 2px;
+    }
+    .tl-week-cluster {
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.14);
+    }
+
+    /* Cluster Detail Modal / Sheet (Image 6) */
+    .cluster-sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 99990;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .cluster-sheet-card {
+      width: 100%;
+      max-width: 420px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+      color: var(--text-primary);
+    }
+    .cluster-sheet-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 999px;
+      background: #CBD5E1;
+      margin: 0 auto 10px;
+      display: none;
+    }
+    .cluster-sheet-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 12px 0;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .cluster-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .cluster-row-time {
+      width: 58px;
+      flex-shrink: 0;
+      font-size: 11px;
+      font-family: 'SF Mono', monospace;
+      color: #64748B;
+      text-align: right;
+    }
+    .cluster-row-bar {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border-left: 3px solid #2563EB;
+      background: rgba(37, 99, 235, 0.1);
+      min-width: 0;
+    }
+    .cluster-row-title {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cluster-row-dur {
+      font-size: 12px;
+      color: #475569;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Hidden on Desktop (>768px) */
+    .mobile-ypt-header,
+    .mobile-ypt-dock {
+      display: none;
+    }
+
+    /* ========================================================
+       MOBILE-ONLY YPT 1-TO-1 DARK UI (IMAGES 1–7)
+       Desktop (>768px) remains 100% untouched!
+       ======================================================== */
+    @media (max-width: 768px) {
+      body.mobile-ypt-planner {
+        background-color: #0A0B0D !important;
+        color: #F3F4F6 !important;
+        padding-bottom: 0 !important;
+        overflow: hidden;
+      }
+      body.mobile-ypt-planner header,
+      body.mobile-ypt-planner #mobileBottomNav,
+      body.mobile-ypt-planner .planner-top-nav,
+      body.mobile-ypt-planner .ypt-dashboard-card {
+        display: none !important;
+      }
+      body.mobile-ypt-planner .planner-page-wrapper {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+
+      /* YPT Top Mobile Bar */
+      body.mobile-ypt-planner .mobile-ypt-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        height: 52px;
+        padding: 0 16px;
+        background: #0A0B0D;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+      }
+      .mob-ypt-hdr-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .mob-ypt-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #F9FAFB;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+      }
+      .mob-ypt-dday {
+        font-size: 12px;
+        font-weight: 600;
+        color: #9CA3AF;
+        background: #1C1E22;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .mob-ypt-dday.urgent {
+        color: #FCA5A5;
+        background: rgba(220, 38, 38, 0.16);
+      }
+      .mob-ypt-today-pill {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #E5E7EB;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        padding: 4px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .mob-ypt-nav-chevrons {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+      }
+      .mob-ypt-chev-btn {
+        background: transparent;
+        border: none;
+        color: #6B7280;
+        padding: 4px 6px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .mob-ypt-week-pills {
+        display: inline-flex;
+        align-items: center;
+        background: transparent;
+        gap: 2px;
+      }
+      .mob-ypt-week-pill-btn {
+        border: none;
+        background: transparent;
+        color: #6B7280;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 999px;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .mob-ypt-week-pill-btn.active {
+        background: #23252A;
+        color: #F9FAFB;
+      }
+      .mob-ypt-grid-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: transparent;
+        border: none;
+        color: #E5E7EB;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+      }
+      .mob-ypt-grid-dot {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #EF4444;
+      }
+
+      /* Hide desktop toolbars/banners in timeline panels on mobile */
+      body.mobile-ypt-planner #plannerDayTimelinePanel .tl-toolbar,
+      body.mobile-ypt-planner #tlDayLegacyBanner,
+      body.mobile-ypt-planner #plannerWeekTimelinePanel .tl-toolbar,
+      body.mobile-ypt-planner #plannerMonthViewPanel .tl-toolbar {
+        display: none !important;
+      }
+      body.mobile-ypt-planner .tl-panel-card {
+        background: #0A0B0D !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        margin-bottom: 0 !important;
+      }
+
+      /* Day Vertical Timeline YPT Dark Styling */
+      body.mobile-ypt-planner .tl-day-scroll {
+        background: #0A0B0D !important;
+        max-height: calc(100dvh - 52px) !important;
+        height: calc(100dvh - 52px);
+        overflow-y: auto;
+      }
+      body.mobile-ypt-planner .tl-axis-col {
+        background: #0A0B0D !important;
+        border-right: 1px dashed rgba(255, 255, 255, 0.12) !important;
+        width: 52px !important;
+      }
+      body.mobile-ypt-planner .tl-axis-hour {
+        color: #6B7280 !important;
+      }
+      body.mobile-ypt-planner .tl-axis-hour span {
+        background: #0A0B0D !important;
+      }
+      body.mobile-ypt-planner .tl-track-col {
+        border-right: 1px dashed rgba(255, 255, 255, 0.1);
+      }
+      body.mobile-ypt-planner .tl-hour-line {
+        border-top: 1px solid rgba(255, 255, 255, 0.055) !important;
+      }
+      body.mobile-ypt-planner .tl-hour-line:hover {
+        background: rgba(255, 255, 255, 0.02) !important;
+      }
+
+      /* Session Blocks & Clusters Dark YPT Style */
+      body.mobile-ypt-planner .tl-session-block {
+        left: 0 !important;
+        right: 0 !important;
+        border-radius: 3px !important;
+        border-top: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        border-left-width: 3px !important;
+        background: #1C2327 !important;
+      }
+      body.mobile-ypt-planner .tl-session-block.tl-cluster-block {
+        background: #232B30 !important;
+        border: 1.5px solid #E5E7EB !important;
+        border-left-width: 3px !important;
+      }
+      body.mobile-ypt-planner .tl-session-title {
+        color: #F3F4F6 !important;
+        font-weight: 550 !important;
+      }
+      body.mobile-ypt-planner .tl-session-time {
+        color: #93C5FD !important;
+      }
+      body.mobile-ypt-planner .tl-session-dur {
+        color: #93C5FD !important;
+        font-weight: 500 !important;
+      }
+      body.mobile-ypt-planner .tl-break-slot {
+        left: 0 !important;
+        right: 0 !important;
+        padding: 3px 10px;
+      }
+      body.mobile-ypt-planner .tl-break-range,
+      body.mobile-ypt-planner .tl-break-dur {
+        color: #555961 !important;
+      }
+
+      /* Sleep Block Dark YPT Style */
+      body.mobile-ypt-planner .tl-sleep-block {
+        left: 0 !important;
+        right: 0 !important;
+        border-radius: 4px !important;
+        border: 1px dashed rgba(255, 255, 255, 0.14) !important;
+        background: rgba(255, 255, 255, 0.015) !important;
+      }
+      body.mobile-ypt-planner .tl-sleep-title {
+        color: #555961 !important;
+      }
+      body.mobile-ypt-planner .tl-sleep-range,
+      body.mobile-ypt-planner .tl-sleep-dur {
+        color: #464950 !important;
+      }
+
+      /* Now Indicator & Countdown Dark YPT Style */
+      body.mobile-ypt-planner .tl-now-line {
+        background: #FFFFFF !important;
+      }
+      body.mobile-ypt-planner .tl-now-axis-pill {
+        background: #FFFFFF !important;
+        color: #0A0B0D !important;
+        left: -49px !important;
+      }
+      body.mobile-ypt-planner .tl-sleep-countdown {
+        background: rgba(10, 11, 13, 0.88) !important;
+        color: #6B7280 !important;
+      }
+
+      /* Week View Mobile YPT Dark Styling */
+      body.mobile-ypt-planner .tl-week-scroll {
+        background: #0A0B0D !important;
+        max-height: calc(100dvh - 52px) !important;
+        height: calc(100dvh - 52px);
+      }
+      body.mobile-ypt-planner .tl-week-header-row {
+        background: #0A0B0D !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+      }
+      body.mobile-ypt-planner .tl-week-axis-spacer,
+      body.mobile-ypt-planner .tl-week-axis-col {
+        background: #0A0B0D !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+      }
+      body.mobile-ypt-planner .tl-week-day-head {
+        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+      }
+      body.mobile-ypt-planner .tl-week-dow {
+        color: #6B7280 !important;
+      }
+      body.mobile-ypt-planner .tl-week-date-num {
+        color: #E5E7EB !important;
+      }
+      body.mobile-ypt-planner .tl-week-day-head.is-today .tl-week-date-num {
+        background: transparent !important;
+        border: 1.5px solid #FFFFFF !important;
+        color: #FFFFFF !important;
+      }
+      body.mobile-ypt-planner .tl-week-day-head.is-selected {
+        background: rgba(255, 255, 255, 0.04) !important;
+      }
+      body.mobile-ypt-planner .tl-week-day-total {
+        background: transparent !important;
+        border: none !important;
+        color: #93C5FD !important;
+      }
+      body.mobile-ypt-planner .tl-week-day-col {
+        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+      }
+      body.mobile-ypt-planner .tl-week-day-col.is-today {
+        background: rgba(255, 255, 255, 0.025) !important;
+      }
+      body.mobile-ypt-planner .tl-week-hour-cell {
+        border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+      }
+      body.mobile-ypt-planner .tl-week-session {
+        background: #1C2327 !important;
+        border-left-color: #93C5FD !important;
+      }
+      body.mobile-ypt-planner .tl-week-session-title {
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .tl-week-session-dur {
+        color: #93C5FD !important;
+      }
+      body.mobile-ypt-planner .tl-week-break {
+        color: #555961 !important;
+      }
+      body.mobile-ypt-planner .tl-week-now-bar {
+        background: #FFFFFF !important;
+      }
+      body.mobile-ypt-planner .tl-week-now-sub {
+        color: #6B7280 !important;
+      }
+
+      /* Month View Mobile YPT Dark Styling */
+      body.mobile-ypt-planner .tl-month-weekdays {
+        background: #0A0B0D !important;
+        color: #6B7280 !important;
+      }
+      body.mobile-ypt-planner .tl-month-grid-full {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+      }
+      body.mobile-ypt-planner .tl-month-cell {
+        background: #0A0B0D !important;
+      }
+      body.mobile-ypt-planner .tl-month-cell.is-outside {
+        background: #07080A !important;
+        opacity: 0.35;
+      }
+      body.mobile-ypt-planner .tl-month-cell.is-selected {
+        background: #14171C !important;
+        box-shadow: inset 0 0 0 1px rgba(147, 197, 253, 0.6) !important;
+      }
+      body.mobile-ypt-planner .tl-month-day-num {
+        color: #E5E7EB !important;
+      }
+      body.mobile-ypt-planner .tl-month-cell.is-today .tl-month-day-num {
+        background: #FFFFFF !important;
+        color: #0A0B0D !important;
+      }
+      body.mobile-ypt-planner .ypt-cal-time-pill {
+        background: #1B2428 !important;
+        border: none !important;
+        color: #93C5FD !important;
+      }
+      body.mobile-ypt-planner #plannerMonthViewPanel {
+        max-height: calc(100dvh - 52px);
+        overflow-y: auto;
+      }
+      body.mobile-ypt-planner .tl-month-detail-session-row {
+        background: #1C1E23 !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .tl-month-detail-session-row .tl-month-ses-dur {
+        color: #93C5FD !important;
+      }
+      body.mobile-ypt-planner .tl-month-event-add-box {
+        background: #1C1E23 !important;
+        border-color: rgba(255, 255, 255, 0.12) !important;
+      }
+      body.mobile-ypt-planner #tlMonthEventInput {
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .tl-month-detail-card {
+        background: #121316 !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #E5E7EB !important;
+        padding-bottom: 145px !important;
+      }
+      body.mobile-ypt-planner .tl-stat-chip {
+        background: #1C1E22 !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        color: #9CA3AF !important;
+      }
+      body.mobile-ypt-planner .tl-stat-chip strong {
+        color: #F3F4F6 !important;
+      }
+
+      /* Tasks (Việc) view on Mobile Dark Mode */
+      body.mobile-ypt-planner #plannerTasksContainer {
+        padding: 10px 14px 150px;
+      }
+      body.mobile-ypt-planner .notion-goals-card,
+      body.mobile-ypt-planner .notion-goal-col,
+      body.mobile-ypt-planner .notion-goal-item {
+        background: #141518 !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        color: #E5E7EB !important;
+      }
+      body.mobile-ypt-planner .notion-goals-header-bar,
+      body.mobile-ypt-planner .notion-goal-col-header {
+        background: #1A1C20 !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+      }
+      body.mobile-ypt-planner .notion-goals-main-title,
+      body.mobile-ypt-planner .notion-col-title,
+      body.mobile-ypt-planner .notion-goal-text,
+      body.mobile-ypt-planner .planner-section-title,
+      body.mobile-ypt-planner .planner-task-text {
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .planner-task-text.completed {
+        color: #6B7280 !important;
+      }
+      body.mobile-ypt-planner .ypt-task-timer-badge {
+        background: #1E2025 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #93C5FD !important;
+      }
+      body.mobile-ypt-planner .ypt-task-timer-badge.running {
+        background: rgba(234, 88, 12, 0.2) !important;
+        border-color: #EA580C !important;
+        color: #FB923C !important;
+      }
+
+      /* Floating Focus / Break Pill above Dock (Exact YPT Images 3, 4, 5) */
+      body.mobile-ypt-planner .tl-floating-bar {
+        bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+        background: rgba(230, 232, 236, 0.94) !important;
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55) !important;
+        padding: 5px 18px 5px 7px !important;
+      }
+      body.mobile-ypt-planner .tl-floating-clock {
+        color: #111827 !important;
+      }
+      body.mobile-ypt-planner .tl-floating-clock.running {
+        color: #EA580C !important;
+      }
+      body.mobile-ypt-planner .tl-floating-sub {
+        color: #4B5563 !important;
+      }
+
+      /* Floating Bottom Glass Dock (Exact YPT Images 1, 2, 5, 7) */
+      body.mobile-ypt-planner .mobile-ypt-dock {
+        display: flex !important;
+        position: fixed;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+        left: 14px;
+        right: 14px;
+        z-index: 98;
+        align-items: center;
+        gap: 10px;
+        pointer-events: none;
+      }
+      .mob-ypt-dock-pill {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        height: 54px;
+        background: rgba(28, 30, 34, 0.9);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        padding: 4px;
+        pointer-events: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+      .mob-ypt-dock-item {
+        flex: 1;
+        height: 100%;
+        border: none;
+        background: transparent;
+        color: #9CA3AF;
+        border-radius: 999px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        font-size: 11px;
+        font-weight: 550;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .mob-ypt-dock-item.active {
+        background: rgba(255, 255, 255, 0.13);
+        color: #FFFFFF;
+        font-weight: 650;
+      }
+      .mob-ypt-dock-circle {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: rgba(28, 30, 34, 0.9);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #F3F4F6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        pointer-events: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Dark Bottom Sheets & Modals on Mobile (Exact Images 6 & 7) */
+      body.mobile-ypt-planner .cluster-sheet-overlay,
+      body.mobile-ypt-planner #quickTimerPickerModal,
+      body.mobile-ypt-planner #mobileYptMenuSheet {
+        align-items: flex-end !important;
+        padding: 0 !important;
+        background: rgba(0, 0, 0, 0.65) !important;
+      }
+      body.mobile-ypt-planner .cluster-sheet-card,
+      body.mobile-ypt-planner #quickTimerPickerModal .modal-card,
+      body.mobile-ypt-planner #mobileYptMenuSheet .modal-card,
+      body.mobile-ypt-planner #sessionEditorModal .modal-card,
+      body.mobile-ypt-planner #scheduleSettingsModal .modal-card {
+        background: #1B1C20 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .cluster-sheet-card,
+      body.mobile-ypt-planner #quickTimerPickerModal .modal-card,
+      body.mobile-ypt-planner #mobileYptMenuSheet .modal-card {
+        max-width: 100% !important;
+        border-radius: 22px 22px 0 0 !important;
+        padding: 12px 18px calc(22px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      body.mobile-ypt-planner .cluster-sheet-handle {
+        display: block !important;
+        background: #4B5563 !important;
+      }
+      body.mobile-ypt-planner .cluster-row-time {
+        color: #9CA3AF !important;
+      }
+      body.mobile-ypt-planner .cluster-row-bar {
+        background: #252B31 !important;
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .cluster-row-dur {
+        color: #93C5FD !important;
+      }
+      body.mobile-ypt-planner .modal-input,
+      body.mobile-ypt-planner select.modal-input {
+        background: #121316 !important;
+        border-color: rgba(255, 255, 255, 0.14) !important;
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .rpc-group-label,
+      body.mobile-ypt-planner .modal-title {
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .quick-task-pick-btn {
+        background: transparent !important;
+        border: none !important;
+        padding: 10px 6px !important;
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .quick-task-pick-btn:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+      }
+    }
+
     /* YPT 4-Action Status Popover (PURE WHITE NOTION STYLE - Matches user request) */
     .ypt-popover {
       position: fixed;
@@ -6169,6 +6821,32 @@
   <div id="pageView_planner" class="app-page-view" style="display: none;">
     <div class="planner-page-wrapper">
 
+      <!-- MOBILE-ONLY YPT HEADER (Hidden on Desktop) -->
+      <div id="mobileYptHeader" class="mobile-ypt-header">
+        <div class="mob-ypt-hdr-left">
+          <span class="mob-ypt-title" id="mobYptTitle" onclick="resetPlannerDateToToday()">Th 5, 26/11</span>
+          <span class="mob-ypt-dday" id="mobYptDDay" onclick="openExamModal()">D-9</span>
+          <button type="button" class="mob-ypt-today-pill" id="mobYptTodayBtn" style="display: none;" onclick="resetMonthViewToToday()">Hôm nay ↓</button>
+          <div class="mob-ypt-nav-chevrons" id="mobYptNavChevrons">
+            <button type="button" class="mob-ypt-chev-btn" onclick="handleMobilePrevNav()" title="Trước">‹</button>
+            <button type="button" class="mob-ypt-chev-btn" onclick="handleMobileNextNav()" title="Sau">›</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="mob-ypt-week-pills" id="mobYptWeekPills" style="display: none;">
+            <button type="button" class="mob-ypt-week-pill-btn" id="mobWeekCols3" onclick="setWeekColumnsCount(3)">3 ngày</button>
+            <button type="button" class="mob-ypt-week-pill-btn active" id="mobWeekCols5" onclick="setWeekColumnsCount(5)">5 ngày</button>
+            <button type="button" class="mob-ypt-week-pill-btn" id="mobWeekCols7" onclick="setWeekColumnsCount(7)">7 ngày</button>
+          </div>
+          <button type="button" class="mob-ypt-grid-btn" onclick="openMobileYptMenu()" title="Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
       <!-- Top Date Switcher & View Tabs -->
       <div class="planner-top-nav">
         <div class="planner-date-title">
@@ -6523,6 +7201,68 @@
     </div>
   </div>
 
+  <!-- MOBILE-ONLY YPT FLOATING GLASS DOCK (Hidden on Desktop) -->
+  <div id="mobileYptDock" class="mobile-ypt-dock">
+    <div class="mob-ypt-dock-pill">
+      <button type="button" class="mob-ypt-dock-item active" data-view="day" onclick="switchPlannerSubView('day')">
+        <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><line x1="4" y1="9" x2="20" y2="9"/></svg>
+        <span>Ngày</span>
+      </button>
+      <button type="button" class="mob-ypt-dock-item" data-view="week" onclick="switchPlannerSubView('week')">
+        <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><line x1="8" y1="4" x2="8" y2="9"/><line x1="16" y1="4" x2="16" y2="9"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+        <span>Tuần</span>
+      </button>
+      <button type="button" class="mob-ypt-dock-item" data-view="month" onclick="switchPlannerSubView('month')">
+        <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M8 2v4m8-4v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+        <span>Tháng</span>
+      </button>
+      <button type="button" class="mob-ypt-dock-item" data-view="tasks" onclick="switchPlannerSubView('tasks')">
+        <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        <span>Việc</span>
+      </button>
+    </div>
+    <button type="button" class="mob-ypt-dock-circle" onclick="handleMobileCircleAction()" title="Bấm giờ nhanh">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path stroke-linecap="round" d="M12 9v4l2.5 1.5M9 2h6"/></svg>
+    </button>
+  </div>
+
+  <!-- CLUSTER DETAIL BOTTOM SHEET / MODAL (Image 6: Click on "+ N" group) -->
+  <div id="clusterDetailModal" class="cluster-sheet-overlay" onclick="if(event.target === this) closeClusterSheet()">
+    <div class="cluster-sheet-card">
+      <div class="cluster-sheet-handle"></div>
+      <div style="text-align: center;">
+        <div id="clusterModalTitle" style="font-size: 16px; font-weight: 700;">SAT math và 1 khác</div>
+        <div id="clusterModalRange" style="font-size: 12.5px; color: #9CA3AF; font-family: monospace; margin-top: 2px;">21:06-21:06</div>
+      </div>
+      <div id="clusterModalList" class="cluster-sheet-list"></div>
+      <div id="clusterModalLegend" style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-size:11.5px;color:#9CA3AF;margin-bottom:10px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+        <button type="button" class="tl-btn-small" style="border-radius:999px;padding:6px 12px;" onclick="closeClusterSheet(); openSessionModal();">+ Thêm phiên</button>
+        <button type="button" class="tl-btn-small" style="border-radius:999px;padding:6px 14px;" onclick="closeClusterSheet()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE YPT GRID MENU SHEET (Top-Right ⊞ Button) -->
+  <div id="mobileYptMenuSheet" class="modal-overlay" onclick="if(event.target === this) closeMobileYptMenu()">
+    <div class="modal-card" style="max-width: 380px;">
+      <div class="cluster-sheet-handle"></div>
+      <div class="modal-title" style="margin-bottom: 10px;">Tùy chọn Daily Plan</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); resetPlannerDateToToday();">📅 Về hôm nay</button>
+        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); openSessionModal();">➕ Thêm phiên học thủ công</button>
+        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); openScheduleSettingsModal();">🛏 Cài đặt Giờ ngủ & Ngày bắt đầu</button>
+        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); openExamModal();">🎯 Chỉnh Ngày thi SAT (D-Day)</button>
+        <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0;"></div>
+        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); navigateToPage('sat');">📚 Mở Tài liệu SAT</button>
+        <button type="button" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;" onclick="closeMobileYptMenu(); navigateToPage('habits');">⚡ Mở Thói quen (Habits)</button>
+      </div>
+      <div class="modal-actions" style="margin-top:12px;">
+        <button type="button" class="btn-ghost btn-outline" onclick="closeMobileYptMenu()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <!-- STUDY SESSION CREATE / EDIT MODAL -->
   <div id="sessionEditorModal" class="modal-overlay" onclick="if(event.target === this) closeSessionModal()">
     <div class="modal-card" style="max-width: 440px;">
@@ -6621,16 +7361,21 @@
     </div>
   </div>
 
-  <!-- QUICK TIMER PICKER MODAL (When clicking Play on Floating Pill) -->
+  <!-- QUICK TIMER PICKER MODAL (When clicking Play on Floating Pill - Image 7) -->
   <div id="quickTimerPickerModal" class="modal-overlay" onclick="if(event.target === this) closeQuickTimerPicker()">
     <div class="modal-card" style="max-width: 400px;">
-      <div class="modal-title">Chọn việc để bắt đầu bấm giờ</div>
-      <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-        <input id="quickStartNewTaskInput" class="modal-input" type="text" placeholder="Hoặc gõ nhanh tên bài học mới..." style="margin-bottom: 0; flex: 1;" onkeydown="if(event.key==='Enter'){ quickCreateAndStartTask(); }">
-        <button type="button" class="btn-ghost" style="background: #EA580C; color: #FFFFFF; font-weight: 600;" onclick="quickCreateAndStartTask()">Học ngay</button>
+      <div class="cluster-sheet-handle"></div>
+      <div class="modal-title" style="font-size:15px;">Chọn việc để bắt đầu bấm giờ</div>
+      <div id="quickTaskPickList" class="quick-task-pick-list" style="margin-bottom: 10px;"></div>
+      <div style="display: flex; gap: 6px; margin-bottom: 12px; align-items: center;">
+        <input id="quickStartNewTaskInput" class="modal-input" type="text" placeholder="+ Thêm việc mới & bấm giờ ngay..." style="margin-bottom: 0; flex: 1;" onkeydown="if(event.key==='Enter'){ quickCreateAndStartTask(); }">
+        <button type="button" class="btn-ghost" style="background: #38BDF8; color: #0F172A; font-weight: 700;" onclick="quickCreateAndStartTask()">Học</button>
       </div>
-      <div id="quickTaskPickList" class="quick-task-pick-list"></div>
-      <div class="modal-actions" style="margin-top: 12px;">
+      <div class="modal-actions" style="justify-content: space-between; margin-top: 4px;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button type="button" class="tl-btn-small" style="border-radius:999px;" onclick="closeQuickTimerPicker(); openSessionModal();">+ Ghi phiên</button>
+          <button type="button" class="tl-btn-small" style="border-radius:999px;" onclick="closeQuickTimerPicker(); openScheduleSettingsModal();">🛏 Giờ ngủ</button>
+        </div>
         <button type="button" class="btn-ghost btn-outline" onclick="closeQuickTimerPicker()">Đóng</button>
       </div>
     </div>
@@ -7126,6 +7871,7 @@
       if (dropdown) dropdown.classList.remove('show');
 
       // Trigger loads & instant render
+      syncMobileYptModeClass();
       const floatingBar = document.getElementById('tlFloatingBar');
       if (pageId !== 'planner' && floatingBar) {
         floatingBar.style.display = 'none';
@@ -8581,8 +9327,14 @@
       minBreakSeconds: 60,
       updatedAt: 0
     };
-    let currentPlannerSubView = localStorage.getItem('elias_planner_subview') || 'tasks';
-    if (currentPlannerSubView === 'split' && window.innerWidth <= 960) currentPlannerSubView = 'tasks';
+    function isMobileViewport() {
+      return window.innerWidth <= 768;
+    }
+
+    let currentPlannerSubView = isMobileViewport()
+      ? (localStorage.getItem('elias_planner_subview_mobile') || 'day')
+      : (localStorage.getItem('elias_planner_subview') || 'tasks');
+    if (currentPlannerSubView === 'split' && window.innerWidth <= 960) currentPlannerSubView = isMobileViewport() ? 'day' : 'tasks';
     let weekColsCount = parseInt(localStorage.getItem('elias_planner_week_cols') || (window.innerWidth <= 768 ? '5' : '7'), 10);
     if (![3, 5, 7].includes(weekColsCount)) weekColsCount = 5;
     let weekCursorDate = getLocalDateStr();
@@ -8593,6 +9345,20 @@
     let selectedSessionModalColor = '#2563EB';
     let _dayTimelineAutoScrolledKey = '';
     let _weekTimelineAutoScrolled = false;
+
+    function syncMobileYptModeClass() {
+      const active = isMobileViewport() && currentPage === 'planner';
+      document.body.classList.toggle('mobile-ypt-planner', active);
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) {
+        themeMeta.setAttribute('content', active ? '#0A0B0D' : '#FFFFFF');
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      syncMobileYptModeClass();
+      if (currentPage === 'planner') applyPlannerSubViewLayout();
+    });
 
     function getScheduleSettingsFE() {
       const s = (plannerData && plannerData.scheduleSettings && typeof plannerData.scheduleSettings === 'object') ? plannerData.scheduleSettings : {};
@@ -8820,9 +9586,12 @@
     }
 
     function switchPlannerSubView(viewId) {
-      if (viewId === 'split' && window.innerWidth <= 960) viewId = 'tasks';
+      if (viewId === 'split' && window.innerWidth <= 960) viewId = isMobileViewport() ? 'day' : 'tasks';
       currentPlannerSubView = viewId;
-      try { localStorage.setItem('elias_planner_subview', viewId); } catch (e) { }
+      try {
+        if (isMobileViewport()) localStorage.setItem('elias_planner_subview_mobile', viewId);
+        else localStorage.setItem('elias_planner_subview', viewId);
+      } catch (e) { }
       if (viewId === 'month') {
         const [y, m] = (currentPlannerDate || getLocalDateStr()).split('-').map(Number);
         if (y && m) { fullMonthYear = y; fullMonthIdx = m - 1; selectedMonthDate = currentPlannerDate; }
@@ -8835,6 +9604,7 @@
     }
 
     function applyPlannerSubViewLayout() {
+      syncMobileYptModeClass();
       const wrapper = document.querySelector('.planner-page-wrapper');
       const splitGrid = document.getElementById('plannerSplitGrid');
       const tasksEl = document.getElementById('plannerTasksContainer');
@@ -8844,6 +9614,9 @@
       const floatingEl = document.getElementById('tlFloatingBar');
 
       document.querySelectorAll('#plannerViewSwitcher .planner-view-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-view') === currentPlannerSubView);
+      });
+      document.querySelectorAll('#mobileYptDock .mob-ypt-dock-item').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-view') === currentPlannerSubView);
       });
 
@@ -8856,9 +9629,173 @@
       if (monthEl) monthEl.style.display = (currentPlannerSubView === 'month') ? 'block' : 'none';
 
       if (floatingEl) {
-        const showFloating = (currentPage === 'planner') && (currentPlannerSubView === 'day' || currentPlannerSubView === 'week');
+        const showFloating = (currentPage === 'planner') && (
+          currentPlannerSubView === 'day' ||
+          currentPlannerSubView === 'week' ||
+          (isMobileViewport() && currentPlannerSubView === 'tasks')
+        );
         floatingEl.style.display = showFloating ? 'flex' : 'none';
       }
+      renderMobileYptChrome();
+    }
+
+    function renderMobileYptChrome() {
+      const titleEl = document.getElementById('mobYptTitle');
+      const dDayEl = document.getElementById('mobYptDDay');
+      const todayBtn = document.getElementById('mobYptTodayBtn');
+      const chevrons = document.getElementById('mobYptNavChevrons');
+      const weekPills = document.getElementById('mobYptWeekPills');
+      if (!titleEl) return;
+
+      if (currentPlannerSubView === 'week') {
+        const dates = getWeekDisplayDates();
+        const fmtDM = (ds) => { const p = ds.split('-'); return `${p[2]}/${p[1]}`; };
+        titleEl.innerText = `${fmtDM(dates[0])} - ${fmtDM(dates[dates.length - 1])}`;
+        if (dDayEl) dDayEl.style.display = 'none';
+        if (todayBtn) todayBtn.style.display = 'none';
+        if (chevrons) chevrons.style.display = 'inline-flex';
+        if (weekPills) {
+          weekPills.style.display = 'inline-flex';
+          [3, 5, 7].forEach(c => {
+            const b = document.getElementById('mobWeekCols' + c);
+            if (b) b.classList.toggle('active', weekColsCount === c);
+          });
+        }
+      } else if (currentPlannerSubView === 'month') {
+        titleEl.innerText = `Tháng ${fullMonthIdx + 1}`;
+        if (dDayEl) dDayEl.style.display = 'none';
+        if (todayBtn) todayBtn.style.display = 'inline-block';
+        if (chevrons) chevrons.style.display = 'inline-flex';
+        if (weekPills) weekPills.style.display = 'none';
+      } else {
+        const parts = currentPlannerDate.split('-').map(Number);
+        const dowNames = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'];
+        const dow = new Date(vnDateTimeToMsFE(currentPlannerDate, 12, 0)).getUTCDay();
+        titleEl.innerText = `${dowNames[dow]}, ${parts[2]}/${parts[1]}`;
+        const dDay = getDDayInfo(currentPlannerDate);
+        if (dDayEl) {
+          if (dDay) {
+            dDayEl.style.display = 'inline-block';
+            dDayEl.innerText = dDay.label;
+            dDayEl.classList.toggle('urgent', !!dDay.urgent);
+          } else {
+            dDayEl.style.display = 'none';
+          }
+        }
+        if (todayBtn) todayBtn.style.display = 'none';
+        if (chevrons) chevrons.style.display = 'inline-flex';
+        if (weekPills) weekPills.style.display = 'none';
+      }
+    }
+
+    function handleMobilePrevNav() {
+      if (currentPlannerSubView === 'week') shiftWeekTimeline(-1);
+      else if (currentPlannerSubView === 'month') changeMonthView(-1);
+      else changePlannerDate(-1);
+      renderMobileYptChrome();
+    }
+
+    function handleMobileNextNav() {
+      if (currentPlannerSubView === 'week') shiftWeekTimeline(1);
+      else if (currentPlannerSubView === 'month') changeMonthView(1);
+      else changePlannerDate(1);
+      renderMobileYptChrome();
+    }
+
+    function handleMobileCircleAction() {
+      if (currentPlannerSubView === 'tasks') showInlineTaskInput('morning');
+      else openQuickTimerPicker();
+    }
+
+    function openMobileYptMenu() {
+      const m = document.getElementById('mobileYptMenuSheet');
+      if (m) { m.style.display = 'flex'; m.classList.add('active', 'show'); }
+    }
+
+    function closeMobileYptMenu() {
+      const m = document.getElementById('mobileYptMenuSheet');
+      if (m) { m.classList.remove('show', 'active'); m.style.display = 'none'; }
+    }
+
+    /* CLUSTER GROUPING FOR COLLIDING / OVERLAPPING SESSIONS ("+ 1" FIX) */
+    function clusterTimelineSessions(sessions, toY, totalHeight, minHeightPx) {
+      const sorted = [...sessions].sort((a, b) => a.startedAt - b.startedAt);
+      const clusters = [];
+      for (const s of sorted) {
+        const rawTop = Math.max(0, toY(s.startRelMin));
+        const rawBot = Math.min(totalHeight, toY(s.endRelMin));
+        const visH = Math.max(minHeightPx, rawBot - rawTop);
+        const visBot = Math.min(totalHeight + minHeightPx, rawTop + visH);
+        const last = clusters[clusters.length - 1];
+        if (last && rawTop < last.visualBottom - 1) {
+          last.items.push(s);
+          last.endRelMin = Math.max(last.endRelMin, s.endRelMin);
+          last.endedAt = Math.max(last.endedAt, s.endedAt);
+          last.visualBottom = Math.max(last.visualBottom, visBot);
+          last.totalDurationSeconds += (s.durationSeconds || 0);
+          if (s.isLive) last.hasLive = true;
+        } else {
+          clusters.push({
+            id: s.id,
+            items: [s],
+            startRelMin: s.startRelMin,
+            endRelMin: s.endRelMin,
+            startedAt: s.startedAt,
+            endedAt: s.endedAt,
+            top: rawTop,
+            visualBottom: visBot,
+            totalDurationSeconds: s.durationSeconds || 0,
+            hasLive: !!s.isLive
+          });
+        }
+      }
+      return clusters;
+    }
+
+    function openClusterSheet(dateStr, idsJson) {
+      const modal = document.getElementById('clusterDetailModal');
+      const titleEl = document.getElementById('clusterModalTitle');
+      const rangeEl = document.getElementById('clusterModalRange');
+      const listEl = document.getElementById('clusterModalList');
+      const legendEl = document.getElementById('clusterModalLegend');
+      if (!modal || !listEl) return;
+
+      const idSet = new Set(idsJson || []);
+      const data = computeDayTimelineClient(dateStr);
+      const items = data.sessions.filter(s => idSet.has(s.id)).sort((a, b) => a.startedAt - b.startedAt);
+      if (items.length === 0) return;
+
+      const first = items[0];
+      const minStart = items[0].startLabel;
+      const maxEnd = items.reduce((mx, it) => (it.endRelMin > mx.rel ? { rel: it.endRelMin, lbl: it.endLabel } : mx), { rel: -1, lbl: '' }).lbl;
+      if (titleEl) titleEl.innerText = items.length > 1 ? `${first.title} và ${items.length - 1} khác` : first.title;
+      if (rangeEl) rangeEl.innerText = `${minStart}-${maxEnd}`;
+
+      listEl.innerHTML = items.map(it => {
+        const bgTint = hexToRgbaTint(it.color, 0.14);
+        return `
+          <div class="cluster-row" onclick="closeClusterSheet(); openSessionModal('${it.id}');">
+            <div class="cluster-row-time">${it.startLabel}</div>
+            <div class="cluster-row-bar" style="border-left-color: ${it.color}; background: ${bgTint};">
+              <span class="cluster-row-title">${it.isLive ? '● ' : ''}${escapeHtml(it.title)}</span>
+              <span class="cluster-row-dur">${it.isLive ? formatHMS(it.durationSeconds) : formatVnDuration(it.durationSeconds)} <span style="opacity:0.65;">⋮</span></span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (legendEl) {
+        legendEl.innerHTML = items.map(it =>
+          `<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:${it.color};"></span>${escapeHtml(it.title)}: ${formatVnDuration(it.durationSeconds)}</span>`
+        ).join('');
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeClusterSheet() {
+      const modal = document.getElementById('clusterDetailModal');
+      if (modal) modal.style.display = 'none';
     }
 
     function renderDayTimelineView() {
@@ -8936,44 +9873,56 @@
         `;
       }
 
-      // Session blocks (track visual bottoms so adjacent break labels NEVER overlap clamped short sessions!)
-      const renderedSessionBoxes = [];
-      const sessionsHtml = data.sessions.map(s => {
-        const sTop = Math.max(0, toY(s.startRelMin));
-        const sBot = Math.min(totalHeight, toY(s.endRelMin));
-        const sHeight = Math.max(22, sBot - sTop);
-        renderedSessionBoxes.push({ startedAt: s.startedAt, endedAt: s.endedAt, visualBottom: sTop + sHeight });
-        const isCompact = sHeight < 38;
-        const bgTint = hexToRgbaTint(s.color, 0.13);
-        const borderTint = hexToRgbaTint(s.color, 0.25);
+      // Group overlapping / adjacent blocks into "+ N" clusters (fixes text overlap!)
+      const clusters = clusterTimelineSessions(data.sessions, toY, totalHeight, 24);
+      const sessionsHtml = clusters.map(cl => {
+        const sTop = cl.top;
+        const sHeight = Math.max(24, cl.visualBottom - sTop);
+        const first = cl.items[0];
+        const isCluster = cl.items.length > 1;
+        const extraCount = cl.items.length - 1;
+        const isCompact = sHeight < 42;
+        const bgTint = hexToRgbaTint(first.color, 0.14);
+        const borderTint = hexToRgbaTint(first.color, 0.25);
+        const titleText = isCluster
+          ? `${escapeHtml(first.title)} <span class="tl-cluster-badge">+ ${extraCount}</span>`
+          : escapeHtml(first.title);
+        const durText = cl.hasLive
+          ? formatHMS(cl.items.find(x => x.isLive)?.durationSeconds || cl.totalDurationSeconds)
+          : formatVnDuration(cl.totalDurationSeconds);
+        const rangeText = `${first.startLabel}-${formatRelMinTime(cl.endRelMin)}`;
+        const clickHandler = isCluster
+          ? `openClusterSheet('${currentPlannerDate}', ${JSON.stringify(cl.items.map(i => i.id)).replace(/"/g, '&quot;')})`
+          : `openSessionModal('${first.id}')`;
+
         return `
-          <div class="tl-session-block ${isCompact ? 'compact' : ''} ${s.isLive ? 'is-live' : ''}"
-               id="${s.isLive ? 'tlLiveSessionBlock' : ''}"
-               style="top: ${sTop}px; height: ${sHeight}px; border-left-color: ${s.color}; background: ${bgTint}; border-top-color: ${borderTint}; border-right-color: ${borderTint}; border-bottom-color: ${borderTint};"
-               onclick="openSessionModal('${s.id}')"
-               title="${escapeHtml(s.title)} (${s.startLabel} - ${s.endLabel})">
+          <div class="tl-session-block ${isCompact ? 'compact' : ''} ${cl.hasLive ? 'is-live' : ''} ${isCluster ? 'tl-cluster-block' : ''}"
+               id="${cl.hasLive ? 'tlLiveSessionBlock' : ''}"
+               style="top: ${sTop}px; height: ${sHeight}px; border-left-color: ${first.color}; background: ${bgTint}; border-top-color: ${borderTint}; border-right-color: ${borderTint}; border-bottom-color: ${borderTint};"
+               onclick="${clickHandler}"
+               title="${escapeHtml(first.title)}${isCluster ? ` (+${extraCount})` : ''} (${rangeText})">
             <div class="tl-session-left">
               <div class="tl-session-title">
-                ${s.isLive ? '<span class="tl-live-dot"></span>' : ''}
-                <span>${escapeHtml(s.title)}</span>
+                ${cl.hasLive ? '<span class="tl-live-dot"></span>' : ''}
+                <span>${titleText}</span>
               </div>
-              <div class="tl-session-time">${s.startLabel}-${s.endLabel}</div>
+              <div class="tl-session-time">${rangeText}</div>
             </div>
-            <div class="tl-session-dur" id="${s.isLive ? 'tlLiveSessionDurText' : ''}">${s.isLive ? formatHMS(s.durationSeconds) : formatVnDuration(s.durationSeconds)}</div>
+            <div class="tl-session-dur" id="${cl.hasLive ? 'tlLiveSessionDurText' : ''}">${durText}</div>
           </div>
         `;
       }).join('');
 
-      // Breaks between sessions (positioned strictly below any minimum-height clamped session block)
+      // Breaks between finalized clusters (strictly outside cluster boxes)
       let breaksHtml = '';
       if (sch.showBreaks) {
         breaksHtml = data.breaks.map(b => {
-          const prevBox = renderedSessionBoxes.filter(bx => bx.endedAt <= b.startedAt + 1000).pop();
-          const minTopFromPrev = prevBox ? (prevBox.visualBottom + 2) : 0;
-          const bTop = Math.max(0, toY(b.startRelMin), minTopFromPrev);
-          const bBot = Math.min(totalHeight, toY(b.endRelMin));
+          const prevBox = clusters.filter(bx => bx.endedAt <= b.startedAt + 1000).pop();
+          const nextBox = clusters.find(bx => bx.startedAt >= b.endedAt - 1000);
+          const bTop = Math.max(0, toY(b.startRelMin), prevBox ? prevBox.visualBottom + 2 : 0);
+          const bBot = Math.min(totalHeight, toY(b.endRelMin), nextBox ? nextBox.top - 2 : totalHeight);
           const bHeight = bBot - bTop;
-          if (bHeight < 16) return '';
+          if (bHeight < 18) return '';
           return `
             <div class="tl-break-slot ${b.isOngoing ? 'is-ongoing-break' : ''}" id="${b.isOngoing ? 'tlOngoingBreakSlot' : ''}" style="top: ${bTop}px; height: ${bHeight}px;">
               <span class="tl-break-range">${b.startLabel}-${b.endLabel}</span>
@@ -8983,18 +9932,23 @@
         }).join('');
       }
 
-      // Current time indicator line
+      // Current time indicator line + non-overlapping sleep countdown placement
       let nowHtml = '';
       if (data.isToday && data.nowRelMin >= startTotalMin && data.nowRelMin <= endHour * 60) {
         const nowY = toY(data.nowRelMin);
         const nowPillText = msToVnPartsFE(data.nowMs).hhmm;
+        let cdTopOffset = 5;
+        const hitCluster = clusters.find(c => nowY >= c.top - 6 && nowY <= c.visualBottom + 20);
+        if (hitCluster) {
+          cdTopOffset = Math.max(5, Math.round(hitCluster.visualBottom - nowY) + 4);
+        }
         const cdText = data.countdownToSleepSeconds !== null
           ? `Còn ${formatVnDuration(data.countdownToSleepSeconds)} đến giờ ngủ`
           : '';
         nowHtml = `
           <div class="tl-now-line" id="tlDayNowLine" data-start-hour="${startHour}" data-px-per-hour="${PX_PER_HOUR}" style="top: ${nowY}px;">
             <span class="tl-now-axis-pill" id="tlDayNowPill">${nowPillText}</span>
-            ${cdText ? `<span class="tl-sleep-countdown" id="tlDaySleepCountdown">${cdText}</span>` : ''}
+            ${cdText ? `<span class="tl-sleep-countdown" id="tlDaySleepCountdown" style="top: ${cdTopOffset}px;">${cdText}</span>` : ''}
           </div>
         `;
       }
@@ -9126,25 +10080,30 @@
         for (let h = startHour; h < endHour; h++) {
           gridCells += `<div class="tl-week-hour-cell" style="height: ${PX_PER_HOUR}px;" onclick="openSessionModalForHour('${dd.dateStr}', ${h})"></div>`;
         }
-        const renderedBoxes = [];
-        const sesHtml = dd.sessions.map(s => {
-          const sTop = Math.max(0, toY(s.startRelMin));
-          const sBot = Math.min(totalHeight, toY(s.endRelMin));
-          const sh = Math.max(18, sBot - sTop);
-          renderedBoxes.push({ endedAt: s.endedAt, visualBottom: sTop + sh });
-          const bgTint = hexToRgbaTint(s.color, 0.14);
+        const clusters = clusterTimelineSessions(dd.sessions, toY, totalHeight, 18);
+        const sesHtml = clusters.map(cl => {
+          const sTop = cl.top;
+          const sh = Math.max(18, cl.visualBottom - sTop);
+          const first = cl.items[0];
+          const isCluster = cl.items.length > 1;
+          const extraCount = cl.items.length - 1;
+          const bgTint = hexToRgbaTint(first.color, 0.14);
+          const titleLbl = isCluster ? `${escapeHtml(first.title)} + ${extraCount}` : escapeHtml(first.title);
+          const clickHandler = isCluster
+            ? `openClusterSheet('${dd.dateStr}', ${JSON.stringify(cl.items.map(i => i.id)).replace(/"/g, '&quot;')})`
+            : `openSessionModal('${first.id}')`;
           return `
-            <div class="tl-week-session ${s.isLive ? 'is-live' : ''}"
-                 style="top: ${sTop}px; height: ${sh}px; border-left-color: ${s.color}; background: ${bgTint};"
-                 onclick="openSessionModal('${s.id}')"
-                 title="${escapeHtml(s.title)} (${s.startLabel} - ${s.endLabel})">
-              <div class="tl-week-session-title">${escapeHtml(s.title)}</div>
-              ${sh >= 30 ? `<div class="tl-week-session-dur">${formatVnDuration(s.durationSeconds, true)}</div>` : ''}
+            <div class="tl-week-session ${cl.hasLive ? 'is-live' : ''} ${isCluster ? 'tl-week-cluster' : ''}"
+                 style="top: ${sTop}px; height: ${sh}px; border-left-color: ${first.color}; background: ${bgTint};"
+                 onclick="${clickHandler}"
+                 title="${escapeHtml(first.title)}${isCluster ? ` (+${extraCount})` : ''} (${first.startLabel} - ${formatRelMinTime(cl.endRelMin)})">
+              <div class="tl-week-session-title">${titleLbl}</div>
+              ${sh >= 30 ? `<div class="tl-week-session-dur">${formatVnDuration(cl.totalDurationSeconds, true)}</div>` : ''}
             </div>
           `;
         }).join('');
         const breaksHtml = sch.showBreaks ? dd.breaks.map(b => {
-          const prevBox = renderedBoxes.filter(bx => bx.endedAt <= b.startedAt + 1000).pop();
+          const prevBox = clusters.filter(bx => bx.endedAt <= b.startedAt + 1000).pop();
           const bTop = Math.max(0, toY(b.startRelMin), prevBox ? prevBox.visualBottom + 1 : 0);
           const bBot = Math.min(totalHeight, toY(b.endRelMin));
           const bh = bBot - bTop;
@@ -9316,9 +10275,9 @@
 
       const sesHtml = dayData.sessions.length
         ? dayData.sessions.map(s => `
-            <div onclick="openSessionModal('${s.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:#FFFFFF;border:1px solid var(--border-subtle);border-left:3px solid ${s.color};border-radius:5px;cursor:pointer;font-size:12px;">
+            <div class="tl-month-detail-session-row" onclick="openSessionModal('${s.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:#FFFFFF;border:1px solid var(--border-subtle);border-left:3px solid ${s.color};border-radius:5px;cursor:pointer;font-size:12px;">
               <span><b>${escapeHtml(s.title)}</b> <span style="color:var(--text-muted);font-family:monospace;">(${s.startLabel}-${s.endLabel})</span></span>
-              <span style="font-weight:600;color:#334155;">${formatVnDuration(s.durationSeconds)}</span>
+              <span class="tl-month-ses-dur" style="font-weight:600;color:#334155;">${formatVnDuration(s.durationSeconds)}</span>
             </div>
           `).join('')
         : `<div style="font-size:12px;color:#9CA3AF;font-style:italic;">Chưa có block phiên học nào cho ngày này.</div>`;
@@ -9342,7 +10301,7 @@
 
         <div class="tl-month-events-bar">
           ${evHtml}
-          <div style="display:inline-flex;align-items:center;gap:6px;background:#FFFFFF;border:1px solid var(--border-subtle);border-radius:6px;padding:3px 8px;">
+          <div class="tl-month-event-add-box" style="display:inline-flex;align-items:center;gap:6px;background:#FFFFFF;border:1px solid var(--border-subtle);border-radius:6px;padding:3px 8px;">
             ${colorDots}
             <input id="tlMonthEventInput" type="text" placeholder="+ Thêm mốc sự kiện (vd: Xong Lý)..." style="border:none;outline:none;font-size:12px;width:190px;background:transparent;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addMonthEventForDate('${ds}'); }">
             <button type="button" class="tl-btn-small" style="padding:2px 8px;" onclick="addMonthEventForDate('${ds}')">Lưu</button>
@@ -9639,18 +10598,27 @@
       if (!modal || !listEl) return;
       const targetDate = currentPlannerDate || getLocalDateStr();
       const dayTasks = (plannerData.tasks || []).filter(t => (t.date || targetDate) === targetDate);
+      const activeId = plannerData.activeTimer?.taskId;
       if (dayTasks.length === 0) {
-        listEl.innerHTML = `<div style="font-size:12.5px;color:#9CA3AF;padding:12px;text-align:center;">Chưa có task nào cho ngày này. Nhập tên bên trên để bắt đầu ngay!</div>`;
+        listEl.innerHTML = `<div style="font-size:12.5px;color:#9CA3AF;padding:12px;text-align:center;">Chưa có việc nào hôm nay. Nhập tên bên trên để bấm giờ ngay!</div>`;
       } else {
-        listEl.innerHTML = dayTasks.map(t => `
-          <button type="button" class="quick-task-pick-btn" onclick="closeQuickTimerPicker(); startTaskYptTimer('${t.id}');">
-            <span style="display:flex;align-items:center;gap:8px;min-width:0;">
-              <span style="width:8px;height:8px;border-radius:50%;background:${inferSessionColorFE(t.title, t.subject, t.color)};flex-shrink:0;"></span>
-              <span style="font-weight:600;color:#1E293B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(t.title)}</span>
-            </span>
-            <span style="font-family:monospace;font-size:11.5px;color:#64748B;">${formatHMS(t.spentSeconds || 0)}</span>
-          </button>
-        `).join('');
+        listEl.innerHTML = dayTasks.map(t => {
+          const isRunning = activeId === t.id;
+          const playBg = isRunning ? '#EA580C' : '#BAE6FD';
+          const playFg = isRunning ? '#FFFFFF' : '#0F172A';
+          const iconSvg = isRunning
+            ? `<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>`
+            : `<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24" style="margin-left:2px;"><polygon points="6 4 20 12 6 20 6 4"/></svg>`;
+          return `
+            <button type="button" class="quick-task-pick-btn" onclick="closeQuickTimerPicker(); ${isRunning ? 'stopCurrentYptTimer()' : `startTaskYptTimer('${t.id}')`};">
+              <span style="display:flex;align-items:center;gap:12px;min-width:0;">
+                <span style="width:32px;height:32px;border-radius:50%;background:${playBg};color:${playFg};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${iconSvg}</span>
+                <span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14.5px;${t.completed ? 'text-decoration:line-through;opacity:0.55;' : ''}">${escapeHtml(t.title)}</span>
+              </span>
+              <span style="font-family:monospace;font-size:13px;opacity:0.8;">${formatHMS(t.spentSeconds || 0)}</span>
+            </button>
+          `;
+        }).join('');
       }
       modal.style.display = 'flex';
       modal.classList.add('active', 'show');
@@ -9909,7 +10877,7 @@
           // Reconcile conflict-free with local-first source of truth
           reconcilePlannerWithServer(freshData);
 
-          const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal'].some(mid => {
+          const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal', 'clusterDetailModal', 'mobileYptMenuSheet'].some(mid => {
             const m = document.getElementById(mid);
             return m && m.style.display === 'flex';
           });
@@ -11913,7 +12881,7 @@
               h: plannerData.daysHistory, a: plannerData.activeTimer
             });
             if (beforeSig !== afterSig) {
-              const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal'].some(mid => {
+              const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal', 'clusterDetailModal', 'mobileYptMenuSheet'].some(mid => {
                 const m = document.getElementById(mid);
                 return m && m.style.display === 'flex';
               });
@@ -14316,7 +15284,7 @@
                 reconcilePlannerWithServer(data.dailyPlanner);
               }
 
-              const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal'].some(mid => {
+              const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal', 'clusterDetailModal', 'mobileYptMenuSheet'].some(mid => {
                 const m = document.getElementById(mid);
                 return m && m.style.display === 'flex';
               });

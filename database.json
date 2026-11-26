@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-26T13:59:10.889Z",
+  "updatedAt": "2026-11-26T14:08:56.224Z",
   "settings": {
     "examDate": "2026-12-05T08:00",
     "examTitle": "Đếm ngược kỳ thi SAT",
@@ -1929,9 +1929,9 @@
           "deadline": "",
           "completed": true,
           "status": "completed",
-          "spentSeconds": 4410,
+          "spentSeconds": 4411,
           "createdAt": "2026-11-26T02:26:50.270Z",
-          "updatedAt": 1795684207293,
+          "updatedAt": 1795701882777,
           "completedAt": "2026-11-26T09:09:40.927Z"
         },
         {
@@ -1981,9 +1981,9 @@
           "deadline": "",
           "completed": false,
           "status": "incomplete",
-          "spentSeconds": 0,
+          "spentSeconds": 17,
           "createdAt": "2026-11-26T02:29:56.120Z",
-          "updatedAt": 1795686735481,
+          "updatedAt": 1795701857880,
           "completedAt": null
         },
         {
@@ -1994,9 +1994,9 @@
           "deadline": "",
           "completed": false,
           "status": "incomplete",
-          "spentSeconds": 0,
+          "spentSeconds": 8,
           "createdAt": "2026-11-26T02:30:18.950Z",
-          "updatedAt": 1795660221503,
+          "updatedAt": 1795701872072,
           "completedAt": null
         },
         {
@@ -2019,9 +2019,9 @@
           "deadline": "",
           "completed": false,
           "status": "incomplete",
-          "spentSeconds": 0,
+          "spentSeconds": 5,
           "createdAt": "2026-11-26T02:31:01.091Z",
-          "updatedAt": 1795686738769,
+          "updatedAt": 1795702128194,
           "completedAt": null
         },
         {
@@ -2450,6 +2450,88 @@
           "updatedAt": 1795684204954
         }
       ],
+      "sessions": [
+        {
+          "id": "ses_1795701835775_lig6",
+          "taskId": "dp_1795660196119_1b2v",
+          "title": "25 câu main idea",
+          "subject": "VERBAL",
+          "color": "#7C3AED",
+          "date": "2026-11-26",
+          "startedAt": 1795701835775,
+          "endedAt": 1795701837775,
+          "durationSeconds": 2,
+          "source": "timer",
+          "note": "",
+          "updatedAt": 1795701838607
+        },
+        {
+          "id": "ses_1795701841772_lgfq",
+          "taskId": "dp_1795660196119_1b2v",
+          "title": "25 câu main idea",
+          "subject": "VERBAL",
+          "color": "#7C3AED",
+          "date": "2026-11-26",
+          "startedAt": 1795701841772,
+          "endedAt": 1795701858772,
+          "durationSeconds": 17,
+          "source": "timer",
+          "note": "",
+          "updatedAt": 1795701858873
+        },
+        {
+          "id": "ses_1795701862467_86l7",
+          "taskId": "dp_1795660218950_ln55",
+          "title": "30 câu details",
+          "subject": "VERBAL",
+          "color": "#7C3AED",
+          "date": "2026-11-26",
+          "startedAt": 1795701862467,
+          "endedAt": 1795701871467,
+          "durationSeconds": 9,
+          "source": "timer",
+          "note": "",
+          "updatedAt": 1795701872107
+        },
+        {
+          "id": "ses_1795701881342_9y78",
+          "taskId": "dp_1795660010270_osci",
+          "title": "30 câu problem solving",
+          "subject": "MATH",
+          "color": "#2563EB",
+          "date": "2026-11-26",
+          "startedAt": 1795701881342,
+          "endedAt": 1795701882342,
+          "durationSeconds": 1,
+          "source": "timer",
+          "note": "",
+          "updatedAt": 1795701882809
+        },
+        {
+          "id": "ses_1795702122818_3h0d",
+          "taskId": "dp_1795660261091_ygkg",
+          "title": "25 câu inference",
+          "subject": "VERBAL",
+          "color": "#7C3AED",
+          "date": "2026-11-26",
+          "startedAt": 1795702122818,
+          "endedAt": 1795702127818,
+          "durationSeconds": 5,
+          "source": "timer",
+          "note": "",
+          "updatedAt": 1795702128194
+        }
+      ],
+      "calendarEvents": [],
+      "scheduleSettings": {
+        "dayStartHour": 4,
+        "sleepEnabled": true,
+        "bedTime": "22:35",
+        "wakeTime": "04:45",
+        "showBreaks": true,
+        "minBreakSeconds": 60,
+        "updatedAt": 0
+      },
       "daysHistory": {
         "2026-10-23": {
           "totalSeconds": 81349,
@@ -2576,7 +2658,7 @@
           "maxFocusSeconds": 9575
         },
         "2026-11-26": {
-          "totalSeconds": 13453,
+          "totalSeconds": 13484,
           "maxFocusSeconds": 8064
         }
       },
@@ -2601,7 +2683,7 @@
         "dp_1795589133456_lw75": 1795660023492,
         "dp_1795660035401_f457": 1795660040799,
         "dp_1795660017089_dony": 1795669201889,
-        "dp_1795660224441_5g82": 1795701548692
+        "dp_1795660224441_5g82": 1795701550374
       },
       "deletedGoals": {
         "goal_1795145208114_m1r6": 1795152700888,
@@ -2616,7 +2698,9 @@
         "goal_1795660640255_rknk": 1795684189316
       },
       "activeTimer": null,
-      "activeTimerChangedAt": 1795686738001
+      "activeTimerChangedAt": 1795702128194,
+      "deletedSessions": {},
+      "deletedCalendarEvents": {}
     },
     "discordRpc": {
       "enabled": true,
