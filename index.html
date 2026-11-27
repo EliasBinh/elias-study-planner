@@ -3297,6 +3297,14 @@
       opacity: 0.85;
     }
 
+    /* Active time slot (currently within startTime..deadline window) */
+    .planner-deadline-badge.deadline-active-slot {
+      color: #0284C7;
+      background: #E0F2FE;
+      border: 1px solid #7DD3FC;
+      font-weight: 600;
+    }
+
     .planner-deadline-badge.empty {
       background: transparent;
       border: 1px dashed var(--border-checkbox);
@@ -3306,6 +3314,101 @@
 
     .planner-task-item:hover .planner-deadline-badge.empty {
       opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .planner-deadline-badge.empty {
+        opacity: 0.78;
+      }
+    }
+
+    .tr-presets-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .tr-preset-chip {
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s ease, border-color 0.12s ease;
+    }
+
+    .tr-preset-chip:hover {
+      background: #E0F2FE;
+      border-color: #7DD3FC;
+      color: #0284C7;
+    }
+
+    .task-alert-banner {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100001;
+      width: min(440px, calc(100vw - 24px));
+      background: #FFFFFF;
+      border: 1.5px solid #38BDF8;
+      border-radius: 14px;
+      box-shadow: 0 18px 42px rgba(2, 132, 199, 0.22), 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 12px 14px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      animation: yptPopupSpringIn 0.25s cubic-bezier(0.22, 1.25, 0.36, 1);
+    }
+
+    .task-alert-banner.show {
+      display: flex;
+    }
+
+    .task-alert-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #E0F2FE;
+      color: #0284C7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .task-alert-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-alert-kicker {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0284C7;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .task-alert-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .task-alert-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
     /* Inline deadline text input */
@@ -6033,14 +6136,35 @@
       body.mobile-ypt-planner #clusterDetailModal .tl-btn-small,
       body.mobile-ypt-planner #mobileYptMenuSheet .btn-outline,
       body.mobile-ypt-planner #sessionEditorModal .btn-outline,
-      body.mobile-ypt-planner #scheduleSettingsModal .btn-outline {
+      body.mobile-ypt-planner #scheduleSettingsModal .btn-outline,
+      body.mobile-ypt-planner #taskTimeRangeModal .btn-outline,
+      body.mobile-ypt-planner #taskTimeRangeModal .tr-preset-chip {
         background: #262930 !important;
         border-color: rgba(255, 255, 255, 0.1) !important;
         color: #F3F4F6 !important;
       }
       body.mobile-ypt-planner #mobileYptMenuSheet .tl-btn-small:hover,
-      body.mobile-ypt-planner #clusterDetailModal .tl-btn-small:hover {
+      body.mobile-ypt-planner #clusterDetailModal .tl-btn-small:hover,
+      body.mobile-ypt-planner #taskTimeRangeModal .tr-preset-chip:hover {
         background: #2F333C !important;
+      }
+      body.mobile-ypt-planner .planner-deadline-badge.deadline-active-slot {
+        background: rgba(56, 189, 248, 0.18) !important;
+        border-color: rgba(56, 189, 248, 0.4) !important;
+        color: #7DD3FC !important;
+      }
+      body.mobile-ypt-planner .task-alert-banner {
+        top: 62px !important;
+        background: #1B1D22 !important;
+        border-color: #38BDF8 !important;
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .task-alert-title {
+        color: #F3F4F6 !important;
+      }
+      body.mobile-ypt-planner .task-alert-icon {
+        background: rgba(56, 189, 248, 0.16) !important;
+        color: #7DD3FC !important;
       }
     }
 
@@ -7151,6 +7275,20 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </button>
+          <button type="button" id="btnBellSoundSetup" class="btn-ghost btn-outline" style="padding: 4px 9px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;"
+            onclick="enableAndTestNotifications()" title="Bật thông báo &amp; thử tiếng chuông nhắc giờ học">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+            <span id="btnBellSoundLabel">Chuông</span>
+          </button>
+          <button type="button" id="btnPwaInstallDesktop" class="btn-ghost btn-outline" style="padding: 4px 9px; font-size: 12px; display: none; align-items: center; gap: 5px;"
+            onclick="triggerPwaInstall()" title="Cài ứng dụng từ Chrome">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            <span>Cài App</span>
+          </button>
         </div>
       </div>
 
@@ -7445,6 +7583,14 @@
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>
           <span>Chỉnh Ngày thi SAT (D-Day)</span>
         </button>
+        <button type="button" id="btnMobNotifSetup" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;gap:10px;" onclick="closeMobileYptMenu(); enableAndTestNotifications();">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span id="btnMobNotifLabel">Bật thông báo &amp; Thử chuông</span>
+        </button>
+        <button type="button" id="btnMobPwaInstall" class="tl-btn-small" style="padding:10px 12px;justify-content:flex-start;gap:10px;" onclick="closeMobileYptMenu(); triggerPwaInstall();">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+          <span>Cài App về điện thoại</span>
+        </button>
       </div>
       <div class="modal-actions" style="margin-top:12px;">
         <button type="button" class="btn-ghost btn-outline" onclick="closeMobileYptMenu()">Đóng</button>
@@ -7515,6 +7661,65 @@
         <button type="button" class="btn-ghost btn-outline" onclick="closeScheduleSettingsModal()">Hủy</button>
         <button type="button" class="btn-ghost" style="background: var(--notion-blue); color: #fff;" onclick="saveScheduleSettingsFromModal()">Lưu cài đặt</button>
       </div>
+    </div>
+  </div>
+
+  <!-- TASK TIME RANGE & REMINDER MODAL -->
+  <div id="taskTimeRangeModal" class="modal-overlay" onclick="if(event.target === this) closeTaskTimeRangeModal()">
+    <div class="modal-card" style="max-width: 390px;">
+      <div class="cluster-sheet-handle"></div>
+      <div class="modal-title" style="margin-bottom: 4px;">Khung giờ &amp; Deadline</div>
+      <div id="trModalTaskTitle" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Công việc</div>
+      <input type="hidden" id="trEditTaskId" value="">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+        <div>
+          <label class="rpc-group-label" for="trStartTimeInput">Từ giờ (Nhắc lúc bắt đầu):</label>
+          <input id="trStartTimeInput" class="modal-input" type="time" style="margin-bottom: 0;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); saveTaskTimeRange(); }">
+        </div>
+        <div>
+          <label class="rpc-group-label" for="trDeadlineInput">Đến giờ (Deadline):</label>
+          <input id="trDeadlineInput" class="modal-input" type="time" style="margin-bottom: 0;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); saveTaskTimeRange(); }">
+        </div>
+      </div>
+
+      <div class="tr-presets-row">
+        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(30)">+30 phút</button>
+        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(60)">+1 giờ</button>
+        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(120)">+2 giờ</button>
+        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(210)">+3g30</button>
+        <button type="button" class="tr-preset-chip" onclick="clearTaskTimeRangeInputs()">Xóa giờ</button>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; padding-top: 6px; border-top: 1px solid var(--border-subtle);">
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 500; cursor: pointer;">
+          <input type="checkbox" id="trChkNotifyEnabled" checked style="width: 15px; height: 15px; cursor: pointer;">
+          <span>Thông báo &amp; chuông khi đến giờ</span>
+        </label>
+        <button type="button" class="btn-ghost btn-outline" style="padding: 4px 8px; font-size: 11.5px; white-space: nowrap;" onclick="playClassInChimeSound({ preview: true })">Thử chuông</button>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost btn-outline" onclick="closeTaskTimeRangeModal()">Hủy</button>
+        <button type="button" class="btn-ghost" style="background: #0284C7; color: #fff; font-weight: 600;" onclick="saveTaskTimeRange()">Lưu khung giờ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHEDULED TASK START ALERT BANNER -->
+  <div id="taskStartAlertBanner" class="task-alert-banner" role="alert">
+    <div class="task-alert-icon">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+      </svg>
+    </div>
+    <div class="task-alert-body">
+      <div id="taskAlertKicker" class="task-alert-kicker">Đã đến giờ học</div>
+      <div id="taskAlertTitle" class="task-alert-title">Nhiệm vụ</div>
+    </div>
+    <div class="task-alert-actions">
+      <button type="button" class="btn-ghost" style="background: #0284C7; color: #FFFFFF; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 8px;" onclick="startTaskFromAlertBanner()">Bắt đầu</button>
+      <button type="button" class="btn-ghost btn-outline" style="font-size: 12px; padding: 6px 8px; border-radius: 8px;" onclick="dismissTaskAlertBanner()">Đóng</button>
     </div>
   </div>
 
@@ -9209,25 +9414,353 @@
     }
 
     /* ========================================================
-       NOTIFICATIONS PERMANENTLY DISABLED
+       PWA INSTALL + LOUD CLASSIN-STYLE CHIME & TASK START ALERTS
        ======================================================== */
-    // Purge any lingering notifications on device
-    try {
+    let _deferredPwaPrompt = null;
+    let _classInAudioCtx = null;
+    let _activeAlertTaskId = null;
+    let _alertBannerTimer = null;
+
+    function isRunningAsInstalledPwa() {
+      return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        window.navigator.standalone === true;
+    }
+
+    function refreshPwaInstallButtons() {
+      const installed = isRunningAsInstalledPwa();
+      const deskBtn = document.getElementById('btnPwaInstallDesktop');
+      const mobBtn = document.getElementById('btnMobPwaInstall');
+      if (deskBtn) deskBtn.style.display = (!installed && _deferredPwaPrompt) ? 'inline-flex' : 'none';
+      if (mobBtn) mobBtn.style.display = installed ? 'none' : 'flex';
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      _deferredPwaPrompt = e;
+      refreshPwaInstallButtons();
+    });
+
+    window.addEventListener('appinstalled', () => {
+      _deferredPwaPrompt = null;
+      refreshPwaInstallButtons();
+      toast('Đã cài đặt App thành công!');
+    });
+
+    async function triggerPwaInstall() {
+      if (isRunningAsInstalledPwa()) {
+        toast('Ứng dụng đã được cài trên máy rồi');
+        return;
+      }
+      if (_deferredPwaPrompt) {
+        try {
+          _deferredPwaPrompt.prompt();
+          const choice = await _deferredPwaPrompt.userChoice;
+          if (choice && choice.outcome === 'accepted') {
+            _deferredPwaPrompt = null;
+            refreshPwaInstallButtons();
+          }
+          return;
+        } catch (err) {}
+      }
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isIOS) {
+        alert('Cách cài trên iPhone/iPad:\n1. Mở link này bằng Safari\n2. Bấm nút Chia sẻ (Share) ở dưới\n3. Chọn "Thêm vào MH chính" (Add to Home Screen)');
+      } else {
+        alert('Cách cài từ Chrome về điện thoại / máy tính:\n1. Bấm dấu ba chấm (⋮) ở góc trên phải Chrome\n2. Chọn "Thêm vào Màn hình chính" hoặc "Cài đặt ứng dụng"\n3. Xác nhận Cài đặt');
+      }
+    }
+
+    function getOrCreateAudioCtx() {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      if (!_classInAudioCtx) {
+        _classInAudioCtx = new AC();
+      }
+      if (_classInAudioCtx.state === 'suspended') {
+        _classInAudioCtx.resume().catch(() => {});
+      }
+      return _classInAudioCtx;
+    }
+
+    function unlockClassInAudio() {
+      try {
+        const ctx = getOrCreateAudioCtx();
+        if (!ctx) return;
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+      } catch (e) {}
+    }
+    ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+      document.addEventListener(evt, unlockClassInAudio, { passive: true });
+    });
+
+    /* Resonant high-volume multi-harmonic chime inspired by ClassIn alerts */
+    function playClassInChimeSound({ preview = false } = {}) {
+      try {
+        const ctx = getOrCreateAudioCtx();
+        if (!ctx) return;
+
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.setValueAtTime(-16, ctx.currentTime);
+        comp.knee.setValueAtTime(10, ctx.currentTime);
+        comp.ratio.setValueAtTime(8, ctx.currentTime);
+        comp.attack.setValueAtTime(0.002, ctx.currentTime);
+        comp.release.setValueAtTime(0.14, ctx.currentTime);
+
+        const master = ctx.createGain();
+        master.gain.setValueAtTime(1.0, ctx.currentTime);
+        comp.connect(master);
+        master.connect(ctx.destination);
+
+        const ringBellNote = (freq, startTime, duration, peakGain) => {
+          const harmonics = [
+            { mult: 1.0, type: 'triangle', weight: 0.72 },
+            { mult: 1.0, type: 'sine', weight: 0.90 },
+            { mult: 2.0, type: 'sine', weight: 0.48 },
+            { mult: 3.0, type: 'sine', weight: 0.20 }
+          ];
+          harmonics.forEach(h => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = h.type;
+            osc.frequency.setValueAtTime(freq * h.mult, startTime);
+            const target = Math.max(0.05, peakGain * h.weight);
+            g.gain.setValueAtTime(0.0001, startTime);
+            g.gain.linearRampToValueAtTime(target, startTime + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+            osc.connect(g);
+            g.connect(comp);
+            osc.start(startTime);
+            osc.stop(startTime + duration + 0.03);
+          });
+        };
+
+        const schedulePhrase = (offsetSec) => {
+          const t0 = ctx.currentTime + offsetSec;
+          ringBellNote(1046.50, t0 + 0.00, 0.38, 0.78); // C6
+          ringBellNote(1318.51, t0 + 0.12, 0.38, 0.82); // E6
+          ringBellNote(1567.98, t0 + 0.24, 0.42, 0.86); // G6
+          ringBellNote(2093.00, t0 + 0.36, 0.92, 0.95); // C7 bright ClassIn bell finish
+        };
+
+        const runNotes = () => {
+          schedulePhrase(0.02);
+          if (!preview) {
+            schedulePhrase(0.95);
+          }
+        };
+
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(runNotes).catch(() => {});
+        } else {
+          runNotes();
+        }
+      } catch (e) {
+        console.warn('Audio chime failed:', e);
+      }
+    }
+
+    function updateYptNotifButtonState() {
+      const granted = ('Notification' in window) && Notification.permission === 'granted';
+      const deskLabel = document.getElementById('btnBellSoundLabel');
+      const mobLabel = document.getElementById('btnMobNotifLabel');
+      const deskBtn = document.getElementById('btnBellSoundSetup');
+      if (deskLabel) deskLabel.innerText = granted ? 'Chuông: Bật' : 'Chuông';
+      if (mobLabel) mobLabel.innerText = granted ? 'Thông báo đang Bật (Thử chuông)' : 'Bật thông báo & Thử chuông';
+      if (deskBtn) deskBtn.style.borderColor = granted ? '#7DD3FC' : '';
+      refreshPwaInstallButtons();
+    }
+
+    async function enableAndTestNotifications() {
+      unlockClassInAudio();
+      playClassInChimeSound({ preview: false });
+
+      if (!('Notification' in window)) {
+        toast('Đã phát thử chuông (trình duyệt này chỉ hỗ trợ báo trong trang)');
+        updateYptNotifButtonState();
+        return;
+      }
+
+      if (Notification.permission === 'default') {
+        try {
+          const perm = await Notification.requestPermission();
+          updateYptNotifButtonState();
+          if (perm === 'granted') {
+            showTaskSystemNotification({
+              id: 'test_' + Date.now(),
+              title: 'Chuông nhắc giờ học đã sẵn sàng!',
+              startTime: msToVnPartsFE(getSyncedServerNow()).hhmm,
+              deadline: ''
+            }, { isTest: true });
+            toast('Đã bật thông báo & phát thử chuông ClassIn!');
+            return;
+          }
+          toast('Đã tắt thông báo hệ thống (vẫn phát chuông khi mở trang)');
+          return;
+        } catch (e) {}
+      } else if (Notification.permission === 'granted') {
+        showTaskSystemNotification({
+          id: 'test_' + Date.now(),
+          title: 'Kiểm tra chuông & thông báo ClassIn',
+          startTime: msToVnPartsFE(getSyncedServerNow()).hhmm,
+          deadline: ''
+        }, { isTest: true });
+        toast('Đã bật thông báo & phát thử chuông!');
+      } else {
+        toast('Thông báo đang bị chặn trong cài đặt trình duyệt (vẫn phát chuông trên trang)');
+      }
+      updateYptNotifButtonState();
+    }
+
+    function showTaskSystemNotification(task, { isTest = false } = {}) {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const rangeStr = (task.startTime && task.deadline)
+        ? `${task.startTime} - ${task.deadline}`
+        : (task.startTime || task.deadline || '');
+      const title = isTest ? 'Elias Study Planner' : `Đến giờ: ${task.title}`;
+      const body = isTest
+        ? task.title
+        : `${rangeStr ? `Khung giờ: ${rangeStr}` : 'Bắt đầu ngay'}${task.deadline ? ` • Hạn: ${task.deadline}` : ''}`;
+      const opts = {
+        body,
+        icon: '/app_icon_192.png',
+        badge: '/app_icon_192.png',
+        tag: isTest ? 'elias-test-bell' : `elias-task-start-${task.id}-${task.startTime}`,
+        renotify: true,
+        requireInteraction: !isTest,
+        vibrate: [300, 120, 300, 120, 450],
+        data: { taskId: isTest ? null : task.id, url: '/' },
+        actions: isTest ? [] : [{ action: 'start-task', title: 'Bắt đầu bấm giờ' }]
+      };
+
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(reg => {
-          if (reg && reg.getNotifications) {
-            reg.getNotifications().then(notifs => notifs.forEach(n => n.close())).catch(() => {});
+          if (reg && reg.showNotification) {
+            return reg.showNotification(title, opts);
           }
-        }).catch(() => {});
+          new Notification(title, opts);
+        }).catch(() => {
+          try { new Notification(title, opts); } catch (e) {}
+        });
+      } else {
+        try { new Notification(title, opts); } catch (e) {}
       }
-    } catch (e) {}
+    }
 
-    // Safe no-ops so nothing throws errors
+    function triggerTaskStartAlert(task) {
+      playClassInChimeSound({ preview: false });
+      showTaskSystemNotification(task);
+
+      _activeAlertTaskId = task.id;
+      const banner = document.getElementById('taskStartAlertBanner');
+      const kicker = document.getElementById('taskAlertKicker');
+      const titleEl = document.getElementById('taskAlertTitle');
+      if (banner && kicker && titleEl) {
+        const rangeTxt = (task.startTime && task.deadline) ? `${task.startTime} - ${task.deadline}` : (task.startTime || '');
+        kicker.innerText = `Đến giờ học${rangeTxt ? ` • ${rangeTxt}` : ''}`;
+        titleEl.innerText = task.title || 'Nhiệm vụ';
+        banner.classList.add('show');
+        if (_alertBannerTimer) clearTimeout(_alertBannerTimer);
+        _alertBannerTimer = setTimeout(() => {
+          banner.classList.remove('show');
+        }, 45000);
+      }
+    }
+
+    function dismissTaskAlertBanner() {
+      const banner = document.getElementById('taskStartAlertBanner');
+      if (banner) banner.classList.remove('show');
+      if (_alertBannerTimer) {
+        clearTimeout(_alertBannerTimer);
+        _alertBannerTimer = null;
+      }
+      _activeAlertTaskId = null;
+    }
+
+    function startTaskFromAlertBanner() {
+      const tid = _activeAlertTaskId;
+      dismissTaskAlertBanner();
+      if (tid) startTaskYptTimer(tid);
+    }
+
+    function getNotifiedStartsMap() {
+      try {
+        return JSON.parse(localStorage.getItem('elias_notified_starts_v1') || '{}') || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function markStartNotified(key) {
+      try {
+        const map = getNotifiedStartsMap();
+        map[key] = Date.now();
+        // Prune keys older than 3 days
+        const cutoff = Date.now() - 3 * 24 * 3600 * 1000;
+        for (const k of Object.keys(map)) {
+          if ((map[k] || 0) < cutoff) delete map[k];
+        }
+        localStorage.setItem('elias_notified_starts_v1', JSON.stringify(map));
+      } catch (e) {}
+    }
+
+    function checkTaskStartReminders() {
+      const tasks = plannerData?.tasks || [];
+      if (!tasks.length) return;
+      const nowMs = getSyncedServerNow();
+      const vn = msToVnPartsFE(nowMs);
+      const todayVn = vn.dateStr;
+      const [curH, curM] = (vn.hhmm || '00:00').split(':').map(Number);
+      const curTotalMin = (curH || 0) * 60 + (curM || 0);
+      const notifiedMap = getNotifiedStartsMap();
+
+      for (const t of tasks) {
+        if (!t || !t.id || !t.startTime) continue;
+        if (t.notifyEnabled === false) continue;
+        if (t.completed || t.status === 'completed' || t.status === 'failed') continue;
+        const taskDate = t.date || todayVn;
+        if (taskDate !== todayVn) continue;
+
+        const startMin = parseTaskHHMMToMin(t.startTime);
+        if (startMin === null) continue;
+        const diffMin = curTotalMin - startMin;
+        if (diffMin < 0 || diffMin > 10) continue;
+
+        const normStart = formatMinutesToHHMM(startMin);
+        const dedupKey = `${todayVn}|${t.id}|${normStart}`;
+        if (notifiedMap[dedupKey]) continue;
+
+        // For late catch-up (> 0 min after start), only alert if task was scheduled BEFORE start time
+        if (diffMin > 0) {
+          const sh = Math.floor(startMin / 60);
+          const sm = startMin % 60;
+          const scheduledStartMs = vnDateTimeToMsFE(todayVn, sh, sm, 0);
+          const taskUpdated = t.updatedAt || (t.createdAt ? new Date(t.createdAt).getTime() : 0);
+          if (taskUpdated > scheduledStartMs) {
+            markStartNotified(dedupKey);
+            continue;
+          }
+        }
+
+        markStartNotified(dedupKey);
+        notifiedMap[dedupKey] = Date.now();
+        triggerTaskStartAlert({ ...t, startTime: normStart });
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'START_TASK_FROM_NOTIF' && event.data.taskId) {
+          navigateToPage('planner');
+          startTaskYptTimer(event.data.taskId);
+        }
+      });
+    }
+
     function updateMediaSession() {}
     function clearMediaSession() {}
     function updateSystemNotification() {}
     function clearSystemNotification() {}
-    function updateYptNotifButtonState() {}
 
     /* ========================================================
        MOBILE TOUCH DRAG & DROP CONTROLLER (Phone & Tablet)
@@ -11061,6 +11594,7 @@
       if (currentPage === 'planner') {
         updateLiveDeadlines();
       }
+      checkTaskStartReminders();
       updateTimelineLiveTick();
 
       if (!active) {
@@ -11148,7 +11682,7 @@
           // Reconcile conflict-free with local-first source of truth
           reconcilePlannerWithServer(freshData);
 
-          const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal', 'clusterDetailModal', 'mobileYptMenuSheet'].some(mid => {
+          const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal', 'clusterDetailModal', 'mobileYptMenuSheet', 'taskTimeRangeModal'].some(mid => {
             const m = document.getElementById(mid);
             return m && m.style.display === 'flex';
           });
@@ -11188,61 +11722,79 @@
       renderDailyPlannerPage();
     }
 
+    function parseTaskHHMMToMin(str) {
+      if (!str) return null;
+      const m = String(str).match(/^\s*(\d{1,2})[:hH](\d{1,2})\s*$/);
+      if (!m) return null;
+      const h = parseInt(m[1], 10);
+      const min = parseInt(m[2], 10);
+      if (isNaN(h) || isNaN(min) || h < 0 || h > 23 || min < 0 || min > 59) return null;
+      return h * 60 + min;
+    }
+
+    function formatMinutesToHHMM(totalMin) {
+      const m = ((Math.round(totalMin) % 1440) + 1440) % 1440;
+      const hh = Math.floor(m / 60);
+      const mm = m % 60;
+      return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+    }
+
+    function formatTaskTimeBadgeText(task) {
+      if (!task) return '+ Giờ / Hạn';
+      if (task.startTime && task.deadline) return `${task.startTime} - ${task.deadline}`;
+      if (task.startTime) return `${task.startTime} →`;
+      if (task.deadline) return task.deadline;
+      return '+ Giờ / Hạn';
+    }
+
     /* Helper: check if a deadline is overdue */
     function checkIsOverdue(task, selectedDate) {
       if (!task.deadline) return false;
 
-      const now = new Date();
-      const todayStr = getLocalDateStr(now);
+      const vn = msToVnPartsFE(getSyncedServerNow());
+      const todayStr = vn.dateStr;
       const taskDate = task.date || selectedDate || todayStr;
 
-      // Nếu ngày của task là ngày trước hôm nay -> Chắc chắn đã quá hạn
       if (taskDate < todayStr) return true;
 
-      // Nếu ngày của task là hôm nay -> So sánh giờ:phút theo múi giờ Việt Nam
       if (taskDate === todayStr) {
-        const timeMatch = task.deadline.match(/^\s*(\d{1,2})[:hH](\d{1,2})\s*$/);
-        if (timeMatch) {
-          const dlHours = parseInt(timeMatch[1], 10);
-          const dlMinutes = parseInt(timeMatch[2], 10);
-
-          let currentHours = now.getHours();
-          let currentMinutes = now.getMinutes();
-          try {
-            const parts = new Intl.DateTimeFormat('en-GB', {
-              timeZone: 'Asia/Ho_Chi_Minh',
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false
-            }).formatToParts(now);
-            const h = parts.find(p => p.type === 'hour')?.value;
-            const m = parts.find(p => p.type === 'minute')?.value;
-            if (h !== undefined) currentHours = parseInt(h, 10);
-            if (m !== undefined) currentMinutes = parseInt(m, 10);
-          } catch (e) {}
-
-          if (currentHours > dlHours || (currentHours === dlHours && currentMinutes >= dlMinutes)) {
-            return true;
-          }
+        const dlMin = parseTaskHHMMToMin(task.deadline);
+        const curMin = parseTaskHHMMToMin(vn.hhmm);
+        if (dlMin !== null && curMin !== null && curMin >= dlMin) {
+          return true;
         }
       }
       return false;
     }
 
-    /* Helper: Phân loại trạng thái deadline chuẩn xác (done | overdue | upcoming | empty) */
+    /* Helper: Phân loại trạng thái khung giờ & deadline (done | overdue | active-slot | upcoming | empty) */
     function getTaskDeadlineInfo(task, selectedDate) {
-      if (!task.deadline) {
-        return { className: 'empty', tooltip: 'Bấm để nhập deadline' };
+      if (!task.deadline && !task.startTime) {
+        return { className: 'empty', tooltip: 'Bấm để đặt khung giờ (vd 13:30 - 17:00) & deadline' };
       }
+      const rangeStr = (task.startTime && task.deadline)
+        ? `${task.startTime} - ${task.deadline}`
+        : (task.deadline || task.startTime);
       const isDone = (task.completed || task.status === 'completed');
       if (isDone) {
-        return { className: 'deadline-done', tooltip: `Đã hoàn thành! (Hạn: ${task.deadline})` };
+        return { className: 'deadline-done', tooltip: `Đã hoàn thành! (${rangeStr})` };
       }
-      const isOverdue = checkIsOverdue(task, selectedDate);
-      if (isOverdue) {
-        return { className: 'deadline-overdue', tooltip: `Đã quá deadline! (Hạn: ${task.deadline})` };
+      if (checkIsOverdue(task, selectedDate)) {
+        return { className: 'deadline-overdue', tooltip: `Đã quá deadline! (${rangeStr})` };
       }
-      return { className: 'deadline-upcoming', tooltip: `Hạn: ${task.deadline}` };
+      if (task.startTime) {
+        const vn = msToVnPartsFE(getSyncedServerNow());
+        const taskDate = task.date || selectedDate || vn.dateStr;
+        if (taskDate === vn.dateStr) {
+          const curMin = parseTaskHHMMToMin(vn.hhmm);
+          const startMin = parseTaskHHMMToMin(task.startTime);
+          const dlMin = parseTaskHHMMToMin(task.deadline);
+          if (curMin !== null && startMin !== null && curMin >= startMin && (dlMin === null || curMin < dlMin)) {
+            return { className: 'deadline-active-slot', tooltip: `Đang trong khung giờ học: ${rangeStr}` };
+          }
+        }
+      }
+      return { className: 'deadline-upcoming', tooltip: task.startTime ? `Nhắc lúc ${task.startTime} • Hạn ${task.deadline || '...'}` : `Hạn: ${task.deadline}` };
     }
 
     /* Cập nhật màu sắc deadline theo thời gian thực (1s) */
@@ -11250,11 +11802,14 @@
       const tasks = plannerData.tasks || [];
       tasks.forEach(t => {
         const badge = document.getElementById(`deadlineBadge_${t.id}`);
-        if (badge && t.deadline && !badge.querySelector('input')) {
+        if (badge && (t.deadline || t.startTime) && !badge.querySelector('input')) {
           const info = getTaskDeadlineInfo(t, currentPlannerDate);
-          badge.classList.remove('deadline-upcoming', 'deadline-overdue', 'deadline-done', 'empty');
+          badge.classList.remove('deadline-upcoming', 'deadline-overdue', 'deadline-done', 'deadline-active-slot', 'empty');
           badge.classList.add(info.className);
           badge.setAttribute('data-tooltip', info.tooltip);
+          const valSpan = document.getElementById(`deadlineVal_${t.id}`);
+          const nextTxt = formatTaskTimeBadgeText(t);
+          if (valSpan && valSpan.innerText !== nextTxt) valSpan.innerText = nextTxt;
         }
       });
     }
@@ -11978,7 +12533,7 @@
                         onclick="startInlineDeadlineEdit(event, '${t.id}')"
                         data-tooltip="${dlInfo.tooltip}">
                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg>
-                    <span id="deadlineVal_${t.id}">${t.deadline || '+ Hạn'}</span>
+                    <span id="deadlineVal_${t.id}">${formatTaskTimeBadgeText(t)}</span>
                   </span>
 
                   <button class="planner-task-del" onclick="deleteDailyTask('${t.id}')" title="Xóa công việc">
@@ -12913,63 +13468,94 @@
       }
     }
 
-    /* INLINE DEADLINE EDITING: No prompt! Direct input in badge */
+    /* TIME RANGE & DEADLINE EDITOR MODAL */
     function startInlineDeadlineEdit(event, id) {
       if (event) event.stopPropagation();
-      const badge = document.getElementById(`deadlineBadge_${id}`);
-      if (!badge) return;
-
-      // Check if already editing
-      if (badge.querySelector('input')) return;
-
+      const modal = document.getElementById('taskTimeRangeModal');
       const task = (plannerData.tasks || []).find(t => t.id === id);
-      const currentVal = task ? (task.deadline || '') : '';
+      if (!modal || !task) return;
 
-      badge.innerHTML = `
-        <input type="text" class="inline-deadline-input" value="${currentVal}" placeholder="14:00" maxlength="8">
-      `;
+      document.getElementById('trEditTaskId').value = id;
+      document.getElementById('trModalTaskTitle').innerText = task.title || 'Công việc';
+      document.getElementById('trStartTimeInput').value = task.startTime || '';
+      document.getElementById('trDeadlineInput').value = task.deadline || '';
+      document.getElementById('trChkNotifyEnabled').checked = (task.notifyEnabled !== false);
+      modal.style.display = 'flex';
+      setTimeout(() => {
+        const st = document.getElementById('trStartTimeInput');
+        if (st && !st.value) st.focus();
+      }, 40);
+    }
 
-      const input = badge.querySelector('input');
-      input.focus();
-      input.select();
+    function closeTaskTimeRangeModal() {
+      const modal = document.getElementById('taskTimeRangeModal');
+      if (modal) modal.style.display = 'none';
+    }
 
-      let isCommitted = false;
-      const commit = async () => {
-        if (isCommitted) return;
-        isCommitted = true;
+    function applyTimeRangePreset(durationMins) {
+      const startEl = document.getElementById('trStartTimeInput');
+      const dlEl = document.getElementById('trDeadlineInput');
+      if (!startEl || !dlEl) return;
+      let startMin = parseTaskHHMMToMin(startEl.value);
+      if (startMin === null) {
+        const nowVn = msToVnPartsFE(getSyncedServerNow());
+        const curMin = parseTaskHHMMToMin(nowVn.hhmm) || 0;
+        startMin = Math.ceil(curMin / 5) * 5;
+        startEl.value = formatMinutesToHHMM(startMin);
+      }
+      dlEl.value = formatMinutesToHHMM(startMin + durationMins);
+    }
 
-        const val = input.value.trim();
-        if (task) {
-          task.deadline = val;
-          task.updatedAt = Date.now();
+    function clearTaskTimeRangeInputs() {
+      const startEl = document.getElementById('trStartTimeInput');
+      const dlEl = document.getElementById('trDeadlineInput');
+      if (startEl) startEl.value = '';
+      if (dlEl) dlEl.value = '';
+    }
+
+    async function saveTaskTimeRange() {
+      const id = document.getElementById('trEditTaskId')?.value;
+      const startTime = (document.getElementById('trStartTimeInput')?.value || '').trim();
+      const deadline = (document.getElementById('trDeadlineInput')?.value || '').trim();
+      const notifyEnabled = !!document.getElementById('trChkNotifyEnabled')?.checked;
+      const task = (plannerData.tasks || []).find(t => t.id === id);
+
+      if (startTime && notifyEnabled) {
+        unlockClassInAudio();
+        if ('Notification' in window && Notification.permission === 'default') {
+          try { Notification.requestPermission().then(() => updateYptNotifButtonState()).catch(() => {}); } catch (e) {}
         }
-        savePlannerToLocal();
-        renderDailyPlannerPage();
+      }
 
-        isTaskMutating++;
-        try {
-          await fetch('/api/daily-todos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'edit', id, deadline: val })
-          });
-        } catch (err) {
-          console.error('Lỗi lưu deadline:', err);
-        } finally {
-          isTaskMutating--;
-        }
-      };
+      if (task) {
+        task.startTime = startTime;
+        task.deadline = deadline;
+        task.notifyEnabled = notifyEnabled;
+        task.updatedAt = getSyncedServerNow();
+      }
+      closeTaskTimeRangeModal();
+      savePlannerToLocal();
+      renderDailyPlannerPage();
 
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          commit();
-        } else if (e.key === 'Escape') {
+      isTaskMutating++;
+      try {
+        const reqStart = Date.now();
+        const res = await fetch('/api/daily-todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'edit', id, startTime, deadline, notifyEnabled })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.serverTime) updateServerClockSkew(data.serverTime, reqStart, Date.now());
+          if (data.dailyPlanner) reconcilePlannerWithServer(data.dailyPlanner);
           renderDailyPlannerPage();
         }
-      });
-
-      input.addEventListener('blur', commit);
+      } catch (err) {
+        console.error('Lỗi lưu khung giờ:', err);
+      } finally {
+        isTaskMutating--;
+      }
     }
 
     /* INLINE TASK TITLE EDITING: Pure Notion Block Edit */
@@ -13175,7 +13761,7 @@
               lts: plannerData.lastTimerStoppedAt || 0
             });
             if (beforeSig !== afterSig) {
-              const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal', 'clusterDetailModal', 'mobileYptMenuSheet'].some(mid => {
+              const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal', 'clusterDetailModal', 'mobileYptMenuSheet', 'taskTimeRangeModal'].some(mid => {
                 const m = document.getElementById(mid);
                 return m && m.style.display === 'flex';
               });
@@ -13570,2204 +14156,4 @@
             <div class="cell-check">
               <button 
                 type="button"
-                class="checkbox-btn ${item.isDone ? 'checked' : ''}" 
-                onclick="toggleDone('${item.id}')"
-                data-tooltip="${item.isDone ? 'Đánh dấu chưa làm' : 'Đánh dấu đã hoàn thành'}"
-              >
-                <svg width="10" height="10" fill="none" stroke="#FFFFFF" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-              </button>
-            </div>
-
-            <!-- 2. File Title & Badges -->
-            <div class="file-col cell-title" ${(item.url || item.hasFile) ? `onclick="openPdfPreviewModal('${item.id}')" style="cursor: pointer;" title="Bấm để xem trước đề thi trực tiếp"` : ''}>
-              ${(item.url || item.hasFile) ? `
-                <svg class="file-icon" width="15" height="15" fill="none" stroke="#2563EB" stroke-width="1.6" viewBox="0 0 24 24" data-tooltip="Đề thi sẵn sàng (Bấm để xem trước)"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              ` : (item.noPdf ? `
-                <svg class="file-icon" width="15" height="15" fill="none" stroke="#EF4444" stroke-width="1.6" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Không có file PDF"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 3h.01" stroke="#EF4444" stroke-width="2"/></svg>
-              ` : `
-                <svg class="file-icon" width="15" height="15" fill="none" stroke="#9B9A97" stroke-width="1.5" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Chờ quét link trên PC"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-              `)}
-              <span class="file-title ${item.isDone ? 'done' : ''}" data-tooltip="${displayName}">
-                ${displayName}
-              </span>
-              ${item.isTimed ? `
-                <span class="badge-timed-shield" data-tooltip="Bài thi tính giờ (${item.timeLimit}p) - Đã khóa an toàn để tuyệt đối không bị tính giờ!">
-                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  Bài thi ${item.timeLimit}p 
-                </span>
-              ` : ''}
-            </div>
-
-            <!-- 3. Subject Tag (Click to switch) -->
-            <div class="cell-subject">
-              <span 
-                class="subject-pill ${isMath ? 'math' : 'verbal'}" 
-                onclick="toggleSubject('${item.id}', '${isMath ? 'Verbal' : 'Math'}')"
-                data-tooltip="Bấm để chuyển sang ${isMath ? 'Verbal' : 'Math'}"
-              >
-                ${isMath ? 'Math' : 'Verbal'}
-              </span>
-            </div>
-
-            <!-- 4. 10SAT Deadline Column (Tinh gọn, no duplicate dates, no emojis) -->
-            <div class="deadline-cell cell-deadline">
-              ${getCleanDeadlineBadgeHtml(item)}
-            </div>
-
-            <!-- 5. Personal Deadline Column -->
-            <div class="cell-personal-deadline" ondblclick="openDatePicker('${item.id}')" data-tooltip="Double click để chọn ngày bằng lịch">
-              <div style="position: relative; display: inline-flex; align-items: center; gap: 4px;">
-                ${item.customDeadline ? `
-                  <button 
-                    type="button"
-                    class="personal-deadline-btn ${pDeadline.type}" 
-                    onclick="openDatePicker('${item.id}')"
-                    data-tooltip="Bấm để đổi ngày hạn tự học"
-                  >
-                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <span>${pDeadline.label}</span>
-                  </button>
-                  <button 
-                    type="button" 
-                    class="btn-icon-tiny" 
-                    onclick="event.stopPropagation(); clearCustomDeadline('${item.id}')" 
-                    data-tooltip="Xóa hạn tự học"
-                    style="color: var(--text-muted); font-size: 13px; line-height: 1; padding: 2px 4px;"
-                  >×</button>
-                ` : `
-                  <button 
-                    type="button" 
-                    class="personal-deadline-btn" 
-                    onclick="setTodayDeadline('${item.id}')"
-                    data-tooltip="Click để đặt hạn là Hôm nay"
-                  >
-                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                    <span>Hôm nay</span>
-                  </button>
-                  <button 
-                    type="button" 
-                    class="btn-icon-tiny" 
-                    onclick="openDatePicker('${item.id}')"
-                    data-tooltip="Chọn ngày khác từ lịch"
-                  >
-                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                  </button>
-                `}
-                <input 
-                  type="date" 
-                  id="datePicker_${item.id}" 
-                  value="${item.customDeadline || ''}"
-                  style="position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0;"
-                  onchange="onDateChanged('${item.id}', this.value)"
-                >
-              </div>
-            </div>
-
-            <!-- 6. Actions Column -->
-            <div class="actions-cell cell-actions">
-              ${(item.url || item.hasFile) ? `
-                <button class="action-icon-btn btn-action-preview" onclick="openPdfPreviewModal('${item.id}')" data-tooltip="Xem trước đề thi trực tiếp" title="Xem trước PDF">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                </button>
-                <button class="action-icon-btn btn-action-dl" onclick="triggerDirectPdfDownload('${item.id}')" data-tooltip="Tải đề thi về máy (PDF)" title="Tải PDF">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                </button>
-                ${item.url ? `
-                  <button class="action-icon-btn btn-cloud-open" onclick="window.open('${item.url}', '_blank')" data-tooltip="Mở link gốc CDN trong tab mới" title="Mở link gốc">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                  </button>
-                ` : ''}
-                <button class="action-icon-btn btn-cloud-copy" onclick="copyItemShareLink('${item.id}')" data-tooltip="Sao chép link xem đề thi" title="Sao chép link">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                </button>
-                ${(!isCloudHost && item.hasFile) ? `
-                  <button class="action-icon-btn btn-trash" onclick="deleteFile('${item.id}', '${displayName}')" data-tooltip="Xóa file này">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                  </button>
-                ` : ''}
-              ` : (item.isTimed ? `
-                <span class="shield-lock-tag" data-tooltip="Bài thi ${item.timeLimit} phút (Đã khóa an toàn để tuyệt đối không bị tính giờ)">
-                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                  Khóa
-                </span>
-              ` : (item.noPdf ? `
-                <span class="badge-no-pdf" data-tooltip="Không có file PDF trong ClassIn">Không có PDF</span>
-                ${!isCloudHost ? `
-                  <button class="action-icon-btn" onclick="retryTaskPdf('${item.id}')" data-tooltip="Thử quét lại bài tập này">
-                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                  </button>
-                ` : ''}
-              ` : `
-                <span class="badge-waiting-pc" data-tooltip="Cần mở ClassIn trên laptop để quét link này">Chờ quét trên PC</span>
-                ${!isCloudHost ? `
-                  <button class="btn-ghost" id="fetchBtn_${item.id}" style="font-size: 11px; padding: 2px 7px; color: var(--notion-blue); border: 1px solid rgba(35,131,226,0.3); border-radius: 4px;" onclick="fetchTaskPdf('${item.id}')" data-tooltip="Lấy file PDF qua ClassIn">
-                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    <span>Lấy đề</span>
-                  </button>
-                ` : ''}
-              `))}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      let expandRowHtml = '';
-      if (isAllTab && filtered.length > 6) {
-        expandRowHtml = `
-          <div class="expand-all-row">
-            <button class="btn-expand-all" onclick="toggleExpandAll()">
-              <span>${isAllExpanded ? 'Thu gọn ' : `Xem tất cả (${filtered.length} bài)`}</span>
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="${isAllExpanded ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'}"/>
-              </svg>
-            </button>
-          </div>
-        `;
-      }
-
-      container.innerHTML = rowsHtml + expandRowHtml;
-    }
-
-    // 5. Topic Grouping View ("Gom file": 2 Ô Lớn VERBAL & MATH trong 1 hàng + Subtopics theo phong cách Notion)
-    let openTopicDrawers = new Set(); // Mặc định không mở sẵn drawer nào (fix lỗi tự hạ thanh drop down)
-    let selectedGroupSubject = null;  // Chỉ mở subtopics khi người dùng bấm vào VERBAL hoặc MATH
-
-    function selectGroupSubject(subj) {
-      if (selectedGroupSubject === subj) {
-        selectedGroupSubject = null;
-      } else {
-        selectedGroupSubject = subj;
-      }
-      renderTopicGroups();
-    }
-
-    const BUILTIN_VERBAL_TOPICS = [
-      { id: 'verbal_wic', name: 'WORDS IN CONTEXT', badgeColor: 'badge-purple' },
-      { id: 'verbal_cr', name: 'THE CRITICAL READER', badgeColor: 'badge-rose' },
-      { id: 'verbal_ebrw', name: 'EBRW PRACTICE SETS', badgeColor: 'badge-blue' },
-      { id: 'verbal_core', name: 'CORE CONCEPTS', badgeColor: 'badge-green' },
-      { id: 'verbal_unknown', name: 'Unknown', badgeColor: 'badge-gray' }
-    ];
-
-    const BUILTIN_MATH_TOPICS = [
-      { id: 'math_l1', name: 'LESSON 1: LINEAR EQUATIONS', badgeColor: 'badge-orange' },
-      { id: 'math_l2', name: 'LESSON 2: LINEAR FUNCTIONS', badgeColor: 'badge-yellow' },
-      { id: 'math_l3', name: 'LESSON 3: LINES & TRIANGLES', badgeColor: 'badge-blue' },
-      { id: 'math_l4', name: 'LESSON 4: CIRCLES', badgeColor: 'badge-green' },
-      { id: 'math_l5', name: 'LESSON 5: AREAS & VOLUMES', badgeColor: 'badge-purple' },
-      { id: 'math_l6', name: 'LESSON 6: RATIOS & PERCENTAGES', badgeColor: 'badge-brown' },
-      { id: 'math_l7', name: 'LESSON 7: PROBABILITY', badgeColor: 'badge-rose' },
-      { id: 'math_l8', name: 'LESSON 8: STATISTICS', badgeColor: 'badge-teal' },
-      { id: 'math_l9', name: 'LESSON 9: QUADRATIC EQUATIONS', badgeColor: 'badge-blue' },
-      { id: 'math_l10', name: 'LESSON 10: QUADRATIC FUNCTIONS', badgeColor: 'badge-purple' },
-      { id: 'math_hw', name: 'GEOMETRY & ALGEBRA SETS', badgeColor: 'badge-blue' },
-      { id: 'math_unknown', name: 'Unknown', badgeColor: 'badge-gray' }
-    ];
-
-    function classifyItemTopic(item) {
-      // 1. Check manual assignment first (Drag & Drop persistence)
-      if (appSettings.manualFileGroups && appSettings.manualFileGroups[item.id]) {
-        const manualId = appSettings.manualFileGroups[item.id];
-        // Check custom topic folders
-        const custom = (appSettings.customTopicFolders || []).find(f => f.id === manualId);
-        if (custom) {
-          return { id: custom.id, name: custom.name, badgeColor: custom.badgeColor, isCustom: true, subject: custom.subject };
-        }
-        // Check built-in verbal
-        const matchedV = BUILTIN_VERBAL_TOPICS.find(v => v.id === manualId);
-        if (matchedV) return { ...matchedV, isCustom: false, subject: 'VERBAL' };
-        // Check built-in math
-        const matchedM = BUILTIN_MATH_TOPICS.find(m => m.id === manualId);
-        if (matchedM) return { ...matchedM, isCustom: false, subject: 'MATH' };
-      }
-
-      // 2. Default heuristic regex classification
-      const title = (item.title || item.filename || '').trim();
-      const lower = title.toLowerCase();
-      const isMath = (item.subject || '').toUpperCase() === 'MATH';
-
-      if (!isMath) {
-        if (/word.*context|words in context/i.test(lower)) {
-          return { ...BUILTIN_VERBAL_TOPICS[0], isCustom: false, subject: 'VERBAL' };
-        }
-        if (/critical reader|erica meltzer/i.test(lower)) {
-          return { ...BUILTIN_VERBAL_TOPICS[1], isCustom: false, subject: 'VERBAL' };
-        }
-        if (/ebrw|practice set|test\s|set [abc]/i.test(lower)) {
-          return { ...BUILTIN_VERBAL_TOPICS[2], isCustom: false, subject: 'VERBAL' };
-        }
-        if (/conventions|punctuation|grammar|transition|rhetorical/i.test(lower)) {
-          return { ...BUILTIN_VERBAL_TOPICS[3], isCustom: false, subject: 'VERBAL' };
-        }
-        return { ...BUILTIN_VERBAL_TOPICS[4], isCustom: false, subject: 'VERBAL' };
-      } else {
-        if (/lesson 1\b|linear equation/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[0], isCustom: false, subject: 'MATH' };
-        if (/lesson 2\b|linear function/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[1], isCustom: false, subject: 'MATH' };
-        if (/lesson 3\b|lines.*angles.*triangles/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[2], isCustom: false, subject: 'MATH' };
-        if (/lesson 4\b|circle/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[3], isCustom: false, subject: 'MATH' };
-        if (/lesson 5\b|areas.*volumes/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[4], isCustom: false, subject: 'MATH' };
-        if (/lesson 6\b|ratios.*percentages/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[5], isCustom: false, subject: 'MATH' };
-        if (/lesson 7\b|probability/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[6], isCustom: false, subject: 'MATH' };
-        if (/lesson 8\b|statistics/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[7], isCustom: false, subject: 'MATH' };
-        if (/lesson 9\b|quadratic equation/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[8], isCustom: false, subject: 'MATH' };
-        if (/lesson 10\b|quadratic function/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[9], isCustom: false, subject: 'MATH' };
-        if (/hw:|homework|algebra|geometry/i.test(lower)) return { ...BUILTIN_MATH_TOPICS[10], isCustom: false, subject: 'MATH' };
-        return { ...BUILTIN_MATH_TOPICS[11], isCustom: false, subject: 'MATH' };
-      }
-    }
-
-    function toggleTopicDrawer(topicId) {
-      if (openTopicDrawers.has(topicId)) {
-        openTopicDrawers.delete(topicId);
-      } else {
-        openTopicDrawers.add(topicId);
-      }
-      const card = document.getElementById(`topic_card_${topicId}`);
-      if (card) {
-        card.classList.toggle('open', openTopicDrawers.has(topicId));
-      }
-    }
-
-    // Drag & Drop Handlers
-    let draggedFileId = null;
-
-    function handleFileDragStart(e, fileId) {
-      draggedFileId = fileId;
-      e.dataTransfer.setData('text/plain', fileId);
-      e.dataTransfer.effectAllowed = 'move';
-      const row = document.getElementById(`drawer_row_${fileId}`);
-      if (row) {
-        setTimeout(() => row.classList.add('is-dragging'), 0);
-      }
-    }
-
-    function handleFileDragEnd(e, fileId) {
-      draggedFileId = null;
-      document.querySelectorAll('.drawer-file-item.is-dragging').forEach(el => el.classList.remove('is-dragging'));
-      document.querySelectorAll('.topic-card.drag-target-hover').forEach(el => el.classList.remove('drag-target-hover'));
-      document.querySelectorAll('.drop-hint-tag').forEach(el => el.style.display = 'none');
-    }
-
-    function handleTopicDragOver(e, topicId) {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      const card = document.getElementById(`topic_card_${topicId}`);
-      if (card && !card.classList.contains('drag-target-hover')) {
-        card.classList.add('drag-target-hover');
-        const hint = document.getElementById(`drop_hint_${topicId}`);
-        if (hint) hint.style.display = 'inline-flex';
-      }
-    }
-
-    function handleTopicDragLeave(e, topicId) {
-      const card = document.getElementById(`topic_card_${topicId}`);
-      if (card && !card.contains(e.relatedTarget)) {
-        card.classList.remove('drag-target-hover');
-        const hint = document.getElementById(`drop_hint_${topicId}`);
-        if (hint) hint.style.display = 'none';
-      }
-    }
-
-    async function handleTopicDrop(e, targetTopicId) {
-      e.preventDefault();
-      const card = document.getElementById(`topic_card_${targetTopicId}`);
-      if (card) card.classList.remove('drag-target-hover');
-      const hint = document.getElementById(`drop_hint_${targetTopicId}`);
-      if (hint) hint.style.display = 'none';
-
-      const fileId = e.dataTransfer.getData('text/plain') || draggedFileId;
-      if (!fileId) return;
-
-      if (!appSettings.manualFileGroups) appSettings.manualFileGroups = {};
-      appSettings.manualFileGroups[fileId] = targetTopicId;
-
-      // Auto-open target topic drawer so user sees the newly dropped item
-      openTopicDrawers.add(targetTopicId);
-
-      renderTopicGroups();
-      toast('Đang chuyển bài tập vào folder...');
-
-      try {
-        const res = await fetch(`/api/save-file-group?id=${encodeURIComponent(fileId)}&groupId=${encodeURIComponent(targetTopicId)}`);
-        const data = await res.json();
-        if (data.success) {
-          toast('Đã lưu bài tập vào folder!');
-        } else {
-          toast('Lỗi lưu folder');
-        }
-      } catch (err) {
-        toast('Lỗi kết nối lưu folder');
-      }
-    }
-
-    // Modal Helpers for Custom Topic Folders
-    function openCreateTopicModal(defaultSubject) {
-      const modal = document.getElementById('createTopicModal');
-      if (!modal) return;
-      const subj = defaultSubject || selectedGroupSubject || 'VERBAL';
-      if (subj === 'MATH') {
-        const rM = document.getElementById('radioMath');
-        if (rM) rM.checked = true;
-      } else {
-        const rV = document.getElementById('radioVerbal');
-        if (rV) rV.checked = true;
-      }
-      const input = document.getElementById('inputTopicName');
-      if (input) {
-        input.value = '';
-        setTimeout(() => input.focus(), 60);
-      }
-      modal.style.display = 'flex';
-      modal.classList.add('active');
-    }
-
-    function closeCreateTopicModal() {
-      const modal = document.getElementById('createTopicModal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.classList.remove('active');
-      }
-    }
-
-    async function submitCreateTopicFolder() {
-      const input = document.getElementById('inputTopicName');
-      const name = input ? input.value.trim() : '';
-      if (!name) {
-        toast('Vui lòng nhập tên dạng bài');
-        return;
-      }
-      const subject = document.querySelector('input[name="topicSubjectRadio"]:checked')?.value || 'VERBAL';
-
-      closeCreateTopicModal();
-      toast(`Đang tạo dạng bài "${name}"...`);
-
-      try {
-        const res = await fetch(`/api/create-topic-folder?name=${encodeURIComponent(name)}&subject=${encodeURIComponent(subject)}`);
-        const data = await res.json();
-        if (data.success) {
-          if (!appSettings.customTopicFolders) appSettings.customTopicFolders = [];
-          appSettings.customTopicFolders.push(data.folder);
-          selectedGroupSubject = subject;
-          openTopicDrawers.add(data.folder.id);
-          renderTopicGroups();
-          toast(`Đã tạo dạng "${name}" thành công!`);
-        } else {
-          toast(data.error || 'Lỗi tạo folder');
-        }
-      } catch (e) {
-        toast('Lỗi kết nối máy chủ');
-      }
-    }
-
-    // General Notion Confirmation Modal Controller (Replaces ugly browser confirm)
-    let pendingConfirmCallback = null;
-
-    function showNotionConfirm({ title, iconSvg, text, note, confirmText, confirmColor, onConfirm }) {
-      const modal = document.getElementById('generalConfirmModal');
-      if (!modal) return;
-
-      document.getElementById('generalConfirmTitle').innerText = title || 'Xác nhận';
-      document.getElementById('generalConfirmText').innerHTML = text || '';
-
-      const iconEl = document.getElementById('generalConfirmIcon');
-      if (iconEl) {
-        iconEl.innerHTML = iconSvg || `<svg width="18" height="18" fill="none" stroke="#DC2626" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
-      }
-
-      const noteBox = document.getElementById('generalConfirmNoteBox');
-      const noteText = document.getElementById('generalConfirmNoteText');
-      if (note && noteBox && noteText) {
-        noteText.innerHTML = note;
-        noteBox.style.display = 'block';
-      } else if (noteBox) {
-        noteBox.style.display = 'none';
-      }
-
-      const btn = document.getElementById('generalConfirmBtn');
-      if (btn) {
-        btn.innerText = confirmText || 'Xác nhận';
-        btn.style.background = confirmColor || '#DC2626';
-      }
-
-      generalConfirmCallback = onConfirm;
-
-      modal.style.display = 'flex';
-      modal.classList.add('active');
-    }
-
-    function deleteCustomTopicFolder(folderId, folderName) {
-      showNotionConfirm({
-        title: 'Xóa folder dạng bài',
-        iconSvg: `<svg width="18" height="18" fill="none" stroke="#DC2626" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`,
-        text: `Bạn có chắc muốn xóa folder <strong>"${folderName}"</strong> không?`,
-        note: `<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; color:#16A34A; font-weight:600;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><span>Bảo vệ bài tập 100%</span></div><div>• Các bài bên trong sẽ <strong>tự động trở về nhóm mặc định</strong>.</div><div>• File PDF và tiến độ của bạn <strong>không bị ảnh hưởng</strong>.</div>`,
-        confirmText: 'Xóa folder',
-        confirmColor: '#DC2626',
-        onConfirm: async () => {
-          toast(`Đang xóa folder "${folderName}"...`);
-          try {
-            const res = await fetch(`/api/delete-topic-folder?id=${encodeURIComponent(folderId)}`);
-            const data = await res.json();
-            if (data.success) {
-              if (appSettings.customTopicFolders) {
-                appSettings.customTopicFolders = appSettings.customTopicFolders.filter(f => f.id !== folderId);
-              }
-              if (appSettings.manualFileGroups) {
-                for (const k in appSettings.manualFileGroups) {
-                  if (appSettings.manualFileGroups[k] === folderId) {
-                    delete appSettings.manualFileGroups[k];
-                  }
-                }
-              }
-              renderTopicGroups();
-              toast(`Đã xóa folder "${folderName}"`);
-            } else {
-              toast('Lỗi xóa folder');
-            }
-          } catch (e) {
-            toast('Lỗi kết nối máy chủ');
-          }
-        }
-      });
-    }
-
-    function renderTopicGroups() {
-      const container = document.getElementById('topicGroupsContainer');
-      if (!container) return;
-
-      const q = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
-
-      const groupsMap = new Map();
-
-      // Pre-populate custom folders for both subjects so empty custom folders appear ready for drag-and-drop
-      (appSettings.customTopicFolders || []).forEach(custom => {
-        const isCustomMath = (custom.subject || '').toUpperCase() === 'MATH';
-        if (!groupsMap.has(custom.id)) {
-          groupsMap.set(custom.id, {
-            info: { id: custom.id, name: custom.name, badgeColor: custom.badgeColor, isCustom: true },
-            isMath: isCustomMath,
-            items: []
-          });
-        }
-      });
-
-      allItems.forEach(item => {
-        const displayName = item.title || item.filename;
-        if (q && !displayName.toLowerCase().includes(q) && !(item.deadlineTag || '').toLowerCase().includes(q)) {
-          return;
-        }
-
-        const topic = classifyItemTopic(item);
-        const isMath = topic.subject ? topic.subject === 'MATH' : (item.subject || '').toUpperCase() === 'MATH';
-
-        if (!groupsMap.has(topic.id)) {
-          groupsMap.set(topic.id, {
-            info: topic,
-            isMath,
-            items: []
-          });
-        }
-        groupsMap.get(topic.id).items.push(item);
-      });
-
-      const verbalGroups = Array.from(groupsMap.values()).filter(g => !g.isMath);
-      const mathGroups = Array.from(groupsMap.values()).filter(g => g.isMath);
-
-      const verbalCount = verbalGroups.reduce((acc, g) => acc + g.items.length, 0);
-      const mathCount = mathGroups.reduce((acc, g) => acc + g.items.length, 0);
-
-      function renderGroupCards(groupList, subject) {
-        const cardsHtml = groupList.map(g => {
-          const topic = g.info;
-          const count = g.items.length;
-          const doneCount = g.items.filter(i => i.isDone).length;
-          const isOpen = openTopicDrawers.has(topic.id);
-
-          // Sort items inside drawer by Priority
-          const sortedFiles = g.items.slice().sort((a, b) => getItemSortScore(a) - getItemSortScore(b));
-
-          return `
-            <div class="topic-card ${isOpen ? 'open' : ''}" 
-                 id="topic_card_${topic.id}"
-                 ondragover="handleTopicDragOver(event, '${topic.id}')"
-                 ondragleave="handleTopicDragLeave(event, '${topic.id}')"
-                 ondrop="handleTopicDrop(event, '${topic.id}')">
-              <div class="topic-card-header" onclick="toggleTopicDrawer('${topic.id}')" data-tooltip="Bấm để bung ra ${count} file">
-                <div class="topic-left-area">
-                  <div class="topic-circle-badge ${topic.badgeColor}">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-                  </div>
-                  <div class="topic-title-area">
-                    <div class="topic-card-name">${topic.name}</div>
-                    <div class="topic-card-meta">
-                      <span class="topic-count-pill">${count} file</span>
-                      <span>•</span>
-                      <span>${doneCount}/${count} đã làm</span>
-                      <span class="drop-hint-tag" id="drop_hint_${topic.id}" style="display:none;">DROP</span>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  ${topic.isCustom ? `
-                    <button type="button" class="btn-delete-folder" onclick="event.stopPropagation(); deleteCustomTopicFolder('${topic.id}', '${topic.name}')" data-tooltip="Xóa folder tự tạo này">
-                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                  ` : ''}
-                  <div class="topic-toggle-icon">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Accordion Drawer (Bung ra các file) -->
-              <div class="topic-card-drawer">
-                ${sortedFiles.length === 0 ? `
-                  <div style="padding: 12px; text-align: center; color: var(--text-muted); font-size: 12px; border: 1px dashed var(--border-subtle); border-radius: 4px;">
-                    Chưa có bài tập nào. Hãy kéo thả bài từ nhóm khác vào đây!
-                  </div>
-                ` : sortedFiles.map(file => {
-            const fileTitle = file.title || file.filename;
-
-            return `
-                    <div class="drawer-file-item" 
-                         id="drawer_row_${file.id}"
-                         draggable="true"
-                         ondragstart="handleFileDragStart(event, '${file.id}')"
-                         ondragend="handleFileDragEnd(event, '${file.id}')">
-                      <div class="drawer-file-left">
-                        <!-- 6-Dot Drag Handle -->
-                        <div class="drag-handle" data-tooltip="Kéo thả để chuyển folder">
-                          <svg width="9" height="13" viewBox="0 0 9 13" fill="currentColor">
-                            <circle cx="2" cy="2" r="1.3"/>
-                            <circle cx="7" cy="2" r="1.3"/>
-                            <circle cx="2" cy="6.5" r="1.3"/>
-                            <circle cx="7" cy="6.5" r="1.3"/>
-                            <circle cx="2" cy="11" r="1.3"/>
-                            <circle cx="7" cy="11" r="1.3"/>
-                          </svg>
-                        </div>
-
-                        <button 
-                          type="button"
-                          class="checkbox-btn ${file.isDone ? 'checked' : ''}" 
-                          onclick="event.stopPropagation(); toggleDone('${file.id}')"
-                          data-tooltip="${file.isDone ? 'Đánh dấu chưa làm' : 'Đánh dấu đã hoàn thành'}"
-                        >
-                          <svg width="9" height="9" fill="none" stroke="#FFFFFF" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        </button>
-                        
-                        ${file.hasFile ? `
-                          <svg width="14" height="14" fill="none" stroke="#2563EB" stroke-width="1.5" viewBox="0 0 24 24" data-tooltip="Đã có file PDF"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        ` : (file.noPdf ? `
-                          <svg width="14" height="14" fill="none" stroke="#EF4444" stroke-width="1.6" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Không có file PDF (Đã bỏ qua an toàn)"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 3h.01" stroke="#EF4444" stroke-width="2"/></svg>
-                        ` : `
-                          <svg width="14" height="14" fill="none" stroke="#9B9A97" stroke-width="1.5" stroke-dasharray="2 2" viewBox="0 0 24 24" data-tooltip="Chờ lấy file"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                        `)}
-
-                        <span class="drawer-file-title ${file.isDone ? 'done' : ''}" data-tooltip="${fileTitle}" ${isCloudHost ? (file.url ? `onclick="window.open('${file.url}', '_blank')" style="cursor:pointer;"` : '') : (file.hasFile ? `onclick="previewFile('${file.id}')" style="cursor:pointer;"` : '')}>
-                          ${fileTitle}
-                        </span>
-                        ${file.isTimed ? `
-                          <span class="badge-timed-shield" style="font-size: 10px; padding: 1px 5px; margin-left: 5px;" data-tooltip="Bài thi tính giờ (${file.timeLimit}p)">
-                            Bài thi ${file.timeLimit}p
-                          </span>
-                        ` : ''}
-                      </div>
-
-                      <div class="drawer-file-right">
-                        ${getCleanDeadlineBadgeHtml(file)}
-
-                        ${isCloudHost ? `
-                          ${file.url ? `
-                            <button class="action-icon-btn btn-cloud-open" onclick="window.open('${file.url}', '_blank')" data-tooltip="Mở link PDF trực tiếp (CDN)">
-                              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                            </button>
-                            <button class="action-icon-btn btn-cloud-copy" onclick="copyItemShareLink('${file.id}')" data-tooltip="Sao chép link đề thi">
-                              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                            </button>
-                          ` : (file.isTimed ? `
-                            <span class="badge-timed-shield" data-tooltip="Bài thi tính giờ (Đã khóa)">Khóa</span>
-                          ` : `
-                            <span class="badge-waiting-pc-tiny" data-tooltip="Cần quét trên PC">Chờ PC</span>
-                          `)}
-                        ` : `
-                          ${file.hasFile ? `
-                            <button class="action-icon-btn" onclick="previewFile('${file.id}')" data-tooltip="Xem trước PDF">
-                              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            </button>
-                          ` : (file.isTimed ? `
-                            <span class="badge-timed-shield" data-tooltip="Bài thi ${file.timeLimit}p (Chưa có file PDF - Đã khóa an toàn)">Khóa</span>
-                          ` : (file.noPdf ? `
-                            <button class="action-icon-btn" onclick="retryTaskPdf('${file.id}')" data-tooltip="Không có file PDF • Bấm để thử quét lại" style="color: #DC2626; border-color: rgba(239,68,68,0.3); background: #FEF2F2; width: 24px; height: 24px;">
-                              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            </button>
-                          ` : `
-                            <button class="btn-ghost" style="font-size: 10.5px; padding: 1px 6px; color: var(--notion-blue); border: 1px solid rgba(35,131,226,0.3); border-radius: 4px; width: 48px; justify-content: center;" onclick="fetchTaskPdf('${file.id}')" data-tooltip="Lấy file PDF">
-                              Lấy đề
-                            </button>
-                          `))}
-                        `}
-                      </div>
-                    </div>
-                  `;
-          }).join('')}
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        const addCardHtml = `
-          <div class="topic-card-add" onclick="openCreateTopicModal('${subject}')" data-tooltip="Tạo thêm dạng bài mới cho môn ${subject}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            <span>Tạo dạng mới</span>
-          </div>
-        `;
-
-        return cardsHtml + addCardHtml;
-      }
-
-      container.innerHTML = `
-        <!-- Top Row: 2 Big Subject Square Cards (VERBAL & MATH) -->
-        <div class="big-subject-grid">
-          <!-- Card 1: VERBAL -->
-          <div class="big-subject-card ${selectedGroupSubject === 'VERBAL' ? 'active' : ''}" onclick="selectGroupSubject('VERBAL')">
-            <div class="big-subject-icon-circle verbal">
-              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-            </div>
-            <div class="big-subject-info">
-              <h3>VERBAL</h3>
-              <p><span>${verbalCount} file</span><span>•</span><span>${verbalGroups.length} dạng</span></p>
-            </div>
-            <div class="big-subject-active-tag">
-              <span>${selectedGroupSubject === 'VERBAL' ? 'Đang mở' : 'Bấm để mở'}</span>
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="${selectedGroupSubject === 'VERBAL' ? 'M19 9l-7 7-7-7' : 'M9 5l7 7-7 7'}"/></svg>
-            </div>
-          </div>
-
-          <!-- Card 2: MATH -->
-          <div class="big-subject-card ${selectedGroupSubject === 'MATH' ? 'active' : ''}" onclick="selectGroupSubject('MATH')">
-            <div class="big-subject-icon-circle math">
-              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-            </div>
-            <div class="big-subject-info">
-              <h3>MATH</h3>
-              <p><span>${mathCount} file</span><span>•</span><span>${mathGroups.length} dạng</span></p>
-            </div>
-            <div class="big-subject-active-tag">
-              <span>${selectedGroupSubject === 'MATH' ? 'Đang mở' : 'Bấm để mở'}</span>
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="${selectedGroupSubject === 'MATH' ? 'M19 9l-7 7-7-7' : 'M9 5l7 7-7 7'}"/></svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Subtopics Section (Reveals with smooth animation when VERBAL or MATH is active) -->
-        ${selectedGroupSubject ? `
-          <div class="subtopics-wrapper anim-fade-in" style="display: flex; flex-direction: column; gap: 12px; margin-top: 6px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-              <h4 style="font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
-                ${selectedGroupSubject === 'VERBAL' ? `
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                  <span>DẠNG BÀI VERBAL</span>
-                ` : `
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                  <span>DẠNG BÀI MATH</span>
-                `}
-              </h4>
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 12px; color: var(--text-secondary);">${selectedGroupSubject === 'VERBAL' ? `${verbalGroups.length} dạng` : `${mathGroups.length} dạng`}</span>
-                <button class="btn-ghost btn-outline" style="font-size: 11.5px; padding: 3px 9px; gap: 5px; height: 26px;" onclick="openCreateTopicModal('${selectedGroupSubject}')" data-tooltip="Tạo dạng bài tập mới">
-                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                  <span>Tạo dạng mới</span>
-                </button>
-              </div>
-            </div>
-            <div class="subtopics-grid">
-              ${renderGroupCards(selectedGroupSubject === 'VERBAL' ? verbalGroups : mathGroups, selectedGroupSubject)}
-            </div>
-          </div>
-        ` : `
-          <div style="padding: 28px 16px; text-align: center; color: var(--text-secondary); background: #FAF9F8; border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); margin-top: 4px;">
-            <p style="font-size: 13px; font-weight: 500;">Bấm vào <strong>VERBAL</strong> hoặc <strong>MATH</strong> ở trên để xem chi tiết từng dạng bài tập.</p>
-          </div>
-        `}
-      `;
-    }
-
-    // Single Task Safe PDF Fetcher
-    async function fetchTaskPdf(id) {
-      const btn = document.getElementById(`fetchBtn_${id}`);
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<div class="spinner-tiny" style="width:10px;height:10px;border-width:1.5px;"></div><span>Đang quét...</span>`;
-      }
-      toast('Đang mở ClassIn để quét đề và tự động đóng...');
-      try {
-        const res = await fetch(`/api/fetch-task-pdf?id=${id}`);
-        const data = await res.json();
-        if (data.success) {
-          toast(`Đã tải đề "${data.filename}" và đóng cửa sổ thành công!`);
-          loadData();
-        } else {
-          toast(data.message || 'Không thể lấy bài tập này');
-          if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg><span>Lấy đề</span>`;
-          }
-        }
-      } catch (e) {
-        toast('Lỗi kết nối máy chủ');
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = `<span>Lấy lại</span>`;
-        }
-      }
-    }
-
-    // Retry PDF fetch for a single task that was skipped
-    async function retryTaskPdf(id) {
-      toast('Đang thử quét lại bài tập này qua ClassIn...');
-      try {
-        const res = await fetch(`/api/retry-task-pdf?id=${id}`);
-        const data = await res.json();
-        if (data.success) {
-          toast(`Đã lấy đề "${data.filename}" thành công!`);
-          loadData();
-        } else {
-          toast(data.message || 'Bài này vẫn không có file PDF');
-          loadData();
-        }
-      } catch (e) {
-        toast('Lỗi kết nối máy chủ');
-      }
-    }
-
-    // Batch Safe Mass Fetch Functions
-    let isBatchRunning = false;
-    let batchInterval = null;
-
-    function openBatchConfirmModal() {
-      if (isBatchRunning) return;
-      const pendingCount = allItems.filter(i => !i.hasFile && !i.isTimed && !i.noPdf).length;
-      if (pendingCount === 0) {
-        toast('Tất cả bài tập hợp lệ đều đã có file PDF!');
-        return;
-      }
-
-      const textEl = document.getElementById('batchConfirmText');
-      if (textEl) {
-        textEl.innerHTML = `Tải đề cho <b>${pendingCount} bài tập</b>. Bạn có muốn bắt đầu ngay?`;
-      }
-      const modal = document.getElementById('batchConfirmModal');
-      if (modal) {
-        modal.style.display = 'flex';
-        modal.classList.add('active');
-      }
-    }
-
-    function closeBatchConfirmModal() {
-      const modal = document.getElementById('batchConfirmModal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.classList.remove('active');
-      }
-    }
-
-    function startBatchFetchSafe() {
-      openBatchConfirmModal();
-    }
-
-    async function confirmStartBatchFetch() {
-      closeBatchConfirmModal();
-      if (isBatchRunning) return;
-      const pendingCount = allItems.filter(i => !i.hasFile && !i.isTimed && !i.noPdf).length;
-      if (pendingCount === 0) {
-        toast('Tất cả bài tập hợp lệ đều đã có file PDF!');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/batch-fetch-safe', { method: 'POST' });
-        const data = await res.json();
-        if (data.success) {
-          isBatchRunning = true;
-          document.getElementById('btnBatchStop').style.display = 'inline-flex';
-          document.getElementById('btnBatchFetch').disabled = true;
-          document.getElementById('batchProgressContainer').style.display = 'block';
-          document.getElementById('batchProgressTitle').innerHTML = '<div class="spinner-tiny"></div> <span>Đang khởi động...</span>';
-          document.getElementById('batchProgressCounts').innerText = `0/${pendingCount} bài`;
-          document.getElementById('batchProgressBar').style.width = '0%';
-          toast('Bắt đầu tự động lấy bài tập...');
-          pollBatchStatus();
-          if (!batchInterval) batchInterval = setInterval(pollBatchStatus, 1000);
-        }
-      } catch (e) {
-        toast('Lỗi kết nối máy chủ');
-      }
-    }
-
-    async function stopBatchFetch() {
-      try {
-        await fetch('/api/batch-fetch-stop', { method: 'POST' });
-        toast('Đang dừng lại sau bài hiện tại...');
-      } catch (e) {
-        toast('Lỗi gửi lệnh dừng');
-      }
-    }
-
-    async function pollBatchStatus() {
-      try {
-        const res = await fetch('/api/batch-fetch-status');
-        const state = await res.json();
-
-        const container = document.getElementById('batchProgressContainer');
-        const titleEl = document.getElementById('batchProgressTitle');
-        const countsEl = document.getElementById('batchProgressCounts');
-        const barEl = document.getElementById('batchProgressBar');
-
-        if (state.isRunning) {
-          isBatchRunning = true;
-          document.getElementById('btnBatchStop').style.display = 'inline-flex';
-          document.getElementById('btnBatchFetch').disabled = true;
-          container.style.display = 'block';
-
-          titleEl.innerHTML = `<div class="spinner-tiny"></div> <span>${state.statusText || 'Đang xử lý...'}</span>`;
-          countsEl.innerText = `${state.current}/${state.total} bài`;
-          const pct = state.total > 0 ? Math.round((state.current / state.total) * 100) : 0;
-          barEl.style.width = pct + '%';
-        } else {
-          if (isBatchRunning) {
-            isBatchRunning = false;
-            document.getElementById('btnBatchStop').style.display = 'none';
-            document.getElementById('btnBatchFetch').disabled = false;
-            titleEl.innerHTML = `<svg width="13" height="13" fill="none" stroke="#10B981" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> <span>${state.statusText || 'Hoàn tất!'}</span>`;
-            barEl.style.width = '100%';
-            toast(state.statusText || 'Đã hoàn tất tự động lấy đề!');
-            loadData();
-            setTimeout(() => {
-              if (!isBatchRunning) {
-                container.style.display = 'none';
-              }
-            }, 4000);
-          } else {
-            container.style.display = 'none';
-            document.getElementById('btnBatchStop').style.display = 'none';
-            document.getElementById('btnBatchFetch').disabled = false;
-          }
-          if (batchInterval) {
-            clearInterval(batchInterval);
-            batchInterval = null;
-          }
-        }
-      } catch (e) { }
-    }
-
-    // 4. Quick Set or Pick Personal Deadline
-    function setTodayDeadline(id) {
-      const now = new Date();
-      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-      saveCustomDeadline(id, todayStr);
-    }
-
-    function openDatePicker(id) {
-      const picker = document.getElementById(`datePicker_${id}`);
-      if (picker) {
-        if (picker.showPicker) {
-          picker.showPicker();
-        } else {
-          picker.click();
-        }
-      }
-    }
-
-    function clearCustomDeadline(id) {
-      saveCustomDeadline(id, '');
-    }
-
-    function onDateChanged(id, value) {
-      saveCustomDeadline(id, value);
-    }
-
-    async function saveCustomDeadline(id, dateStr) {
-      try {
-        const res = await fetch(`/api/set-custom-deadline?id=${id}&date=${dateStr}`);
-        const data = await res.json();
-        if (data.success) {
-          const item = allItems.find(i => i.id === id);
-          if (item) item.customDeadline = dateStr;
-          renderTable();
-          toast(dateStr ? `Đã đặt hạn tự học: ${dateStr}` : 'Đã xóa hạn tự học');
-        }
-      } catch (e) {
-        toast('Lỗi cập nhật hạn tự học');
-      }
-    }
-
-    // 5. Delete File
-    function deleteFile(id, filename) {
-      showNotionConfirm({
-        title: 'Xóa file đề thi',
-        iconSvg: `<svg width="18" height="18" fill="none" stroke="#DC2626" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`,
-        text: `Bạn có chắc chắn muốn xóa file <strong>"${filename}"</strong> không?`,
-        note: `<div>• File PDF sẽ được gỡ khỏi thư mục 10SAT trên ổ đĩa.</div><div>• Bạn có thể lấy lại đề bất cứ lúc nào từ ClassIn.</div>`,
-        confirmText: 'Xóa file',
-        confirmColor: '#DC2626',
-        onConfirm: async () => {
-          try {
-            const res = await fetch(`/api/delete?id=${id}`);
-            const data = await res.json();
-            if (data.success) {
-              allItems = allItems.filter(i => i.id !== id);
-              if (selectedId === id) {
-                document.getElementById('previewFrame').style.display = 'none';
-                document.getElementById('previewPlaceholder').style.display = 'flex';
-              }
-              renderTable();
-              toast('Đã xóa file thành công');
-            }
-          } catch (e) {
-            toast('Lỗi xóa file');
-          }
-        }
-      });
-    }
-
-    // 6. Toggle Subject (Math <-> Verbal with immediate disk move)
-    async function toggleSubject(id, newSubject) {
-      toast(`Đang chuyển sang ${newSubject}...`);
-      try {
-        const res = await fetch(`/api/set-subject?id=${id}&subject=${newSubject}`);
-        const data = await res.json();
-        if (data.success) {
-          toast(`Đã lưu sang [${newSubject}] và đổi tên file.`);
-          loadData();
-        }
-      } catch (e) {
-        toast('Lỗi cập nhật môn học');
-      }
-    }
-
-    // 7. Toggle Done (Updates Checkbox & Streak)
-    async function toggleDone(id) {
-      try {
-        const res = await fetch(`/api/toggle-done?id=${id}`);
-        const data = await res.json();
-        if (data.success) {
-          if (data.streak) {
-            appSettings.streak = data.streak;
-            updateWidgets();
-          }
-          toast(data.isDone ? 'Đã hoàn thành bài tập [Done]!' : 'Đã bỏ hoàn thành');
-          loadData();
-        }
-      } catch (e) {
-        toast('Lỗi cập nhật trạng thái');
-      }
-    }
-
-    // 8. Preview PDF
-    function previewFile(id) {
-      selectedId = id;
-      renderTable();
-      switchPaneTab('preview');
-
-      const frame = document.getElementById('previewFrame');
-      const placeholder = document.getElementById('previewPlaceholder');
-
-      frame.src = `/api/preview?id=${id}`;
-      frame.style.display = 'block';
-      placeholder.style.display = 'none';
-    }
-
-    // 9. Download File
-    async function downloadFile(id) {
-      const item = allItems.find(i => i.id === id);
-      const subj = item ? item.subject : 'VERBAL';
-      toast(`Đang lưu vào thư mục 10SAT/${subj}...`);
-      try {
-        const res = await fetch(`/api/download?id=${id}&folder=${subj}`);
-        const data = await res.json();
-        if (data.success) {
-          toast(`Đã lưu "${data.filename}"`);
-          loadData();
-        }
-      } catch (e) {
-        toast('Lỗi tải file');
-      }
-    }
-
-    function copyItemShareLink(id) {
-      const item = allItems.find(i => i.id === id);
-      if (!item) return;
-      if (item.url && item.url.startsWith('http')) {
-        copyLink(item.url, 'Đã sao chép link trực tiếp (CDN)!');
-      } else {
-        const shareUrl = window.location.origin + '/api/preview?id=' + encodeURIComponent(id);
-        copyLink(shareUrl, 'Đã sao chép link xem đề thi!');
-      }
-    }
-
-    // 10. Copy Link (With robust fallback for Mobile & Insecure contexts)
-    function copyLink(url, customMsg) {
-      if (!url) {
-        toast('Không có link để sao chép');
-        return;
-      }
-      const msg = customMsg || 'Đã sao chép link đề thi vào bộ nhớ tạm!';
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(url).then(() => {
-          toast(msg);
-        }).catch(() => fallbackCopy(url, msg));
-      } else {
-        fallbackCopy(url, msg);
-      }
-    }
-
-    function fallbackCopy(text, msg) {
-      try {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        document.execCommand('copy');
-        textArea.remove();
-        toast(msg);
-      } catch (err) {
-        toast('Đã sao chép link!');
-      }
-    }
-
-    // In-App PDF Preview Modal & Direct Mobile/Cloud Download
-    let currentPreviewItem = null;
-
-    function openPdfPreviewModal(id) {
-      const item = allItems.find(i => i.id === id);
-      if (!item) return;
-      currentPreviewItem = item;
-
-      const modal = document.getElementById('pdfPreviewModal');
-      const titleEl = document.getElementById('pdfModalTitle');
-      const subjEl = document.getElementById('pdfModalSubject');
-      const iframe = document.getElementById('pdfModalIframe');
-      const loading = document.getElementById('pdfModalLoading');
-
-      if (!modal) return;
-
-      const displayName = item.title || item.filename || 'Tài liệu SAT';
-      if (titleEl) titleEl.innerText = displayName;
-      if (subjEl) {
-        const isMath = (item.subject || '').toUpperCase() === 'MATH';
-        subjEl.className = `subject-pill ${isMath ? 'math' : 'verbal'}`;
-        subjEl.innerText = isMath ? 'Math' : 'Verbal';
-      }
-
-      if (loading) loading.style.display = 'flex';
-
-      const previewSrc = `/api/preview?id=${encodeURIComponent(id)}`;
-      if (iframe) {
-        iframe.src = previewSrc;
-      }
-
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    }
-
-    function onPdfIframeLoaded() {
-      const loading = document.getElementById('pdfModalLoading');
-      if (loading) loading.style.display = 'none';
-    }
-
-    function closePdfPreviewModal() {
-      const modal = document.getElementById('pdfPreviewModal');
-      const iframe = document.getElementById('pdfModalIframe');
-      if (modal) modal.style.display = 'none';
-      if (iframe) iframe.src = 'about:blank';
-      document.body.style.overflow = '';
-      currentPreviewItem = null;
-    }
-
-    function downloadCurrentPreviewPdf() {
-      if (!currentPreviewItem) return;
-      triggerDirectPdfDownload(currentPreviewItem.id);
-    }
-
-    function openCurrentPreviewExternal() {
-      if (!currentPreviewItem) return;
-      const targetUrl = currentPreviewItem.url || `/api/preview?id=${encodeURIComponent(currentPreviewItem.id)}`;
-      window.open(targetUrl, '_blank');
-    }
-
-    function triggerDirectPdfDownload(id) {
-      const item = allItems.find(i => i.id === id);
-      const title = item ? (item.title || item.filename || 'tai_lieu_sat') : 'tai_lieu_sat';
-      toast(`Đang chuẩn bị tải "${title}"...`);
-
-      const downloadUrl = `/api/download-pdf?id=${encodeURIComponent(id)}`;
-      const safeFilename = title.replace(/[/\\?%*:|"<>]/g, '_') + '.pdf';
-
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = safeFilename;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => a.remove(), 1000);
-    }
-
-    // Close preview modal on Escape key
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closePdfPreviewModal();
-      }
-    });
-
-    // 11. Right Pane Switcher
-    function switchPaneTab(tab) {
-      document.querySelectorAll('.pane-tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('viewPreview').style.display = 'none';
-      document.getElementById('viewMirror').style.display = 'none';
-      document.getElementById('viewTodos').style.display = 'none';
-
-      if (tab === 'preview') {
-        document.getElementById('paneTabPreview').classList.add('active');
-        document.getElementById('viewPreview').style.display = 'block';
-      } else if (tab === 'mirror') {
-        document.getElementById('paneTabMirror').classList.add('active');
-        document.getElementById('viewMirror').style.display = 'flex';
-        updateTargets();
-      } else if (tab === 'todos') {
-        document.getElementById('paneTabTodos').classList.add('active');
-        document.getElementById('viewTodos').style.display = 'block';
-        loadTodos();
-      }
-    }
-
-    // 12. Fullscreen Pop-out Mirror
-    async function openFullscreenMirror() {
-      if (!currentTarget || !currentTarget.devtoolsUrl) {
-        await updateTargets();
-      }
-      if (currentTarget && currentTarget.devtoolsUrl) {
-        window.open(currentTarget.devtoolsUrl, '_blank', 'width=1320,height=880');
-      } else {
-        toast('Không tìm thấy cửa sổ ClassIn đang mở');
-      }
-    }
-
-    // 13. Load Todos
-    async function loadTodos() {
-      const container = document.getElementById('todosContainer');
-      container.innerHTML = '<p style="color:var(--text-secondary); padding:16px;">Đang tải danh sách...</p>';
-      try {
-        const res = await fetch('/api/todos');
-        const data = await res.json();
-
-        if (!data.todos || data.todos.length === 0) {
-          container.innerHTML = '<p style="color:var(--text-secondary); padding:16px;">Chưa có dữ liệu To-do.</p>';
-          return;
-        }
-
-        container.innerHTML = data.todos.map(t => `
-          <div class="todo-item-row">
-            <div>
-              <div class="todo-item-title">${t.title}</div>
-              <div class="todo-item-sub">${t.deadlineDate || 'Chưa rõ hạn'} • ${t.timeLimit > 0 ? `Bài thi (${t.timeLimit}p)` : 'Bài tập về nhà'}</div>
-            </div>
-            <div>
-              <span class="deadline-badge">${t.deadlineTag || 'Chưa làm'}</span>
-            </div>
-          </div>
-        `).join('');
-      } catch (e) {
-        container.innerHTML = '<p style="color:red; padding:16px;">Lỗi tải To-do</p>';
-      }
-    }
-
-    // 14. Open Folder
-    async function openFolder(folder, filename) {
-      try {
-        let url = `/api/open-folder?folder=${encodeURIComponent(folder || 'ALL')}`;
-        if (filename) url += `&filename=${encodeURIComponent(filename)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.folder) {
-          toast(`Đã mở thư mục: ${data.folder}`);
-        } else {
-          toast(`Đã mở thư mục 10SAT/${folder === 'ALL' ? '' : folder}`);
-        }
-      } catch (e) {
-        toast('Lỗi mở thư mục');
-      }
-    }
-
-    // 15. Standardize All
-    async function standardizeAll() {
-      toast('Đang chuẩn hóa toàn bộ tên file theo [DD.MM]...');
-      try {
-        const res = await fetch('/api/standardize-all');
-        const data = await res.json();
-        if (data.success) {
-          toast(`Đã chuẩn hóa ${data.count} file`);
-          loadData();
-        }
-      } catch (e) {
-        toast('Lỗi chuẩn hóa file');
-      }
-    }
-
-    // 16. Trigger Scan
-    async function triggerScan() {
-      toast('Đang quét cửa sổ ClassIn...');
-      await fetch('/api/scan');
-      await loadData();
-      await updateTargets();
-      toast('Đã đồng bộ dữ liệu mới nhất');
-    }
-
-    function switchMirrorTarget(targetId) {
-      const target = activeTargets.find(t => t.id === targetId);
-      if (target) {
-        currentTarget = target;
-        connectScreencast(target.wsUrl);
-        toast(`Đã đổi mirror sang: ${target.title}`);
-      }
-    }
-
-    // 17. Live Screencast with Multi-window selection
-    async function updateTargets() {
-      try {
-        const res = await fetch('/api/targets');
-        const targets = await res.json();
-        activeTargets = targets;
-
-        const select = document.getElementById('mirrorTargetSelect');
-        const countSpan = document.getElementById('mirrorTargetCount');
-
-        if (targets.length === 0) {
-          if (select) select.innerHTML = '<option value="">Not connected</option>';
-          if (countSpan) countSpan.innerText = '';
-          return;
-        }
-
-        if (select) {
-          const currentId = currentTarget ? currentTarget.id : null;
-          select.innerHTML = targets.map(t =>
-            `<option value="${t.id}" ${t.id === currentId ? 'selected' : ''}>${t.title}</option>`
-          ).join('');
-          if (countSpan) countSpan.innerText = `(${targets.length} cửa sổ)`;
-        }
-
-        // Auto-select priority: answersheet/homework sub-window first, else first target
-        if (!currentTarget || !targets.some(t => t.id === currentTarget.id)) {
-          const subWin = targets.find(t => t.url.includes('answersheet') || t.url.includes('homework'));
-          currentTarget = subWin || targets[0];
-          if (select) select.value = currentTarget.id;
-          connectScreencast(currentTarget.wsUrl);
-        }
-      } catch (e) { }
-    }
-
-    function connectScreencast(wsUrl) {
-      if (mirrorWs) {
-        try { mirrorWs.close(); } catch (e) { }
-        mirrorWs = null;
-      }
-
-      const img = document.getElementById('mirrorImage');
-      const placeholder = document.getElementById('mirrorPlaceholder');
-
-      try {
-        mirrorWs = new WebSocket(wsUrl);
-        mirrorWs.onopen = () => {
-          mirrorWs.send(JSON.stringify({
-            id: 1,
-            method: 'Page.startScreencast',
-            params: { format: 'jpeg', quality: 80, maxWidth: 1280, maxHeight: 800 }
-          }));
-        };
-
-        mirrorWs.onmessage = (event) => {
-          try {
-            const msg = JSON.parse(event.data);
-            if (msg.method === 'Page.screencastFrame') {
-              const { data, sessionId } = msg.params;
-              img.src = 'data:image/jpeg;base64,' + data;
-              img.style.display = 'block';
-              placeholder.style.display = 'none';
-              mirrorWs.send(JSON.stringify({ id: 9999, method: 'Page.screencastFrameAck', params: { sessionId } }));
-            }
-          } catch (e) { }
-        };
-
-        mirrorWs.onerror = () => {
-          img.style.display = 'none';
-          placeholder.style.display = 'block';
-        };
-      } catch (e) { }
-    }
-
-    // 18. Notion Floating Tooltip System (Replaces ugly default browser black tooltip)
-    const tooltipEl = document.getElementById('notionTooltip');
-
-    function showTooltip(text, targetEl) {
-      if (!tooltipEl || !text) return;
-      tooltipEl.innerText = text;
-      tooltipEl.classList.add('show');
-
-      const rect = targetEl.getBoundingClientRect();
-      const tipRect = tooltipEl.getBoundingClientRect();
-
-      let top = rect.top - tipRect.height - 7;
-      let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
-
-      if (top < 8) {
-        top = rect.bottom + 7;
-      }
-
-      if (left < 8) left = 8;
-      if (left + tipRect.width > window.innerWidth - 8) {
-        left = window.innerWidth - tipRect.width - 8;
-      }
-
-      tooltipEl.style.top = `${top}px`;
-      tooltipEl.style.left = `${left}px`;
-    }
-
-    function hideTooltip() {
-      if (tooltipEl) {
-        tooltipEl.classList.remove('show');
-      }
-    }
-
-    document.addEventListener('mouseover', (e) => {
-      const target = e.target.closest('[data-tooltip]');
-      if (target) {
-        const tip = target.getAttribute('data-tooltip');
-        if (tip) showTooltip(tip, target);
-      }
-    });
-
-    document.addEventListener('mouseout', (e) => {
-      if (e.target.closest('[data-tooltip]')) {
-        hideTooltip();
-      }
-    });
-
-    window.addEventListener('scroll', hideTooltip, { passive: true });
-
-    // Progressive Web App (PWA) Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      const regSW = () => {
-        navigator.serviceWorker.register('/sw.js').then(reg => {
-          console.log('[PWA] ServiceWorker registered:', reg.scope);
-          if (reg.update) reg.update();
-        }).catch(err => {
-          console.warn('[PWA] ServiceWorker error:', err);
-        });
-      };
-      if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        regSW();
-      } else {
-        window.addEventListener('load', regSW);
-      }
-    }
-
-    /* ========================================================
-       DISCORD RICH PRESENCE (RPC) CLIENT CONTROLLER
-       ======================================================== */
-    let discordRpcState = {
-      enabled: true,
-      connected: false,
-      user: null,
-      clientId: '902536560539484202',
-      activityType: 3,
-      mode: 'cumulative',
-      stateFormat: 'today_stats',
-      customState: '',
-      largeImageStudy: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=512&auto=format&fit=crop&q=80',
-      largeImageRest: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=512&auto=format&fit=crop&q=80',
-      smallIconStudy: 'https://cdn-icons-png.flaticon.com/512/785/785116.png',
-      smallIconRest: 'https://cdn-icons-png.flaticon.com/512/924/924514.png',
-      smallTextStudy: 'Focusing',
-      smallTextRest: 'Resting',
-      restTitle: 'REST',
-      largeText: '',
-      showTimer: true,
-      formattedTodayStudy: '0m'
-    };
-    let currentDiscordPreviewMode = 'study'; // 'study' | 'rest'
-    let currentDiscordActivityType = 3;
-    let currentDiscordTimerMode = 'cumulative';
-    let currentDiscordStateFmt = 'today_stats';
-    let discordPreviewInterval = null;
-    window._previewSimSec = 70; // 01:10 base simulation
-
-    function formatDiscordElapsed(sec) {
-      const s = Math.floor(sec % 60);
-      const m = Math.floor(sec / 60);
-      const h = Math.floor(sec / 3600);
-      if (h > 0) {
-        const remM = Math.floor((sec % 3600) / 60);
-        return `${String(h).padStart(2, '0')}:${String(remM).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-      }
-      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
-
-    function formatDiscordTotalStudy(sec) {
-      const h = Math.floor(sec / 3600);
-      const m = Math.floor((sec % 3600) / 60);
-      if (h > 0) return `${h}h ${String(m).padStart(2, '0')}m`;
-      return `${Math.max(0, m)}m`;
-    }
-
-    async function fetchDiscordRpcStatus() {
-      try {
-        const res = await fetch('/api/discord-rpc');
-        if (res.ok) {
-          discordRpcState = await res.json();
-          updateDiscordDotStatus();
-        }
-      } catch (err) { }
-    }
-
-    function updateDiscordDotStatus() {
-      const dots = [document.getElementById('discordDotStatus'), document.getElementById('discordDotHeader')];
-      dots.forEach(dot => {
-        if (!dot) return;
-        if (discordRpcState.connected && discordRpcState.enabled) {
-          dot.className = 'discord-status-dot online';
-          dot.title = `Discord RPC: Đang kết nối (@${discordRpcState.user?.username || 'User'})`;
-        } else {
-          dot.className = 'discord-status-dot offline';
-          dot.title = 'Discord RPC: Chưa kết nối hoặc đã tắt';
-        }
-      });
-    }
-
-    function switchPreviewMode(mode) {
-      currentDiscordPreviewMode = mode;
-      const btnStudy = document.getElementById('tabPrevStudy');
-      const btnRest = document.getElementById('tabPrevRest');
-      if (btnStudy) btnStudy.className = 'discord-preview-tab-btn ' + (mode === 'study' ? 'active' : '');
-      if (btnRest) btnRest.className = 'discord-preview-tab-btn ' + (mode === 'rest' ? 'active' : '');
-      updateDiscordPreview();
-    }
-
-    function setDiscordActivityType(type) {
-      currentDiscordActivityType = Number(type);
-      const btnW = document.getElementById('btnPrefixWatching');
-      const btnC = document.getElementById('btnPrefixCompeting');
-      const btnP = document.getElementById('btnPrefixPlaying');
-      if (btnW) btnW.className = 'rpc-pill-btn ' + (type === 3 ? 'active' : '');
-      if (btnC) btnC.className = 'rpc-pill-btn ' + (type === 5 ? 'active' : '');
-      if (btnP) btnP.className = 'rpc-pill-btn ' + (type === 0 ? 'active' : '');
-      updateDiscordPreview();
-    }
-
-    function setDiscordAppPreset(preset) {
-      const btnStudying = document.getElementById('btnAppStudying');
-      const btnVscode = document.getElementById('btnAppVscode');
-      const btnCustom = document.getElementById('btnAppCustom');
-      const customBox = document.getElementById('discordCustomIdBox');
-
-      if (btnStudying) btnStudying.className = 'rpc-pill-btn ' + (preset === '902536560539484202' ? 'active' : '');
-      if (btnVscode) btnVscode.className = 'rpc-pill-btn ' + (preset === '383226320970055681' ? 'active' : '');
-      if (btnCustom) btnCustom.className = 'rpc-pill-btn ' + (preset === 'custom' ? 'active' : '');
-
-      if (customBox) {
-        customBox.style.display = (preset === 'custom') ? 'block' : 'none';
-      }
-      updateDiscordPreview();
-    }
-
-    function setDiscordTimerMode(mode) {
-      currentDiscordTimerMode = mode;
-      const btnCum = document.getElementById('btnTimerCumulative');
-      const btnTask = document.getElementById('btnTimerTask');
-      if (btnCum) btnCum.className = 'rpc-pill-btn ' + (mode === 'cumulative' ? 'active' : '');
-      if (btnTask) btnTask.className = 'rpc-pill-btn ' + (mode === 'task' ? 'active' : '');
-      updateDiscordPreview();
-    }
-
-    function setDiscordStateFmt(fmt) {
-      currentDiscordStateFmt = fmt;
-      const btnToday = document.getElementById('btnStateToday');
-      const btnCustom = document.getElementById('btnStateCustom');
-      const btnNone = document.getElementById('btnStateNone');
-      const customBox = document.getElementById('discordCustomStateInputBox');
-
-      if (btnToday) btnToday.className = 'rpc-pill-btn ' + (fmt === 'today_stats' ? 'active' : '');
-      if (btnCustom) btnCustom.className = 'rpc-pill-btn ' + (fmt === 'custom' ? 'active' : '');
-      if (btnNone) btnNone.className = 'rpc-pill-btn ' + (fmt === 'none' ? 'active' : '');
-
-      if (customBox) {
-        customBox.style.display = (fmt === 'custom') ? 'block' : 'none';
-      }
-      updateDiscordPreview();
-    }
-
-    function switchDiscordCfgMode(mode) {
-      const btnStudy = document.getElementById('btnCfgModeStudy');
-      const btnRest = document.getElementById('btnCfgModeRest');
-      const boxStudy = document.getElementById('discordCfgStudyBox');
-      const boxRest = document.getElementById('discordCfgRestBox');
-
-      if (mode === 'study') {
-        if (btnStudy) btnStudy.classList.add('active');
-        if (btnRest) btnRest.classList.remove('active');
-        if (boxStudy) boxStudy.style.display = 'block';
-        if (boxRest) boxRest.style.display = 'none';
-        switchPreviewMode('study');
-      } else {
-        if (btnStudy) btnStudy.classList.remove('active');
-        if (btnRest) btnRest.classList.add('active');
-        if (boxStudy) boxStudy.style.display = 'none';
-        if (boxRest) boxRest.style.display = 'block';
-        switchPreviewMode('rest');
-      }
-    }
-
-    function pickDiscordImage(mode, url, cardId) {
-      if (mode === 'study') {
-        const input = document.getElementById('inputDiscordLargeImgStudy');
-        if (input) input.value = url;
-      } else {
-        const input = document.getElementById('inputDiscordLargeImgRest');
-        if (input) input.value = url;
-      }
-      document.querySelectorAll(`#discordCfg${mode === 'study' ? 'Study' : 'Rest'}Box .img-preset-card`).forEach(c => c.classList.remove('active'));
-      const card = document.getElementById(cardId);
-      if (card) card.classList.add('active');
-      updateDiscordPreview();
-    }
-
-    function pickDiscordBadge(mode, url, text, badgeId) {
-      if (mode === 'study') {
-        const inputImg = document.getElementById('inputDiscordSmallImgStudy');
-        const inputTxt = document.getElementById('inputDiscordSmallTextStudy');
-        if (inputImg) inputImg.value = url;
-        if (inputTxt) inputTxt.value = text;
-      } else {
-        const inputImg = document.getElementById('inputDiscordSmallImgRest');
-        const inputTxt = document.getElementById('inputDiscordSmallTextRest');
-        if (inputImg) inputImg.value = url;
-        if (inputTxt) inputTxt.value = text;
-      }
-      document.querySelectorAll(`#discordCfg${mode === 'study' ? 'Study' : 'Rest'}Box .badge-icon-btn`).forEach(b => b.classList.remove('active'));
-      const el = document.getElementById(badgeId);
-      if (el) el.classList.add('active');
-      updateDiscordPreview();
-    }
-
-    function openDiscordRpcModal() {
-      const modal = document.getElementById('discordRpcModal');
-      if (!modal) return;
-
-      const chkEnable = document.getElementById('chkDiscordRpcEnable');
-      const inputStudyTitle = document.getElementById('inputDiscordStudyTitle');
-      const inputRest = document.getElementById('inputDiscordRestTitle');
-      const inputLargeStudy = document.getElementById('inputDiscordLargeImgStudy');
-      const inputLargeRest = document.getElementById('inputDiscordLargeImgRest');
-      const inputSmallStudy = document.getElementById('inputDiscordSmallImgStudy');
-      const inputSmallRest = document.getElementById('inputDiscordSmallImgRest');
-      const inputSmallTxtStudy = document.getElementById('inputDiscordSmallTextStudy');
-      const inputSmallTxtRest = document.getElementById('inputDiscordSmallTextRest');
-      const inputLargeTxt = document.getElementById('inputDiscordLargeText');
-      const inputCustomState = document.getElementById('inputDiscordCustomState');
-      const inputCustomCid = document.getElementById('inputDiscordCustomClientId');
-
-      if (chkEnable) chkEnable.checked = (discordRpcState.enabled !== false);
-      if (inputStudyTitle) inputStudyTitle.value = discordRpcState.studyTitle || '';
-      if (inputRest) inputRest.value = discordRpcState.restTitle || 'REST';
-      if (inputLargeStudy) inputLargeStudy.value = discordRpcState.largeImageStudy || '';
-      if (inputLargeRest) inputLargeRest.value = discordRpcState.largeImageRest || '';
-      if (inputSmallStudy) inputSmallStudy.value = discordRpcState.smallIconStudy || '';
-      if (inputSmallRest) inputSmallRest.value = discordRpcState.smallIconRest || '';
-      if (inputSmallTxtStudy) inputSmallTxtStudy.value = discordRpcState.smallTextStudy || 'Focusing';
-      if (inputSmallTxtRest) inputSmallTxtRest.value = discordRpcState.smallTextRest || 'Resting';
-      if (inputLargeTxt) inputLargeTxt.value = discordRpcState.largeText || '';
-      if (inputCustomState) inputCustomState.value = discordRpcState.customState || '';
-
-      switchDiscordCfgMode(plannerData.activeTimer ? 'study' : 'rest');
-
-      // Prefix
-      setDiscordActivityType(discordRpcState.activityType !== undefined ? discordRpcState.activityType : 3);
-
-      // App Preset
-      const cid = discordRpcState.clientId || '902536560539484202';
-      if (cid === '902536560539484202') {
-        setDiscordAppPreset('902536560539484202');
-      } else if (cid === '383226320970055681') {
-        setDiscordAppPreset('383226320970055681');
-      } else {
-        setDiscordAppPreset('custom');
-        if (inputCustomCid) inputCustomCid.value = cid;
-      }
-
-      // Timer Mode
-      setDiscordTimerMode(discordRpcState.mode || 'cumulative');
-
-      // State Format
-      setDiscordStateFmt(discordRpcState.stateFormat || 'today_stats');
-
-      // Connection Status Card
-      const userAvatar = document.getElementById('discordUserAvatar');
-      const usernameText = document.getElementById('discordUsernameText');
-      const modalDot = document.getElementById('discordModalDot');
-      const connStatusText = document.getElementById('discordConnStatusText');
-      const connBadge = document.getElementById('discordConnBadge');
-
-      if (discordRpcState.connected && discordRpcState.user) {
-        const u = discordRpcState.user;
-        const displayName = u.global_name ? `${u.global_name} (@${u.username})` : `@${u.username}`;
-        if (usernameText) usernameText.innerText = displayName;
-        if (userAvatar && u.avatar) {
-          userAvatar.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`;
-        }
-        if (modalDot) modalDot.className = 'discord-status-dot online';
-        if (connStatusText) connStatusText.innerText = 'Đã liên kết Discord Desktop';
-        if (connBadge) connBadge.className = 'discord-conn-badge';
-      } else {
-        if (usernameText) usernameText.innerText = 'Chưa phát hiện Discord Desktop';
-        if (userAvatar) userAvatar.src = 'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png';
-        if (modalDot) modalDot.className = 'discord-status-dot offline';
-        if (connStatusText) connStatusText.innerText = 'Mở Discord Desktop để tự kết nối';
-        if (connBadge) connBadge.className = 'discord-conn-badge offline';
-      }
-
-      currentDiscordPreviewMode = plannerData.activeTimer ? 'study' : 'rest';
-      switchPreviewMode(currentDiscordPreviewMode);
-
-      // Check Windows Autostart status
-      const chkAutostart = document.getElementById('chkDiscordAutostart');
-      const rowAutostart = document.getElementById('rowDiscordAutostart');
-      if (chkAutostart) {
-        fetch('/api/autostart')
-          .then(r => r.json())
-          .then(d => {
-            if (rowAutostart) {
-              rowAutostart.style.display = (d.isWindows || !isCloudHost) ? 'flex' : 'none';
-            }
-            chkAutostart.checked = !!d.enabled;
-            const slider = document.getElementById('sliderAutostartToggle');
-            if (slider) slider.style.backgroundColor = d.enabled ? '#5865F2' : 'var(--border-subtle)';
-          })
-          .catch(() => {});
-      }
-
-      modal.style.display = 'flex';
-      modal.classList.add('active');
-
-      // Start live 1-second preview ticker
-      if (discordPreviewInterval) clearInterval(discordPreviewInterval);
-      discordPreviewInterval = setInterval(() => {
-        if (!plannerData.activeTimer) {
-          window._previewSimSec = (window._previewSimSec || 70) + 1;
-        }
-        updateDiscordPreview();
-      }, 1000);
-    }
-
-    function closeDiscordRpcModal() {
-      const modal = document.getElementById('discordRpcModal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.classList.remove('active');
-      }
-      if (discordPreviewInterval) {
-        clearInterval(discordPreviewInterval);
-        discordPreviewInterval = null;
-      }
-    }
-
-    async function toggleDiscordAutostart(enable) {
-      try {
-        const slider = document.getElementById('sliderAutostartToggle');
-        if (slider) slider.style.backgroundColor = enable ? '#5865F2' : 'var(--border-subtle)';
-        const res = await fetch('/api/autostart', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ enable })
-        });
-        const data = await res.json();
-        if (data.success) {
-          toast(enable ? 'Đã bật tự động chạy ngầm khi mở máy tính!' : 'Đã tắt tự khởi động cùng Windows');
-        } else {
-          toast('Không thể thay đổi cài đặt khởi động');
-        }
-      } catch (e) {
-        toast('Lỗi kết nối máy tính');
-      }
-    }
-
-    function updateDiscordPreview() {
-      const previewTypeHeader = document.getElementById('previewDiscordTypeHeader');
-      const previewTaskName = document.getElementById('previewDiscordTaskName');
-      const previewState = document.getElementById('previewDiscordState');
-      const previewTimer = document.getElementById('previewDiscordTimer');
-      const previewTimerText = document.getElementById('previewDiscordTimerText');
-      const previewLargeImg = document.getElementById('previewDiscordLargeImg');
-      const previewSmallImg = document.getElementById('previewDiscordSmallImg');
-      const previewBadge = document.getElementById('previewDiscordBadge');
-      const slider = document.getElementById('sliderDiscordToggle');
-      const chkEnable = document.getElementById('chkDiscordRpcEnable');
-
-      const isEnabled = chkEnable ? chkEnable.checked : true;
-      if (slider) {
-        slider.style.backgroundColor = isEnabled ? '#5865F2' : '#D1D5DB';
-      }
-
-      // 1. Determine App Name & Prefix for Header: "<Prefix> <AppName>"
-      let appName = 'Studying';
-      if (document.getElementById('btnAppVscode')?.classList.contains('active')) {
-        appName = 'Visual Studio Code';
-      } else if (document.getElementById('btnAppCustom')?.classList.contains('active')) {
-        const customId = document.getElementById('inputDiscordCustomClientId')?.value?.trim();
-        appName = customId ? `App (${customId.slice(-4)})` : 'Custom App';
-      }
-
-      let typePrefix = 'Watching';
-      if (currentDiscordActivityType === 5) typePrefix = 'Competing in';
-      else if (currentDiscordActivityType === 0) typePrefix = 'Playing';
-
-      if (previewTypeHeader) {
-        previewTypeHeader.innerHTML = `<span>${typePrefix} ${appName}</span><span class="dots">• • •</span>`;
-      }
-
-      // 2. Images & Small Badge Icon
-      const isStudy = (currentDiscordPreviewMode === 'study');
-      const inputLargeStudy = document.getElementById('inputDiscordLargeImgStudy')?.value?.trim();
-      const inputLargeRest = document.getElementById('inputDiscordLargeImgRest')?.value?.trim();
-      const inputSmallStudy = document.getElementById('inputDiscordSmallImgStudy')?.value?.trim();
-      const inputSmallRest = document.getElementById('inputDiscordSmallImgRest')?.value?.trim();
-      const inputTooltipStudy = document.getElementById('inputDiscordSmallTextStudy')?.value?.trim();
-      const inputTooltipRest = document.getElementById('inputDiscordSmallTextRest')?.value?.trim();
-
-      const largeImgUrl = isStudy
-        ? (inputLargeStudy || discordRpcState.largeImageStudy || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=512&auto=format&fit=crop&q=80')
-        : (inputLargeRest || discordRpcState.largeImageRest || 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=512&auto=format&fit=crop&q=80');
-
-      const smallImgUrl = isStudy
-        ? (inputSmallStudy || discordRpcState.smallIconStudy || 'https://cdn-icons-png.flaticon.com/512/785/785116.png')
-        : (inputSmallRest || discordRpcState.smallIconRest || 'https://cdn-icons-png.flaticon.com/512/924/924514.png');
-
-      const tooltipText = isStudy
-        ? (inputTooltipStudy || discordRpcState.smallTextStudy || 'Focusing')
-        : (inputTooltipRest || discordRpcState.smallTextRest || 'Resting');
-
-      if (previewLargeImg) previewLargeImg.src = largeImgUrl;
-      if (previewSmallImg) previewSmallImg.src = smallImgUrl;
-      if (previewBadge) previewBadge.title = tooltipText;
-
-      // 3. Line 1: Details (Task Name / Custom Study Title in study, or Rest title in rest)
-      if (previewTaskName) {
-        if (isStudy) {
-          const customStudy = document.getElementById('inputDiscordStudyTitle')?.value?.trim();
-          previewTaskName.innerText = customStudy || plannerData.activeTimer?.taskTitle || 'FOCUS';
-        } else {
-          const restText = document.getElementById('inputDiscordRestTitle')?.value?.trim() || 'REST';
-          previewTaskName.innerText = restText;
-        }
-      }
-
-      // 4. Line 2: State line
-      // Study format: "<task_elapsed> - Total: <today_total>" (e.g. 01:10 - Total: 39m)
-      // Rest format: "Total: <today_total>" (e.g. Total: 39m)
-      // NO emojis!
-      const todayTotalSec = typeof getDayTotalSeconds === 'function' ? getDayTotalSeconds(getLocalDateStr()) : 2340;
-      let taskElapsedSec = 70;
-      if (isStudy) {
-        if (plannerData.activeTimer?.startedAt) {
-          const targetTask = (plannerData.tasks || []).find(t => t.id === plannerData.activeTimer.taskId);
-          taskElapsedSec = (targetTask?.spentSeconds || 0) + Math.max(0, Math.floor((getSyncedServerNow() - plannerData.activeTimer.startedAt) / 1000));
-        } else {
-          taskElapsedSec = window._previewSimSec || 70;
-        }
-      }
-
-      if (previewState) {
-        if (currentDiscordStateFmt === 'none') {
-          previewState.style.display = 'none';
-        } else {
-          previewState.style.display = 'block';
-          if (currentDiscordStateFmt === 'today_stats') {
-            if (isStudy) {
-              previewState.innerText = `${formatDiscordElapsed(taskElapsedSec)} - Total: ${formatDiscordTotalStudy(todayTotalSec)}`;
-            } else {
-              previewState.innerText = `Total: ${formatDiscordTotalStudy(todayTotalSec)}`;
-            }
-          } else {
-            previewState.innerText = document.getElementById('inputDiscordCustomState')?.value?.trim() || 'Focus';
-          }
-        }
-      }
-
-      // 5. Line 3: Live Timer (Green Clock)
-      if (previewTimer) {
-        previewTimer.style.display = 'inline-flex';
-        if (previewTimerText) {
-          previewTimerText.innerText = formatDiscordElapsed(taskElapsedSec);
-        }
-      }
-    }
-
-    async function saveDiscordRpcSettings() {
-      const enabled = document.getElementById('chkDiscordRpcEnable')?.checked !== false;
-      let clientId = '902536560539484202';
-      if (document.getElementById('btnAppVscode')?.classList.contains('active')) {
-        clientId = '383226320970055681';
-      } else if (document.getElementById('btnAppCustom')?.classList.contains('active')) {
-        clientId = document.getElementById('inputDiscordCustomClientId')?.value?.trim() || '902536560539484202';
-      }
-
-      const studyTitle = document.getElementById('inputDiscordStudyTitle')?.value?.trim() || '';
-      const restTitle = document.getElementById('inputDiscordRestTitle')?.value?.trim() || 'REST';
-      const largeImageStudy = document.getElementById('inputDiscordLargeImgStudy')?.value?.trim() || '';
-      const largeImageRest = document.getElementById('inputDiscordLargeImgRest')?.value?.trim() || '';
-      const smallIconStudy = document.getElementById('inputDiscordSmallImgStudy')?.value?.trim() || '';
-      const smallIconRest = document.getElementById('inputDiscordSmallImgRest')?.value?.trim() || '';
-      const smallTextStudy = document.getElementById('inputDiscordSmallTextStudy')?.value?.trim() || 'Focusing';
-      const smallTextRest = document.getElementById('inputDiscordSmallTextRest')?.value?.trim() || 'Resting';
-      const largeText = document.getElementById('inputDiscordLargeText')?.value?.trim() || '';
-      const customState = document.getElementById('inputDiscordCustomState')?.value?.trim() || '';
-
-      const payload = {
-        enabled,
-        clientId,
-        activityType: currentDiscordActivityType,
-        mode: currentDiscordTimerMode,
-        stateFormat: currentDiscordStateFmt,
-        customState,
-        studyTitle,
-        restTitle,
-        largeImageStudy,
-        largeImageRest,
-        smallIconStudy,
-        smallIconRest,
-        smallTextStudy,
-        smallTextRest,
-        largeText,
-        showTimer: true
-      };
-
-      try {
-        const res = await fetch('/api/discord-rpc', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          const data = await res.json();
-          discordRpcState = { ...discordRpcState, ...data.config, connected: data.connected, user: data.user };
-          updateDiscordDotStatus();
-          toast('Đã lưu cài đặt Discord RPC');
-          closeDiscordRpcModal();
-        }
-      } catch (err) {
-        toast('Lỗi lưu cài đặt Discord');
-      }
-    }
-
-    async function testDiscordRpcNow() {
-      let clientId = '902536560539484202';
-      if (document.getElementById('btnAppVscode')?.classList.contains('active')) {
-        clientId = '383226320970055681';
-      } else if (document.getElementById('btnAppCustom')?.classList.contains('active')) {
-        clientId = document.getElementById('inputDiscordCustomClientId')?.value?.trim() || '902536560539484202';
-      }
-
-      const studyTitle = document.getElementById('inputDiscordStudyTitle')?.value?.trim() || '';
-      const restTitle = document.getElementById('inputDiscordRestTitle')?.value?.trim() || 'REST';
-      const largeImageStudy = document.getElementById('inputDiscordLargeImgStudy')?.value?.trim() || '';
-      const largeImageRest = document.getElementById('inputDiscordLargeImgRest')?.value?.trim() || '';
-      const smallIconStudy = document.getElementById('inputDiscordSmallImgStudy')?.value?.trim() || '';
-      const smallIconRest = document.getElementById('inputDiscordSmallImgRest')?.value?.trim() || '';
-      const smallTextStudy = document.getElementById('inputDiscordSmallTextStudy')?.value?.trim() || 'Focusing';
-      const smallTextRest = document.getElementById('inputDiscordSmallTextRest')?.value?.trim() || 'Resting';
-      const largeText = document.getElementById('inputDiscordLargeText')?.value?.trim() || '';
-      const customState = document.getElementById('inputDiscordCustomState')?.value?.trim() || '';
-
-      toast('Đang gửi trạng thái lên Discord...');
-      try {
-        const res = await fetch('/api/discord-rpc', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            enabled: true,
-            clientId,
-            activityType: currentDiscordActivityType,
-            mode: currentDiscordTimerMode,
-            stateFormat: currentDiscordStateFmt,
-            customState,
-            studyTitle,
-            restTitle,
-            largeImageStudy,
-            largeImageRest,
-            smallIconStudy,
-            smallIconRest,
-            smallTextStudy,
-            smallTextRest,
-            largeText,
-            showTimer: true,
-            testNow: true
-          })
-        });
-        if (res.ok) {
-          const data = await res.json();
-          discordRpcState = { ...discordRpcState, ...data.config, connected: data.connected, user: data.user };
-          updateDiscordDotStatus();
-          toast('Đã phát lên Discord Desktop');
-        }
-      } catch (err) {
-        toast('Lỗi gửi test Discord');
-      }
-    }
-
-    // Initial load
-    loadData();
-    loadHabits();
-    loadDailyPlanner();
-    isCloudHost = isCloudHost || window.location.hostname.includes('onrender.com') || window.location.hostname.includes('render.com');
-
-    if (!isCloudHost) {
-      fetchDiscordRpcStatus();
-      updateTargets();
-      setInterval(updateTargets, 6000);
-      setInterval(fetchDiscordRpcStatus, 6000);
-    } else {
-      const headerActions = document.getElementById('headerRightActions');
-      if (headerActions) headerActions.style.display = 'none';
-    }
-
-    setInterval(loadData, 2000); // 2s Real-time Multi-Device Sync (phone <-> laptop)
-    setInterval(updateYptLiveTimers, 1000); // 1s live YPT stopwatch
-
-    // ========== SSE (Server-Sent Events): Real-Time Push from Server ==========
-    // Instead of polling every 1.2s, we open a persistent connection.
-    // Server pushes updates instantly (<50ms) whenever data actually changes.
-    // A 10s fallback poll remains as safety net if SSE disconnects.
-    let _sseConnected = false;
-    function connectSSE() {
-      try {
-        const evtSource = new EventSource('/api/events');
-        evtSource.onopen = () => {
-          _sseConnected = true;
-          console.log('[SSE] Connected — real-time push active');
-        };
-        evtSource.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            if (data.type === 'PLANNER_UPDATE' && !isTimerSwitching && isTaskMutating === 0) {
-              if (data.serverTime && serverClockSkew === 0) {
-                // Only seed initial skew from SSE if HTTP RTT hasn't calibrated yet
-                updateServerClockSkew(data.serverTime, Date.now(), Date.now());
-              }
-              const wasRunning = !!plannerData.activeTimer;
-              const isRunningNow = !!data.dailyPlanner?.activeTimer;
-              const taskChanged = plannerData.activeTimer?.taskId !== data.dailyPlanner?.activeTimer?.taskId;
-              const prevTasksJson = JSON.stringify(plannerData.tasks || []);
-              const prevGoalsJson = JSON.stringify(plannerData.goals || []);
-              const prevHistoryJson = JSON.stringify(plannerData.daysHistory || {});
-              const prevSesJson = JSON.stringify(plannerData.sessions || []);
-              const prevCalEvJson = JSON.stringify(plannerData.calendarEvents || []);
-              const prevSchJson = JSON.stringify(plannerData.scheduleSettings || {});
-              const prevLastStopped = plannerData.lastTimerStoppedAt || 0;
-
-              if (data.dailyPlanner) {
-                reconcilePlannerWithServer(data.dailyPlanner);
-              }
-
-              const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal', 'clusterDetailModal', 'mobileYptMenuSheet'].some(mid => {
-                const m = document.getElementById(mid);
-                return m && m.style.display === 'flex';
-              });
-              const activeEl = document.activeElement;
-              const isUserTyping = isModalOpen || (activeEl && (
-                activeEl.id === 'tlMonthEventInput' ||
-                activeEl.classList?.contains('inline-task-title-input') ||
-                activeEl.classList?.contains('inline-deadline-input') ||
-                activeEl.classList?.contains('planner-draft-input') ||
-                activeEl.classList?.contains('notion-goal-input') ||
-                activeEl.classList?.contains('notion-goal-text') ||
-                activeEl.closest?.('.planner-draft-item')
-              ));
-              if (!isUserTyping) {
-                const nowTasksJson = JSON.stringify(plannerData.tasks || []);
-                const nowGoalsJson = JSON.stringify(plannerData.goals || []);
-                const nowHistoryJson = JSON.stringify(plannerData.daysHistory || {});
-                const nowSesJson = JSON.stringify(plannerData.sessions || []);
-                const nowCalEvJson = JSON.stringify(plannerData.calendarEvents || []);
-                const nowSchJson = JSON.stringify(plannerData.scheduleSettings || {});
-                const nowLastStopped = plannerData.lastTimerStoppedAt || 0;
-                if (wasRunning !== isRunningNow || taskChanged || prevLastStopped !== nowLastStopped || prevTasksJson !== nowTasksJson || prevGoalsJson !== nowGoalsJson || prevHistoryJson !== nowHistoryJson || prevSesJson !== nowSesJson || prevCalEvJson !== nowCalEvJson || prevSchJson !== nowSchJson) {
-                  renderDailyPlannerPage();
-                }
-              }
-              updateYptLiveTimers();
-
-              // Also update habits if present
-              if (data.habits) {
-                reconcileHabitsWithServer(data.habits);
-                if (currentPage === 'habits' && !isUserTyping) {
-                  renderHabitsPage();
-                }
-              }
-            }
-          } catch (e) {
-            console.warn('[SSE] Parse error:', e);
-          }
-        };
-        evtSource.onerror = () => {
-          _sseConnected = false;
-          evtSource.close();
-          console.warn('[SSE] Disconnected — fallback to polling. Reconnecting in 3s...');
-          setTimeout(connectSSE, 3000);
-        };
-      } catch (e) {
-        console.warn('[SSE] Not supported, using polling fallback');
-      }
-    }
-    connectSSE();
-
-    // Fallback poll: only runs every 10s as safety net when SSE is active
-    setInterval(() => { if (!_sseConnected) loadDailyPlanner(false); }, 10000);
-
-    // Save timer checkpoint on page hide or tab close
-    window.addEventListener('visibilitychange', () => {
-      if (plannerData.activeTimer) {
-        savePlannerToLocal();
-        checkpointTimerToServer(plannerData.activeTimer.taskId);
-      }
-    });
-    window.addEventListener('beforeunload', () => {
-      if (plannerData.activeTimer) {
-        savePlannerToLocal();
-        checkpointTimerToServer(plannerData.activeTimer.taskId);
-      }
-    });
-
-
-    // On Mobile / Cloud: always default directly into YPT Daily Plan
-    const defaultPage = isCloudHost ? 'planner' : 'sat';
-    const savedPage = isMobileViewport() ? 'planner' : (localStorage.getItem('elias_active_page') || defaultPage);
-    navigateToPage(savedPage);
-  </script>
-
-  <!-- YPT 4-Action Task Dropdown Popover (Pure Notion White Minimalist) -->
-  <div id="yptStatusPopover" class="ypt-popover" style="display: none;">
-    <!-- 1. Stopwatch Play/Pause Item -->
-    <div class="ypt-popover-timer-btn" id="yptPopTimerBtn" onclick="handlePopTimerClick()">
-      <div class="ypt-pop-play-icon" id="yptPopPlayIcon">
-        <svg width="11" height="11" fill="currentColor" viewBox="0 0 24 24">
-          <polygon points="5 3 19 12 5 21 5 3" />
-        </svg>
-      </div>
-      <span class="ypt-pop-timer-text" id="yptPopTimerText">00:00:00</span>
-      <span class="ypt-pop-timer-label" id="yptPopTimerLabel">Bắt đầu</span>
-    </div>
-
-    <div class="ypt-popover-divider"></div>
-
-    <!-- 2. Hoàn thành (◯) -->
-    <div class="ypt-popover-item" onclick="handlePopStatusSelect('completed')">
-      <span class="ypt-pop-icon-box">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:block;">
-          <circle cx="8" cy="8" r="7" fill="#10B981" />
-          <path d="M4.8 8.2l2.2 2.2 4.4-4.6" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"
-            stroke-linejoin="round" />
-        </svg>
-      </span>
-      <span>Hoàn thành</span>
-    </div>
-
-    <!-- 3. Hoàn thành một phần (△) -->
-    <div class="ypt-popover-item" onclick="handlePopStatusSelect('partial')">
-      <span class="ypt-pop-icon-box">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:block;">
-          <path d="M8 2.2L14.6 13.8H1.4L8 2.2Z" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.6"
-            stroke-linejoin="round" />
-        </svg>
-      </span>
-      <span>Hoàn thành một phần</span>
-    </div>
-
-    <!-- 4. Chưa hoàn thành (✕) -->
-    <div class="ypt-popover-item" onclick="handlePopStatusSelect('failed')">
-      <span class="ypt-pop-icon-box">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:block;">
-          <circle cx="8" cy="8" r="7" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1.2" />
-          <path d="M5.5 5.5l5 5m0-5l-5 5" stroke="#EF4444" stroke-width="1.8" stroke-linecap="round" />
-        </svg>
-      </span>
-      <span>Chưa hoàn thành</span>
-    </div>
-
-    <!-- 5. Đặt lại (Chưa làm) -->
-    <div class="ypt-popover-item" onclick="handlePopStatusSelect('incomplete')">
-      <span class="ypt-pop-icon-box">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:block;">
-          <rect x="1.5" y="1.5" width="13" height="13" rx="3.5" stroke="#D3D1CB" stroke-width="1.6" fill="#FFFFFF" />
-        </svg>
-      </span>
-      <span style="color: #6B7280;">Đặt lại (Chưa làm)</span>
-    </div>
-  </div>
-
-  <!-- Global Notion Floating Tooltip Container -->
-  <div id="notionTooltip" class="notion-tooltip"></div>
-
-  <!-- NOTION PRIORITY CONTEXT MENU (Right-click or Badge click) -->
-  <div id="notionPriorityDropdown" class="notion-priority-menu" style="display: none;">
-    <div class="notion-menu-title">SELECT PRIORITY</div>
-    <div class="notion-menu-item" onclick="handleMenuPrioritySelect('high')">
-      <span class="notion-goal-badge badge-high">HIGH</span>
-      <span class="notion-menu-label">High Priority</span>
-    </div>
-    <div class="notion-menu-item" onclick="handleMenuPrioritySelect('medium')">
-      <span class="notion-goal-badge badge-medium">MEDIUM</span>
-      <span class="notion-menu-label">Medium Priority</span>
-    </div>
-    <div class="notion-menu-item" onclick="handleMenuPrioritySelect('low')">
-      <span class="notion-goal-badge badge-low">LOW</span>
-      <span class="notion-menu-label">Low Priority</span>
-    </div>
-    <div class="notion-menu-item" onclick="handleMenuPrioritySelect('none')">
-      <span class="notion-goal-badge badge-none">NONE</span>
-      <span class="notion-menu-label">No Priority</span>
-    </div>
-    <div class="notion-menu-divider"></div>
-    <div class="notion-menu-item danger" onclick="handleMenuGoalDelete()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="3 6 5 6 21 6"></polyline>
-        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-      </svg>
-      <span>Delete goal</span>
-    </div>
-  </div>
-
-  <!-- Modern Mobile Bottom Navigation Bar -->
-  <nav class="mobile-bottom-nav" id="mobileBottomNav">
-    <button class="mob-nav-btn" id="mobNav_planner" onclick="navigateToPage('planner')">
-      <div class="mob-nav-icon">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-      </div>
-      <span>Daily Plan</span>
-    </button>
-    <button class="mob-nav-btn active" id="mobNav_sat" onclick="navigateToPage('sat')">
-      <div class="mob-nav-icon">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-      </div>
-      <span>Tài liệu SAT</span>
-    </button>
-    <button class="mob-nav-btn" id="mobNav_habits" onclick="navigateToPage('habits')">
-      <div class="mob-nav-icon">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-      </div>
-      <span>Thói quen</span>
-    </button>
-  </nav>
-</body>
-
-</html>
+... [truncated for diff preview]

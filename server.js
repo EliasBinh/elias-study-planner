@@ -893,7 +893,9 @@ function mergePlannerTasks(localPlanner, incomingPlanner) {
         if (inc.title !== undefined) existing.title = inc.title;
         if (inc.section !== undefined) existing.section = inc.section;
         if (inc.date !== undefined) existing.date = inc.date;
+        if (inc.startTime !== undefined) existing.startTime = inc.startTime;
         if (inc.deadline !== undefined) existing.deadline = inc.deadline;
+        if (inc.notifyEnabled !== undefined) existing.notifyEnabled = inc.notifyEnabled;
         if (inc.subject !== undefined) existing.subject = inc.subject;
         if (inc.color !== undefined) existing.color = inc.color;
         existing.status = inc.status || (inc.completed ? 'completed' : 'incomplete');
@@ -3380,6 +3382,14 @@ const server = http.createServer(async (req, res) => {
           const { action, id, title, section, date, deadline, status } = parsed;
           const now = getCanonicalNow();
           const planner = appSettings.dailyPlanner;
+          const normalizePlannerHHMM = (v) => {
+            const s = String(v || '').trim();
+            const m = s.match(/^(\d{1,2})[:hH](\d{1,2})$/);
+            if (!m) return s;
+            const hh = Math.min(23, Math.max(0, parseInt(m[1], 10)));
+            const mm = Math.min(59, Math.max(0, parseInt(m[2], 10)));
+            return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+          };
 
           if (action === 'add' && title && title.trim()) {
             const meta = inferPlannerSubjectAndColor(title.trim(), parsed.subject, parsed.color);
@@ -3388,7 +3398,9 @@ const server = http.createServer(async (req, res) => {
               title: title.trim(),
               section: section || 'morning',
               date: date || getVnDateStr(),
-              deadline: deadline || '',
+              startTime: normalizePlannerHHMM(parsed.startTime),
+              deadline: normalizePlannerHHMM(deadline),
+              notifyEnabled: parsed.notifyEnabled !== undefined ? !!parsed.notifyEnabled : true,
               subject: meta.subject,
               color: meta.color,
               completed: false,
@@ -3469,7 +3481,9 @@ const server = http.createServer(async (req, res) => {
             if (t) {
               if (title !== undefined) t.title = title.trim();
               if (section !== undefined) t.section = section;
-              if (deadline !== undefined) t.deadline = deadline;
+              if (parsed.startTime !== undefined) t.startTime = normalizePlannerHHMM(parsed.startTime);
+              if (deadline !== undefined) t.deadline = normalizePlannerHHMM(deadline);
+              if (parsed.notifyEnabled !== undefined) t.notifyEnabled = !!parsed.notifyEnabled;
               if (date !== undefined) t.date = date;
               if (parsed.subject !== undefined || parsed.color !== undefined || title !== undefined) {
                 const meta = inferPlannerSubjectAndColor(
