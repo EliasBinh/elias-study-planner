@@ -3714,6 +3714,12 @@ const server = http.createServer(async (req, res) => {
               appSettings.dailyPlanner.activeTimer = { ...incoming.activeTimer };
             } else {
               appSettings.dailyPlanner.activeTimer = null;
+              if (incoming.lastTimerStoppedAt !== undefined) {
+                appSettings.dailyPlanner.lastTimerStoppedAt = Math.max(
+                  appSettings.dailyPlanner.lastTimerStoppedAt || 0,
+                  incoming.lastTimerStoppedAt || 0
+                );
+              }
             }
             appSettings.dailyPlanner.activeTimerChangedAt = incomingChangedAt;
             timerChanged = true;
@@ -3727,6 +3733,9 @@ const server = http.createServer(async (req, res) => {
           }
           if (timerChanged || plannerChanged || habitsChanged) {
             saveDatabase();
+            if (timerChanged || plannerChanged) {
+              broadcastPlannerUpdate();
+            }
           }
 
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -4107,7 +4116,8 @@ async function triggerCloudSync() {
       daysHistory: appSettings.dailyPlanner?.daysHistory || {},
       habits: appSettings.habits || {},
       activeTimer: appSettings.dailyPlanner?.activeTimer || null,
-      activeTimerChangedAt: appSettings.dailyPlanner?.activeTimerChangedAt || 0
+      activeTimerChangedAt: appSettings.dailyPlanner?.activeTimerChangedAt || 0,
+      lastTimerStoppedAt: appSettings.dailyPlanner?.lastTimerStoppedAt || 0
     };
 
     const res = await fetch(`${CLOUD_SYNC_URL}/api/sync-daily`, {
@@ -4144,6 +4154,12 @@ async function triggerCloudSync() {
             appSettings.dailyPlanner.activeTimer = { ...cloudPlanner.activeTimer };
           } else {
             appSettings.dailyPlanner.activeTimer = null;
+            if (cloudPlanner.lastTimerStoppedAt !== undefined) {
+              appSettings.dailyPlanner.lastTimerStoppedAt = Math.max(
+                appSettings.dailyPlanner.lastTimerStoppedAt || 0,
+                cloudPlanner.lastTimerStoppedAt || 0
+              );
+            }
           }
           appSettings.dailyPlanner.activeTimerChangedAt = cloudTimerChangedAt;
           syncDiscordPresenceFromActiveTimer(true);

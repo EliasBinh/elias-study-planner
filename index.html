@@ -7380,7 +7380,7 @@
   </div>
 
   <!-- FLOATING QUICK FOCUS / BREAK BAR (Day & Week Views - Images 3 & 4) -->
-  <div id="tlFloatingBar" class="tl-floating-bar">
+  <div id="tlFloatingBar" class="tl-floating-bar" style="display: none;">
     <button type="button" id="tlFloatingPlayBtn" class="tl-floating-play-btn" onclick="handleFloatingPlayClick()" title="Bắt đầu / Tạm dừng bấm giờ">
       <svg id="tlFloatingPlayIcon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>
     </button>
@@ -8189,6 +8189,7 @@
             deletedCalendarEvents: dataToSync.deletedCalendarEvents || {},
             activeTimer: dataToSync.activeTimer,
             activeTimerChangedAt: dataToSync.activeTimerChangedAt,
+            lastTimerStoppedAt: dataToSync.lastTimerStoppedAt || 0,
             habits: habitsData
           })
         });
@@ -8220,6 +8221,7 @@
             deletedCalendarEvents: plannerData?.deletedCalendarEvents || {},
             activeTimer: plannerData?.activeTimer || null,
             activeTimerChangedAt: plannerData?.activeTimerChangedAt || 0,
+            lastTimerStoppedAt: plannerData?.lastTimerStoppedAt || 0,
             habits: habitsToSync
           })
         });
@@ -8282,8 +8284,9 @@
       }
     }
 
-    function reconcilePlannerWithServer(freshData) {
+    function reconcilePlannerWithServer(freshData, options = {}) {
       if (!freshData) return;
+      const authoritativeTimer = !!options.authoritativeTimer;
       const local = loadPlannerFromLocal() || plannerData || { tasks: [], goals: [], sessions: [], calendarEvents: [], daysHistory: {}, activeTimer: null };
       const server = freshData;
 
@@ -8370,9 +8373,25 @@
       let finalActiveTimer = server.activeTimer;
       const localTimerChangedAt = local.activeTimerChangedAt || 0;
       const serverTimerChangedAt = server.activeTimerChangedAt || 0;
-      if (localTimerChangedAt > serverTimerChangedAt) {
+      let finalTimerChangedAt = serverTimerChangedAt;
+      let finalLastStoppedAt = Math.max(local.lastTimerStoppedAt || 0, server.lastTimerStoppedAt || 0);
+
+      if (authoritativeTimer) {
+        finalActiveTimer = server.activeTimer;
+        finalTimerChangedAt = serverTimerChangedAt;
+        finalLastStoppedAt = server.lastTimerStoppedAt || 0;
+      } else if (localTimerChangedAt > serverTimerChangedAt) {
         finalActiveTimer = local.activeTimer;
+        finalTimerChangedAt = localTimerChangedAt;
+        if (!local.activeTimer && (local.lastTimerStoppedAt || 0) > 0) {
+          finalLastStoppedAt = local.lastTimerStoppedAt;
+        }
         needsPushToServer = true;
+      } else {
+        finalTimerChangedAt = serverTimerChangedAt;
+        if (!server.activeTimer && serverTimerChangedAt > localTimerChangedAt && server.lastTimerStoppedAt !== undefined) {
+          finalLastStoppedAt = server.lastTimerStoppedAt || 0;
+        }
       }
 
       const finalTasks = Array.from(taskMap.values()).filter(t => {
@@ -8482,8 +8501,8 @@
         scheduleSettings: finalScheduleSettings,
         daysHistory: mergedHistory,
         activeTimer: finalActiveTimer,
-        activeTimerChangedAt: Math.max(localTimerChangedAt, serverTimerChangedAt),
-        lastTimerStoppedAt: Math.max(local.lastTimerStoppedAt || 0, server.lastTimerStoppedAt || 0),
+        activeTimerChangedAt: finalTimerChangedAt,
+        lastTimerStoppedAt: finalLastStoppedAt,
         deletedTasks: mergedDeleted,
         deletedGoals: mergedDeletedGoals,
         deletedSessions: mergedDeletedSessions,
@@ -9658,7 +9677,7 @@
 
     function computeDayTimelineClient(dateStr, nowMs = getSyncedServerNow()) {
       const sch = getScheduleSettingsFE();
-      const todayStr = getLocalDateStr(new Date(nowMs));
+      const todayStr = msToVnPartsFE(nowMs).dateStr;
       const dayMidnightMs = vnDateTimeToMsFE(dateStr, 0, 0, 0);
       const deletedSes = plannerData.deletedSessions || {};
 
@@ -9727,14 +9746,14 @@
 
       let ongoingBreakSeconds = 0;
       let restAnchorMs = null;
-      if (!active) {
+      if (dateStr === todayStr && !active) {
         const lastSesEnd = merged.length > 0 ? merged[merged.length - 1].endedAt : 0;
         const lastStopLocal = (plannerData.lastTimerStoppedAt || 0) >= dayMidnightMs ? plannerData.lastTimerStoppedAt : 0;
         const bestStop = Math.max(lastSesEnd, lastStopLocal);
-        if (bestStop > 0 && nowMs >= bestStop) {
+        if (bestStop >= dayMidnightMs && nowMs >= bestStop) {
           restAnchorMs = bestStop;
           ongoingBreakSeconds = Math.floor((nowMs - bestStop) / 1000);
-          if (dateStr === todayStr && lastSesEnd > 0 && nowMs > lastSesEnd) {
+          if (lastSesEnd >= dayMidnightMs && nowMs > lastSesEnd) {
             const visualBreakDur = Math.floor((nowMs - lastSesEnd) / 1000);
             if (visualBreakDur >= minBreak) {
               const sr = (lastSesEnd - dayMidnightMs) / 60000;
@@ -9836,7 +9855,7 @@
 
       if (floatingEl) {
         const showFloating = (currentPage === 'planner') && (
-          isMobileViewport() || !plannerData.activeTimer
+          plannerData.activeTimer ? isMobileViewport() : (getRestElapsedSeconds() !== null)
         );
         floatingEl.style.display = showFloating ? 'flex' : 'none';
       }
@@ -10766,12 +10785,12 @@
     let quickPickerExpandedGroups = new Set(['MATH', 'VERBAL']);
 
     function getRestElapsedSeconds(nowMs = getSyncedServerNow()) {
-      const todayStr = getLocalDateStr(new Date(nowMs));
+      const todayStr = msToVnPartsFE(nowMs).dateStr;
       const todayData = computeDayTimelineClient(todayStr, nowMs);
       if (todayData.restAnchorMs !== null) {
         return Math.max(0, Math.floor((nowMs - todayData.restAnchorMs) / 1000));
       }
-      return Math.max(0, Math.floor((Date.now() - APP_BOOT_WALL_MS) / 1000));
+      return null;
     }
 
     function handleFloatingPlayClick() {
@@ -10960,7 +10979,9 @@
       const fBtn = document.getElementById('tlFloatingPlayBtn');
       const fIcon = document.getElementById('tlFloatingPlayIcon');
       if (floatingBar) {
-        const shouldShow = (currentPage === 'planner') && (isMobileViewport() || !active);
+        const shouldShow = (currentPage === 'planner') && (
+          active ? isMobileViewport() : (restSec !== null)
+        );
         floatingBar.style.display = shouldShow ? 'flex' : 'none';
       }
       if (fClock && fSub && fBtn && fIcon) {
@@ -10973,7 +10994,7 @@
           fBtn.classList.add('running');
           fIcon.innerHTML = `<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>`;
           fSub.innerText = `Đang học: ${active.taskTitle || 'Focus'} • Tổng ${formatHM(data.dayTotalSeconds)}`;
-        } else {
+        } else if (restSec !== null) {
           fClock.innerText = formatHMS(restSec);
           fClock.classList.remove('running');
           fBtn.classList.remove('running');
@@ -12373,7 +12394,7 @@
         sessionStartedAt: startNow,
         date: currentPlannerDate
       };
-      plannerData.activeTimerChangedAt = Date.now();
+      plannerData.activeTimerChangedAt = startNow;
       savePlannerToLocal();
 
       renderDailyPlannerPage();
@@ -12401,7 +12422,7 @@
             updateServerClockSkew(data.serverTime, reqStart, reqEnd);
           }
           if (data.dailyPlanner) {
-            reconcilePlannerWithServer(data.dailyPlanner);
+            reconcilePlannerWithServer(data.dailyPlanner, { authoritativeTimer: true });
           }
           renderDailyPlannerPage();
           updateYptLiveTimers();
@@ -12456,7 +12477,7 @@
         else plannerData.sessions.push(sesPayload);
       }
       plannerData.activeTimer = null;
-      plannerData.activeTimerChangedAt = Date.now();
+      plannerData.activeTimerChangedAt = now;
       plannerData.lastTimerStoppedAt = now;
       savePlannerToLocal();
 
@@ -12480,7 +12501,7 @@
             updateServerClockSkew(data.serverTime, reqStart, reqEnd);
           }
           if (data.dailyPlanner) {
-            reconcilePlannerWithServer(data.dailyPlanner);
+            reconcilePlannerWithServer(data.dailyPlanner, { authoritativeTimer: true });
           }
           renderDailyPlannerPage();
           updateYptLiveTimers();
@@ -12656,6 +12677,7 @@
 
       isTaskMutating++;
       try {
+        const reqStart = Date.now();
         const res = await fetch('/api/daily-todos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -12663,8 +12685,12 @@
         });
         if (res.ok) {
           const data = await res.json();
+          const reqEnd = Date.now();
+          if (data.serverTime) {
+            updateServerClockSkew(data.serverTime, reqStart, reqEnd);
+          }
           if (data.dailyPlanner) {
-            reconcilePlannerWithServer(data.dailyPlanner);
+            reconcilePlannerWithServer(data.dailyPlanner, { authoritativeTimer: true });
             renderDailyPlannerPage();
           }
         }
@@ -12676,22 +12702,40 @@
     }
 
     async function deleteDailyTask(id) {
+      const wasActive = plannerData.activeTimer?.taskId === id;
+      const syncNow = getSyncedServerNow();
       plannerData.tasks = (plannerData.tasks || []).filter(t => t.id !== id);
-      if (plannerData.activeTimer?.taskId === id) {
+      if (wasActive) {
         plannerData.activeTimer = null;
+        plannerData.activeTimerChangedAt = syncNow;
+        plannerData.lastTimerStoppedAt = syncNow;
       }
       if (!plannerData.deletedTasks) plannerData.deletedTasks = {};
-      plannerData.deletedTasks[id] = Date.now();
+      plannerData.deletedTasks[id] = syncNow;
       savePlannerToLocal();
       renderDailyPlannerPage();
+      updateYptLiveTimers();
 
       isTaskMutating++;
       try {
-        await fetch('/api/daily-todos', {
+        const reqStart = Date.now();
+        const res = await fetch('/api/daily-todos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'delete', id })
         });
+        if (res.ok) {
+          const data = await res.json();
+          const reqEnd = Date.now();
+          if (data.serverTime) {
+            updateServerClockSkew(data.serverTime, reqStart, reqEnd);
+          }
+          if (data.dailyPlanner) {
+            reconcilePlannerWithServer(data.dailyPlanner, { authoritativeTimer: true });
+            renderDailyPlannerPage();
+            updateYptLiveTimers();
+          }
+        }
       } catch (err) {
         console.error('Lỗi xóa task:', err);
       } finally {
@@ -13120,13 +13164,15 @@
             const beforeSig = JSON.stringify({
               t: plannerData.tasks, g: plannerData.goals, s: plannerData.sessions,
               e: plannerData.calendarEvents, sch: plannerData.scheduleSettings,
-              h: plannerData.daysHistory, a: plannerData.activeTimer
+              h: plannerData.daysHistory, a: plannerData.activeTimer,
+              lts: plannerData.lastTimerStoppedAt || 0
             });
             reconcilePlannerWithServer(data.settings.dailyPlanner);
             const afterSig = JSON.stringify({
               t: plannerData.tasks, g: plannerData.goals, s: plannerData.sessions,
               e: plannerData.calendarEvents, sch: plannerData.scheduleSettings,
-              h: plannerData.daysHistory, a: plannerData.activeTimer
+              h: plannerData.daysHistory, a: plannerData.activeTimer,
+              lts: plannerData.lastTimerStoppedAt || 0
             });
             if (beforeSig !== afterSig) {
               const isModalOpen = ['sessionEditorModal', 'scheduleSettingsModal', 'quickTimerPickerModal', 'clusterDetailModal', 'mobileYptMenuSheet'].some(mid => {
@@ -15514,8 +15560,8 @@
           try {
             const data = JSON.parse(event.data);
             if (data.type === 'PLANNER_UPDATE' && !isTimerSwitching && isTaskMutating === 0) {
-              if (data.serverTime) {
-                // SSE has no RTT, use current time directly
+              if (data.serverTime && serverClockSkew === 0) {
+                // Only seed initial skew from SSE if HTTP RTT hasn't calibrated yet
                 updateServerClockSkew(data.serverTime, Date.now(), Date.now());
               }
               const wasRunning = !!plannerData.activeTimer;
@@ -15527,6 +15573,7 @@
               const prevSesJson = JSON.stringify(plannerData.sessions || []);
               const prevCalEvJson = JSON.stringify(plannerData.calendarEvents || []);
               const prevSchJson = JSON.stringify(plannerData.scheduleSettings || {});
+              const prevLastStopped = plannerData.lastTimerStoppedAt || 0;
 
               if (data.dailyPlanner) {
                 reconcilePlannerWithServer(data.dailyPlanner);
@@ -15553,7 +15600,8 @@
                 const nowSesJson = JSON.stringify(plannerData.sessions || []);
                 const nowCalEvJson = JSON.stringify(plannerData.calendarEvents || []);
                 const nowSchJson = JSON.stringify(plannerData.scheduleSettings || {});
-                if (wasRunning !== isRunningNow || taskChanged || prevTasksJson !== nowTasksJson || prevGoalsJson !== nowGoalsJson || prevHistoryJson !== nowHistoryJson || prevSesJson !== nowSesJson || prevCalEvJson !== nowCalEvJson || prevSchJson !== nowSchJson) {
+                const nowLastStopped = plannerData.lastTimerStoppedAt || 0;
+                if (wasRunning !== isRunningNow || taskChanged || prevLastStopped !== nowLastStopped || prevTasksJson !== nowTasksJson || prevGoalsJson !== nowGoalsJson || prevHistoryJson !== nowHistoryJson || prevSesJson !== nowSesJson || prevCalEvJson !== nowCalEvJson || prevSchJson !== nowSchJson) {
                   renderDailyPlannerPage();
                 }
               }
