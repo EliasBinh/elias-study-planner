@@ -3384,10 +3384,23 @@ const server = http.createServer(async (req, res) => {
           const planner = appSettings.dailyPlanner;
           const normalizePlannerHHMM = (v) => {
             const s = String(v || '').trim();
-            const m = s.match(/^(\d{1,2})[:hH](\d{1,2})$/);
-            if (!m) return s;
-            const hh = Math.min(23, Math.max(0, parseInt(m[1], 10)));
-            const mm = Math.min(59, Math.max(0, parseInt(m[2], 10)));
+            if (!s) return '';
+            let hh = NaN, mm = NaN;
+            const m = s.match(/^(\d{1,2})[:hH\.](\d{1,2})$/);
+            if (m) {
+              hh = parseInt(m[1], 10);
+              mm = parseInt(m[2], 10);
+            } else if (/^\d{3,4}$/.test(s)) {
+              const p = s.padStart(4, '0');
+              hh = parseInt(p.slice(0, 2), 10);
+              mm = parseInt(p.slice(2, 4), 10);
+            } else if (/^\d{1,2}$/.test(s)) {
+              hh = parseInt(s, 10);
+              mm = 0;
+            } else {
+              return s;
+            }
+            if (isNaN(hh) || isNaN(mm) || hh < 0 || hh > 23 || mm < 0 || mm > 59) return s;
             return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
           };
 

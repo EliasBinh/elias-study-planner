@@ -2857,6 +2857,8 @@
       font-weight: 400;
       color: #37352F;
       flex: 1;
+      min-width: 0;
+      overflow-wrap: break-word;
       cursor: text;
       transition: all 0.12s ease;
       line-height: 1.45;
@@ -3264,9 +3266,14 @@
     .planner-deadline-badge {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
-      font-size: 12px;
+      width: 172px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      font-size: 11.5px;
       font-weight: 500;
+      font-variant-numeric: tabular-nums;
       padding: 2px 8px;
       border-radius: 4px;
       white-space: nowrap;
@@ -3317,25 +3324,102 @@
     }
 
     @media (max-width: 768px) {
+      .planner-deadline-badge {
+        width: auto;
+        font-size: 10.5px;
+        padding: 2px 6px;
+      }
+      .ypt-task-timer-badge {
+        width: 74px;
+        font-size: 10.5px;
+        padding: 2px 5px;
+      }
       .planner-deadline-badge.empty {
         opacity: 0.78;
       }
+    }
+
+    .tr-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .tr-task-heading {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .tr-notify-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.14s ease;
+    }
+
+    .tr-notify-pill.active {
+      background: #E0F2FE;
+      border-color: #7DD3FC;
+      color: #0284C7;
+    }
+
+    body.mobile-ypt-planner .tr-task-heading {
+      color: #F3F4F6 !important;
+    }
+
+    body.mobile-ypt-planner .tr-notify-pill {
+      background: #262930 !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+      color: #9CA3AF !important;
+    }
+
+    body.mobile-ypt-planner .tr-notify-pill.active {
+      background: rgba(56, 189, 248, 0.16) !important;
+      border-color: rgba(56, 189, 248, 0.4) !important;
+      color: #7DD3FC !important;
+    }
+
+    .tr-time-field {
+      margin-bottom: 0 !important;
+      text-align: center;
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.5px;
+      padding: 9px 10px !important;
+      border-radius: 10px !important;
     }
 
     .tr-presets-row {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .tr-preset-chip {
       border: 1px solid var(--border-subtle);
       background: var(--bg-secondary);
       color: var(--text-primary);
-      border-radius: 6px;
-      padding: 5px 10px;
-      font-size: 12px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.12s ease, border-color 0.12s ease;
@@ -4294,8 +4378,13 @@
     .ypt-task-timer-badge {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
+      width: 82px;
+      flex-shrink: 0;
+      box-sizing: border-box;
       font-family: 'SF Mono', 'Roboto Mono', monospace;
+      font-variant-numeric: tabular-nums;
       font-size: 11.5px;
       font-weight: 550;
       padding: 2px 7px;
@@ -7664,44 +7753,49 @@
     </div>
   </div>
 
-  <!-- TASK TIME RANGE & REMINDER MODAL -->
+  <!-- TASK TIME RANGE & DEADLINE MODAL -->
   <div id="taskTimeRangeModal" class="modal-overlay" onclick="if(event.target === this) closeTaskTimeRangeModal()">
-    <div class="modal-card" style="max-width: 390px;">
+    <div class="modal-card" style="max-width: 340px;">
       <div class="cluster-sheet-handle"></div>
-      <div class="modal-title" style="margin-bottom: 4px;">Khung giờ &amp; Deadline</div>
-      <div id="trModalTaskTitle" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Công việc</div>
+      <div class="tr-modal-head">
+        <div id="trModalTaskTitle" class="tr-task-heading">Công việc</div>
+        <button type="button" id="trBtnNotifyToggle" class="tr-notify-pill active" onclick="toggleTrNotifyState()" title="Bật/tắt chuông nhắc giờ bắt đầu">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span id="trNotifyLabel">Nhắc giờ</span>
+        </button>
+      </div>
       <input type="hidden" id="trEditTaskId" value="">
+      <input type="hidden" id="trNotifyEnabledVal" value="1">
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
         <div>
-          <label class="rpc-group-label" for="trStartTimeInput">Từ giờ (Nhắc lúc bắt đầu):</label>
-          <input id="trStartTimeInput" class="modal-input" type="time" style="margin-bottom: 0;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); saveTaskTimeRange(); }">
+          <label class="rpc-group-label" for="trStartTimeInput">Bắt đầu</label>
+          <input id="trStartTimeInput" class="modal-input tr-time-field" type="text" inputmode="numeric" maxlength="5" placeholder="13:30"
+                 onblur="autoFormatTimeField(this)"
+                 onkeydown="if(event.key==='Enter'){ event.preventDefault(); saveTaskTimeRange(); }">
         </div>
         <div>
-          <label class="rpc-group-label" for="trDeadlineInput">Đến giờ (Deadline):</label>
-          <input id="trDeadlineInput" class="modal-input" type="time" style="margin-bottom: 0;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); saveTaskTimeRange(); }">
+          <label class="rpc-group-label" for="trDeadlineInput">Deadline</label>
+          <input id="trDeadlineInput" class="modal-input tr-time-field" type="text" inputmode="numeric" maxlength="5" placeholder="17:00"
+                 onblur="autoFormatTimeField(this)"
+                 onkeydown="if(event.key==='Enter'){ event.preventDefault(); saveTaskTimeRange(); }">
         </div>
       </div>
 
       <div class="tr-presets-row">
-        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(30)">+30 phút</button>
-        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(60)">+1 giờ</button>
-        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(120)">+2 giờ</button>
-        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(210)">+3g30</button>
-        <button type="button" class="tr-preset-chip" onclick="clearTaskTimeRangeInputs()">Xóa giờ</button>
+        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(30)">+30p</button>
+        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(60)">+1h</button>
+        <button type="button" class="tr-preset-chip" onclick="applyTimeRangePreset(120)">+2h</button>
       </div>
 
-      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; padding-top: 6px; border-top: 1px solid var(--border-subtle);">
-        <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 500; cursor: pointer;">
-          <input type="checkbox" id="trChkNotifyEnabled" checked style="width: 15px; height: 15px; cursor: pointer;">
-          <span>Thông báo &amp; chuông khi đến giờ</span>
-        </label>
-        <button type="button" class="btn-ghost btn-outline" style="padding: 4px 8px; font-size: 11.5px; white-space: nowrap;" onclick="playClassInChimeSound({ preview: true })">Thử chuông</button>
-      </div>
-
-      <div class="modal-actions">
-        <button type="button" class="btn-ghost btn-outline" onclick="closeTaskTimeRangeModal()">Hủy</button>
-        <button type="button" class="btn-ghost" style="background: #0284C7; color: #fff; font-weight: 600;" onclick="saveTaskTimeRange()">Lưu khung giờ</button>
+      <div class="modal-actions" style="justify-content: space-between; margin-top: 2px;">
+        <button type="button" class="btn-ghost" style="color: #EF4444; font-size: 12.5px; padding: 6px 8px;" onclick="clearTaskTimeRangeInputs()">Xóa</button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-ghost btn-outline" onclick="closeTaskTimeRangeModal()">Hủy</button>
+          <button type="button" class="btn-ghost" style="background: #0284C7; color: #fff; font-weight: 600;" onclick="saveTaskTimeRange()">Lưu</button>
+        </div>
       </div>
     </div>
   </div>
@@ -11724,12 +11818,27 @@
 
     function parseTaskHHMMToMin(str) {
       if (!str) return null;
-      const m = String(str).match(/^\s*(\d{1,2})[:hH](\d{1,2})\s*$/);
-      if (!m) return null;
-      const h = parseInt(m[1], 10);
-      const min = parseInt(m[2], 10);
+      const raw = String(str).trim();
+      let h = NaN, min = NaN;
+      const sepMatch = raw.match(/^(\d{1,2})[:hH\.](\d{1,2})$/);
+      if (sepMatch) {
+        h = parseInt(sepMatch[1], 10);
+        min = parseInt(sepMatch[2], 10);
+      } else if (/^\d{3,4}$/.test(raw)) {
+        const padded = raw.padStart(4, '0');
+        h = parseInt(padded.slice(0, 2), 10);
+        min = parseInt(padded.slice(2, 4), 10);
+      } else if (/^\d{1,2}$/.test(raw)) {
+        h = parseInt(raw, 10);
+        min = 0;
+      }
       if (isNaN(h) || isNaN(min) || h < 0 || h > 23 || min < 0 || min > 59) return null;
       return h * 60 + min;
+    }
+
+    function normalizeTaskHHMMFE(str) {
+      const m = parseTaskHHMMToMin(str);
+      return m !== null ? formatMinutesToHHMM(m) : '';
     }
 
     function formatMinutesToHHMM(totalMin) {
@@ -11740,11 +11849,13 @@
     }
 
     function formatTaskTimeBadgeText(task) {
-      if (!task) return '+ Giờ / Hạn';
-      if (task.startTime && task.deadline) return `${task.startTime} - ${task.deadline}`;
-      if (task.startTime) return `${task.startTime} →`;
-      if (task.deadline) return task.deadline;
-      return '+ Giờ / Hạn';
+      if (!task) return '+ Giờ';
+      const st = normalizeTaskHHMMFE(task.startTime);
+      const dl = normalizeTaskHHMMFE(task.deadline) || String(task.deadline || '').trim();
+      if (st && dl) return `${st} - Deadline: ${dl}`;
+      if (st) return `Bắt đầu: ${st}`;
+      if (dl) return `Deadline: ${dl}`;
+      return '+ Giờ';
     }
 
     /* Helper: check if a deadline is overdue */
@@ -13469,6 +13580,31 @@
     }
 
     /* TIME RANGE & DEADLINE EDITOR MODAL */
+    function renderTrNotifyPill(enabled) {
+      const btn = document.getElementById('trBtnNotifyToggle');
+      const hidden = document.getElementById('trNotifyEnabledVal');
+      const label = document.getElementById('trNotifyLabel');
+      if (hidden) hidden.value = enabled ? '1' : '0';
+      if (btn) btn.classList.toggle('active', !!enabled);
+      if (label) label.innerText = enabled ? 'Nhắc giờ' : 'Tắt nhắc';
+    }
+
+    function toggleTrNotifyState() {
+      const cur = document.getElementById('trNotifyEnabledVal')?.value !== '0';
+      const next = !cur;
+      renderTrNotifyPill(next);
+      if (next) {
+        unlockClassInAudio();
+        playClassInChimeSound({ preview: true });
+      }
+    }
+
+    function autoFormatTimeField(inp) {
+      if (!inp) return;
+      const norm = normalizeTaskHHMMFE(inp.value);
+      if (norm) inp.value = norm;
+    }
+
     function startInlineDeadlineEdit(event, id) {
       if (event) event.stopPropagation();
       const modal = document.getElementById('taskTimeRangeModal');
@@ -13477,9 +13613,9 @@
 
       document.getElementById('trEditTaskId').value = id;
       document.getElementById('trModalTaskTitle').innerText = task.title || 'Công việc';
-      document.getElementById('trStartTimeInput').value = task.startTime || '';
-      document.getElementById('trDeadlineInput').value = task.deadline || '';
-      document.getElementById('trChkNotifyEnabled').checked = (task.notifyEnabled !== false);
+      document.getElementById('trStartTimeInput').value = normalizeTaskHHMMFE(task.startTime);
+      document.getElementById('trDeadlineInput').value = normalizeTaskHHMMFE(task.deadline) || task.deadline || '';
+      renderTrNotifyPill(task.notifyEnabled !== false);
       modal.style.display = 'flex';
       setTimeout(() => {
         const st = document.getElementById('trStartTimeInput');
@@ -13502,6 +13638,8 @@
         const curMin = parseTaskHHMMToMin(nowVn.hhmm) || 0;
         startMin = Math.ceil(curMin / 5) * 5;
         startEl.value = formatMinutesToHHMM(startMin);
+      } else {
+        startEl.value = formatMinutesToHHMM(startMin);
       }
       dlEl.value = formatMinutesToHHMM(startMin + durationMins);
     }
@@ -13515,9 +13653,11 @@
 
     async function saveTaskTimeRange() {
       const id = document.getElementById('trEditTaskId')?.value;
-      const startTime = (document.getElementById('trStartTimeInput')?.value || '').trim();
-      const deadline = (document.getElementById('trDeadlineInput')?.value || '').trim();
-      const notifyEnabled = !!document.getElementById('trChkNotifyEnabled')?.checked;
+      const startRaw = (document.getElementById('trStartTimeInput')?.value || '').trim();
+      const dlRaw = (document.getElementById('trDeadlineInput')?.value || '').trim();
+      const startTime = normalizeTaskHHMMFE(startRaw);
+      const deadline = normalizeTaskHHMMFE(dlRaw) || dlRaw;
+      const notifyEnabled = document.getElementById('trNotifyEnabledVal')?.value !== '0';
       const task = (plannerData.tasks || []).find(t => t.id === id);
 
       if (startTime && notifyEnabled) {
@@ -13548,7 +13688,17 @@
         if (res.ok) {
           const data = await res.json();
           if (data.serverTime) updateServerClockSkew(data.serverTime, reqStart, Date.now());
-          if (data.dailyPlanner) reconcilePlannerWithServer(data.dailyPlanner);
+          if (data.dailyPlanner) {
+            const sMatch = (data.dailyPlanner.tasks || []).find(t => t.id === id);
+            if (sMatch && task) {
+              task.startTime = sMatch.startTime || '';
+              task.deadline = sMatch.deadline || '';
+              task.notifyEnabled = sMatch.notifyEnabled !== false;
+              task.updatedAt = sMatch.updatedAt;
+              savePlannerToLocal();
+            }
+            reconcilePlannerWithServer(data.dailyPlanner);
+          }
           renderDailyPlannerPage();
         }
       } catch (err) {

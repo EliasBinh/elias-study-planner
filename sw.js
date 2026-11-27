@@ -1,5 +1,5 @@
 // Service Worker for PWA installation & scheduled task reminder notifications
-const CACHE_NAME = 'elias-pwa-v7';
+const CACHE_NAME = 'elias-pwa-v8';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
