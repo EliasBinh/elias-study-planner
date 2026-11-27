@@ -4533,33 +4533,31 @@
       color: #6B7280;
     }
 
-    /* Study Session Blocks */
+    /* Study Session Blocks (Exact YPT Flush Monochrome Rows - Image 4) */
     .tl-session-block {
       position: absolute;
-      left: 6px;
-      right: 10px;
-      border-radius: 6px;
-      border-left: 4px solid #2563EB;
-      background: rgba(37, 99, 235, 0.1);
-      border-top: 1px solid rgba(37, 99, 235, 0.15);
-      border-right: 1px solid rgba(37, 99, 235, 0.15);
-      border-bottom: 1px solid rgba(37, 99, 235, 0.15);
-      padding: 5px 10px;
+      left: 0;
+      right: 0;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid #FFFFFF;
+      background: #E0F2FE;
+      padding: 2px 10px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 8px;
       cursor: pointer;
       z-index: 6;
       overflow: hidden;
-      transition: transform 0.1s ease, box-shadow 0.12s ease;
+      transition: filter 0.12s ease;
     }
     .tl-session-block:hover {
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      filter: brightness(0.97);
       z-index: 8;
     }
     .tl-session-block.is-live {
-      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.22);
+      box-shadow: inset 0 0 0 1px #0284C7;
     }
     .tl-session-left {
       display: flex;
@@ -4569,24 +4567,25 @@
       flex: 1;
     }
     .tl-session-title {
-      font-size: 13px;
-      font-weight: 650;
-      color: #1E293B;
+      font-size: 12.5px;
+      font-weight: 550;
+      color: #0369A1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
     .tl-session-time {
       font-family: 'SF Mono', monospace;
-      font-size: 11px;
-      color: #0369A1;
+      font-size: 10.5px;
+      color: #0284C7;
+      opacity: 0.8;
     }
     .tl-session-dur {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11.5px;
+      font-weight: 550;
       color: #0284C7;
       white-space: nowrap;
       flex-shrink: 0;
@@ -4769,12 +4768,13 @@
     }
     .tl-week-session {
       position: absolute;
-      left: 3px;
-      right: 3px;
-      border-radius: 4px;
-      border-left: 3px solid #2563EB;
-      background: rgba(37, 99, 235, 0.13);
-      padding: 3px 5px;
+      left: 0;
+      right: 0;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid #FFFFFF;
+      background: #E0F2FE;
+      padding: 2px 5px;
       overflow: hidden;
       cursor: pointer;
       z-index: 6;
@@ -4787,15 +4787,15 @@
       z-index: 10;
     }
     .tl-week-session-title {
-      font-weight: 650;
-      color: #1E293B;
+      font-weight: 550;
+      color: #0369A1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .tl-week-session-dur {
       font-size: 10px;
-      color: #475569;
+      color: #0284C7;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -5287,17 +5287,15 @@
        CLUSTERED OVERLAPPING SESSIONS (+ N BADGE) & MOBILE YPT MODE
        ======================================================== */
     .tl-cluster-block {
-      border: 1.5px solid #38BDF8 !important;
-      border-left: 3px solid #0EA5E9 !important;
-      background: #F0F9FF !important;
+      border: 1px solid #38BDF8 !important;
+      background: #E0F2FE !important;
     }
     .tl-cluster-badge {
-      font-weight: 700;
-      opacity: 0.92;
-      margin-left: 3px;
+      font-weight: 600;
+      margin-left: 2px;
     }
     .tl-week-cluster {
-      box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.35);
+      box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.45);
     }
 
     /* Cluster Detail Modal / Sheet (Exact YPT Mini-Timeline - Image 2) */
@@ -5331,70 +5329,78 @@
       display: none;
     }
     .cluster-sheet-list {
-      margin: 14px 0 10px;
+      margin: 14px 0 8px;
       max-height: 290px;
       overflow-y: auto;
     }
     .ypt-cl-timeline {
       display: flex;
-      align-items: stretch;
-      position: relative;
-      min-height: 76px;
+      flex-direction: column;
+      gap: 0;
     }
-    .ypt-cl-axis {
-      width: 68px;
-      flex-shrink: 0;
-      position: relative;
-      font-family: 'SF Mono', monospace;
-      font-size: 11px;
-      color: #64748B;
-      padding-right: 10px;
+    .ypt-cl-row {
+      display: flex;
+      align-items: stretch;
+      min-height: 28px;
     }
     .ypt-cl-tick {
-      position: absolute;
-      left: 0;
-      right: 4px;
+      width: 78px;
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 4px;
-      line-height: 1;
-      transform: translateY(-50%);
+      gap: 5px;
+      padding-right: 0;
+      font-family: 'SF Mono', monospace;
+      font-size: 11px;
+      color: #64748B;
       white-space: nowrap;
+      position: relative;
     }
-    .ypt-cl-tick::after {
-      content: '';
-      width: 8px;
+    .ypt-cl-dashes {
+      width: 9px;
       border-top: 1px dashed rgba(100, 116, 139, 0.45);
+      flex-shrink: 0;
     }
-    .ypt-cl-bars {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-      border-left: 1px dashed rgba(148, 163, 184, 0.35);
-      padding-left: 2px;
+    .ypt-cl-seam {
+      width: 0;
+      position: relative;
+      border-left: 1px dashed rgba(148, 163, 184, 0.45);
+      flex-shrink: 0;
+    }
+    .ypt-cl-seam-dot {
+      position: absolute;
+      left: -2.5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
     }
     .ypt-cl-bar {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      min-height: 28px;
+      min-width: 0;
       padding: 5px 10px;
-      border-radius: 4px;
-      border-left: 3px solid #38BDF8;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px dashed rgba(14, 165, 233, 0.25);
       background: #F0F9FF;
       cursor: pointer;
       transition: filter 0.12s ease;
+    }
+    .ypt-cl-row:last-child .ypt-cl-bar {
+      border-bottom: none;
     }
     .ypt-cl-bar:hover {
       filter: brightness(0.96);
     }
     .ypt-cl-bar-title {
       font-size: 13px;
-      font-weight: 550;
+      font-weight: 500;
       color: #0F172A;
       white-space: nowrap;
       overflow: hidden;
@@ -5406,7 +5412,7 @@
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      font-weight: 550;
+      font-weight: 500;
       color: #0284C7;
       flex-shrink: 0;
       white-space: nowrap;
@@ -5611,28 +5617,25 @@
         background: rgba(255, 255, 255, 0.02) !important;
       }
 
-      /* Session Blocks & Clusters Dark YPT Style */
+      /* Session Blocks & Clusters Dark YPT Style (Flush Rectangular - Image 2 & 4) */
       body.mobile-ypt-planner .tl-session-block {
         left: 0 !important;
         right: 0 !important;
-        border-radius: 3px !important;
-        border-top: none !important;
-        border-right: none !important;
-        border-bottom: none !important;
-        border-left-width: 3px !important;
-        background: #1C2327 !important;
+        border-radius: 0 !important;
+        border: none !important;
+        border-bottom: 1px solid #0A0B0D !important;
+        background: #1B2327 !important;
       }
       body.mobile-ypt-planner .tl-session-block.tl-cluster-block {
-        background: #222B31 !important;
-        border: 1.5px solid #E5E7EB !important;
-        border-left: 3px solid #7DD3FC !important;
+        background: #20292E !important;
+        border: 1px solid #E5E7EB !important;
       }
       body.mobile-ypt-planner .tl-session-title {
-        color: #F3F4F6 !important;
-        font-weight: 550 !important;
+        color: #93C5FD !important;
+        font-weight: 500 !important;
       }
       body.mobile-ypt-planner .tl-session-time {
-        color: #93C5FD !important;
+        color: #7DD3FC !important;
       }
       body.mobile-ypt-planner .tl-session-dur {
         color: #93C5FD !important;
@@ -5725,11 +5728,13 @@
         border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
       }
       body.mobile-ypt-planner .tl-week-session {
-        background: #1C2327 !important;
-        border-left-color: #93C5FD !important;
+        background: #1B2327 !important;
+        border: none !important;
+        border-bottom: 1px solid #0A0B0D !important;
+        border-radius: 0 !important;
       }
       body.mobile-ypt-planner .tl-week-session-title {
-        color: #F3F4F6 !important;
+        color: #93C5FD !important;
       }
       body.mobile-ypt-planner .tl-week-session-dur {
         color: #93C5FD !important;
@@ -5989,21 +5994,20 @@
         border-color: rgba(255, 255, 255, 0.32) !important;
         color: #9CA3AF !important;
       }
-      body.mobile-ypt-planner .ypt-cl-axis {
+      body.mobile-ypt-planner .ypt-cl-tick {
         color: #6B7280 !important;
       }
-      body.mobile-ypt-planner .ypt-cl-tick::after {
+      body.mobile-ypt-planner .ypt-cl-dashes {
         border-top-color: rgba(156, 163, 175, 0.35) !important;
       }
-      body.mobile-ypt-planner .ypt-cl-bars {
-        border-left-color: rgba(255, 255, 255, 0.1) !important;
+      body.mobile-ypt-planner .ypt-cl-seam {
+        border-left-color: rgba(255, 255, 255, 0.16) !important;
       }
       body.mobile-ypt-planner .ypt-cl-bar {
-        background: #222B31 !important;
-        border-left-color: #7DD3FC !important;
+        border-bottom-color: rgba(255, 255, 255, 0.14) !important;
       }
       body.mobile-ypt-planner .ypt-cl-bar-title {
-        color: #F3F4F6 !important;
+        color: #93C5FD !important;
       }
       body.mobile-ypt-planner .ypt-cl-bar-right {
         color: #7DD3FC !important;
@@ -9961,6 +9965,27 @@
       return `${h12}:${String(m).padStart(2, '0')} ${suffix}`;
     }
 
+    function getYptDurationIntensity(durSec, maxDurSec, isDark) {
+      const ratio = maxDurSec > 0 ? Math.min(1, Math.max(0, (durSec || 0) / maxDurSec)) : 0;
+      const tier = ratio >= 0.78 ? 3 : (ratio >= 0.5 ? 2 : (ratio >= 0.22 ? 1 : 0));
+      if (isDark) {
+        const darkScale = [
+          { barBg: '#161F24', dotColor: '#64748B' },
+          { barBg: '#1B272E', dotColor: '#38BDF8' },
+          { barBg: '#203039', dotColor: '#7DD3FC' },
+          { barBg: '#263944', dotColor: '#BAE6FD' }
+        ];
+        return darkScale[tier];
+      }
+      const lightScale = [
+        { barBg: '#F4F9FE', dotColor: '#BAE6FD' },
+        { barBg: '#E6F4FE', dotColor: '#7DD3FC' },
+        { barBg: '#D3EDFD', dotColor: '#38BDF8' },
+        { barBg: '#BAE6FD', dotColor: '#0284C7' }
+      ];
+      return lightScale[tier];
+    }
+
     function openClusterSheet(dateStr, idsJson) {
       const modal = document.getElementById('clusterDetailModal');
       const titleEl = document.getElementById('clusterModalTitle');
@@ -9980,47 +10005,44 @@
       if (titleEl) titleEl.innerText = items.length > 1 ? `${first.title} và ${items.length - 1} khác` : first.title;
       if (rangeEl) rangeEl.innerText = `${minStart}-${maxEnd}`;
 
-      // Build YPT mini-timeline tick labels spanning cluster interval cleanly
-      const startFloor = Math.floor(Math.min(...items.map(i => i.startRelMin)));
-      const endCeil = Math.max(startFloor + 1, Math.ceil(Math.max(...items.map(i => i.endRelMin))));
-      const spanMin = Math.max(1, endCeil - startFloor);
-      const maxTicks = Math.min(4, Math.max(2, items.length));
-      let ticksHtml = '';
-      for (let t = 0; t < maxTicks; t++) {
-        const pct = maxTicks === 1 ? 0 : (t / (maxTicks - 1)) * 86 + 6;
-        const mVal = startFloor + Math.round((t / Math.max(1, maxTicks - 1)) * spanMin);
-        ticksHtml += `<div class="ypt-cl-tick" style="top: ${pct}%;">${formatTickAmPmFE(mVal)}</div>`;
-      }
-
+      const isDark = isMobileViewport();
+      const maxDur = Math.max(1, ...items.map(i => i.durationSeconds || 0));
       const dotsSvg = `<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24" style="opacity:0.65;"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>`;
-      const shadePalette = ['#7DD3FC', '#38BDF8', '#93C5FD', '#BAE6FD', '#60A5FA'];
 
-      const barsHtml = items.map((it, idx) => {
-        const shade = shadePalette[idx % shadePalette.length];
-        const bgTint = isMobileViewport() ? 'rgba(125, 211, 252, 0.14)' : hexToRgbaTint(shade, 0.16);
+      const rowsHtml = items.map(it => {
+        const dur = it.durationSeconds || 0;
+        const shade = getYptDurationIntensity(dur, maxDur, isDark);
         return `
-          <div class="ypt-cl-bar" onclick="closeClusterSheet(); openSessionModal('${it.id}');"
-               style="border-left-color: ${shade}; background: ${bgTint};">
-            <span class="ypt-cl-bar-title">${escapeHtml(it.title)}</span>
-            <span class="ypt-cl-bar-right">
-              <span>${it.isLive ? formatHMS(it.durationSeconds) : formatVnDuration(it.durationSeconds)}</span>
-              ${dotsSvg}
-            </span>
+          <div class="ypt-cl-row">
+            <div class="ypt-cl-tick">
+              <span>${formatTickAmPmFE(it.startRelMin)}</span>
+              <span class="ypt-cl-dashes"></span>
+            </div>
+            <div class="ypt-cl-seam">
+              <span class="ypt-cl-seam-dot" style="background:${shade.dotColor};"></span>
+            </div>
+            <div class="ypt-cl-bar" onclick="closeClusterSheet(); openSessionModal('${it.id}');"
+                 style="background: ${shade.barBg};">
+              <span class="ypt-cl-bar-title">${escapeHtml(it.title)}</span>
+              <span class="ypt-cl-bar-right">
+                <span>${it.isLive ? formatHMS(dur) : formatVnDuration(dur)}</span>
+                ${dotsSvg}
+              </span>
+            </div>
           </div>
         `;
       }).join('');
 
-      listEl.innerHTML = `
-        <div class="ypt-cl-timeline">
-          <div class="ypt-cl-axis">${ticksHtml}</div>
-          <div class="ypt-cl-bars">${barsHtml}</div>
-        </div>
-      `;
+      listEl.innerHTML = `<div class="ypt-cl-timeline">${rowsHtml}</div>`;
 
+      // Bottom legend: duration intensity dots + seconds ONLY (exact YPT Image 2)
       if (legendEl) {
-        legendEl.innerHTML = items.map((it, idx) => {
-          const shade = shadePalette[idx % shadePalette.length];
-          return `<span class="ypt-cl-legend-item"><span class="ypt-cl-legend-dot" style="background:${shade};"></span><span>${escapeHtml(it.title)}: ${formatVnDuration(it.durationSeconds)}</span></span>`;
+        const uniqueDurs = Array.from(new Set(items.map(i => Math.max(0, Math.round(i.durationSeconds || 0)))))
+          .sort((a, b) => b - a)
+          .slice(0, 4);
+        legendEl.innerHTML = uniqueDurs.map(dur => {
+          const shade = getYptDurationIntensity(dur, maxDur, isDark);
+          return `<span class="ypt-cl-legend-item"><span class="ypt-cl-legend-dot" style="background:${shade.dotColor};"></span><span>${formatVnDuration(dur)}</span></span>`;
         }).join('');
       }
 
@@ -10096,18 +10118,18 @@
         `;
       }
 
-      // Group overlapping / adjacent blocks into "+ N" clusters (fixes text overlap!)
-      const clusters = clusterTimelineSessions(data.sessions, toY, totalHeight, 24);
+      // Group overlapping / adjacent blocks into "+ N" clusters (tight 18px YPT row threshold)
+      const clusters = clusterTimelineSessions(data.sessions, toY, totalHeight, 18);
+      const maxClDur = Math.max(1, ...clusters.map(c => c.totalDurationSeconds || 0));
+      const isDarkMob = isMobileViewport();
       const sessionsHtml = clusters.map(cl => {
         const sTop = cl.top;
-        const sHeight = Math.max(24, cl.visualBottom - sTop);
+        const sHeight = Math.max(18, cl.visualBottom - sTop);
         const first = cl.items[0];
         const isCluster = cl.items.length > 1;
         const extraCount = cl.items.length - 1;
-        const isCompact = sHeight < 42;
-        const skyAccent = inferSessionColorFE();
-        const bgTint = hexToRgbaTint(skyAccent, 0.14);
-        const borderTint = hexToRgbaTint(skyAccent, 0.28);
+        const isCompact = sHeight < 38;
+        const shade = getYptDurationIntensity(cl.totalDurationSeconds, maxClDur, isDarkMob);
         const titleText = isCluster
           ? `${escapeHtml(first.title)} <span class="tl-cluster-badge">+ ${extraCount}</span>`
           : escapeHtml(first.title);
@@ -10122,7 +10144,7 @@
         return `
           <div class="tl-session-block ${isCompact ? 'compact' : ''} ${cl.hasLive ? 'is-live' : ''} ${isCluster ? 'tl-cluster-block' : ''}"
                id="${cl.hasLive ? 'tlLiveSessionBlock' : ''}"
-               style="top: ${sTop}px; height: ${sHeight}px; border-left-color: ${skyAccent}; background: ${bgTint}; border-top-color: ${borderTint}; border-right-color: ${borderTint}; border-bottom-color: ${borderTint};"
+               style="top: ${sTop}px; height: ${sHeight}px; background: ${shade.barBg};"
                onclick="${clickHandler}"
                title="${escapeHtml(first.title)}${isCluster ? ` (+${extraCount})` : ''} (${rangeText})">
             <div class="tl-session-left">
@@ -10304,20 +10326,22 @@
           gridCells += `<div class="tl-week-hour-cell" style="height: ${PX_PER_HOUR}px;"></div>`;
         }
         const clusters = clusterTimelineSessions(dd.sessions, toY, totalHeight, 18);
+        const maxWeekDur = Math.max(1, ...clusters.map(c => c.totalDurationSeconds || 0));
+        const isDarkMobW = isMobileViewport();
         const sesHtml = clusters.map(cl => {
           const sTop = cl.top;
           const sh = Math.max(18, cl.visualBottom - sTop);
           const first = cl.items[0];
           const isCluster = cl.items.length > 1;
           const extraCount = cl.items.length - 1;
-          const bgTint = hexToRgbaTint(first.color, 0.14);
+          const shade = getYptDurationIntensity(cl.totalDurationSeconds, maxWeekDur, isDarkMobW);
           const titleLbl = isCluster ? `${escapeHtml(first.title)} + ${extraCount}` : escapeHtml(first.title);
           const clickHandler = isCluster
             ? `openClusterSheet('${dd.dateStr}', ${JSON.stringify(cl.items.map(i => i.id)).replace(/"/g, '&quot;')})`
             : `openSessionModal('${first.id}')`;
           return `
             <div class="tl-week-session ${cl.hasLive ? 'is-live' : ''} ${isCluster ? 'tl-week-cluster' : ''}"
-                 style="top: ${sTop}px; height: ${sh}px; border-left-color: ${first.color}; background: ${bgTint};"
+                 style="top: ${sTop}px; height: ${sh}px; background: ${shade.barBg};"
                  onclick="${clickHandler}"
                  title="${escapeHtml(first.title)}${isCluster ? ` (+${extraCount})` : ''} (${first.startLabel} - ${formatRelMinTime(cl.endRelMin)})">
               <div class="tl-week-session-title">${titleLbl}</div>
