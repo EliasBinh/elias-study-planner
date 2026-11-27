@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>ELIAS WORKSPACE</title>
 
   <!-- Progressive Web App (PWA) Mobile App Tags -->
@@ -3379,22 +3379,6 @@
       color: #0284C7;
     }
 
-    body.mobile-ypt-planner .tr-task-heading {
-      color: #F3F4F6 !important;
-    }
-
-    body.mobile-ypt-planner .tr-notify-pill {
-      background: #262930 !important;
-      border-color: rgba(255, 255, 255, 0.12) !important;
-      color: #9CA3AF !important;
-    }
-
-    body.mobile-ypt-planner .tr-notify-pill.active {
-      background: rgba(56, 189, 248, 0.16) !important;
-      border-color: rgba(56, 189, 248, 0.4) !important;
-      color: #7DD3FC !important;
-    }
-
     .tr-time-field {
       margin-bottom: 0 !important;
       text-align: center;
@@ -5638,15 +5622,102 @@
     }
 
     /* ========================================================
-       MOBILE-ONLY YPT 1-TO-1 DARK UI (IMAGES 1–7)
+       APPLE-STYLE MOBILE LAUNCH SPLASH OVERLAY
+       ======================================================== */
+    #mobileSplashOverlay {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      #mobileSplashOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        background: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        pointer-events: none;
+        opacity: 1;
+        transform: scale(1);
+        transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+                    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                    filter 0.34s ease;
+        will-change: opacity, transform;
+      }
+      #mobileSplashOverlay.is-hidden {
+        display: none !important;
+      }
+      #mobileSplashOverlay.is-leaving {
+        opacity: 0;
+        transform: scale(1.045);
+        filter: blur(4px);
+      }
+      .mob-splash-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 14px 36px rgba(2, 132, 199, 0.16), 0 2px 8px rgba(15, 23, 42, 0.06);
+        animation: appleSplashIconIn 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      .mob-splash-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .mob-splash-wordmark {
+        text-align: center;
+        animation: appleSplashTextIn 0.46s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+      }
+      .mob-splash-title {
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        color: #111827;
+        line-height: 1.2;
+      }
+      .mob-splash-sub {
+        font-size: 12px;
+        font-weight: 500;
+        color: #9CA3AF;
+        letter-spacing: 0.015em;
+        margin-top: 3px;
+      }
+      @keyframes appleSplashIconIn {
+        0% { opacity: 0; transform: scale(0.76) translateY(8px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      @keyframes appleSplashTextIn {
+        0% { opacity: 0; transform: translateY(8px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      body.mob-app-revealing .planner-page-wrapper {
+        animation: appleContentReveal 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @keyframes appleContentReveal {
+        0% { opacity: 0.45; transform: scale(0.985); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+    }
+
+    /* ========================================================
+       MOBILE-ONLY CLEAN WHITE DAILY PLAN UI (MATCHES DESKTOP)
        Desktop (>768px) remains 100% untouched!
        ======================================================== */
     @media (max-width: 768px) {
+      html:has(body.mobile-ypt-planner) {
+        background-color: #FFFFFF !important;
+      }
       body.mobile-ypt-planner {
-        background-color: #0A0B0D !important;
-        color: #F3F4F6 !important;
+        background-color: #FFFFFF !important;
+        color: var(--text-primary) !important;
         padding-bottom: 0 !important;
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
       }
       body.mobile-ypt-planner header,
       body.mobile-ypt-planner #mobileBottomNav,
@@ -5655,18 +5726,22 @@
         display: none !important;
       }
       body.mobile-ypt-planner .planner-page-wrapper {
-        padding: 0 !important;
+        padding: 0 8px !important;
         max-width: 100% !important;
       }
 
-      /* YPT Top Mobile Bar */
+      /* Mobile Top Bar (Pure White Notion Header) */
       body.mobile-ypt-planner .mobile-ypt-header {
         display: flex !important;
         align-items: center;
         justify-content: space-between;
-        height: 52px;
-        padding: 0 16px;
-        background: #0A0B0D;
+        min-height: calc(52px + env(safe-area-inset-top, 0px));
+        padding: env(safe-area-inset-top, 0px) 12px 0 14px;
+        margin: 0 -8px;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border-subtle);
         position: sticky;
         top: 0;
         z-index: 40;
@@ -5674,38 +5749,41 @@
       .mob-ypt-hdr-left {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         min-width: 0;
       }
       .mob-ypt-title {
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 700;
-        color: #F9FAFB;
+        color: var(--text-primary);
         letter-spacing: -0.02em;
         white-space: nowrap;
       }
       .mob-ypt-dday {
-        font-size: 12px;
-        font-weight: 600;
-        color: #9CA3AF;
-        background: #1C1E22;
-        padding: 3px 10px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #334155;
+        background: #F1F5F9;
+        padding: 2px 9px;
         border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        border: 1px solid #E2E8F0;
+        white-space: nowrap;
       }
       .mob-ypt-dday.urgent {
-        color: #FCA5A5;
-        background: rgba(220, 38, 38, 0.16);
+        color: #DC2626;
+        background: #FEF2F2;
+        border-color: #FECACA;
       }
       .mob-ypt-today-pill {
-        font-size: 12.5px;
+        font-size: 12px;
         font-weight: 600;
-        color: #E5E7EB;
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        padding: 4px 12px;
+        color: var(--text-primary);
+        background: #FFFFFF;
+        border: 1px solid var(--border-subtle);
+        padding: 3px 10px;
         border-radius: 999px;
         cursor: pointer;
+        white-space: nowrap;
       }
       .mob-ypt-nav-chevrons {
         display: inline-flex;
@@ -5715,39 +5793,44 @@
       .mob-ypt-chev-btn {
         background: transparent;
         border: none;
-        color: #6B7280;
+        color: var(--text-secondary);
         padding: 4px 6px;
-        font-size: 16px;
+        font-size: 17px;
         cursor: pointer;
       }
       .mob-ypt-week-pills {
         display: inline-flex;
         align-items: center;
-        background: transparent;
+        background: #F3F4F6;
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        padding: 2px;
         gap: 2px;
       }
       .mob-ypt-week-pill-btn {
         border: none;
         background: transparent;
-        color: #6B7280;
-        font-size: 11.5px;
-        font-weight: 600;
-        padding: 4px 8px;
-        border-radius: 999px;
+        color: var(--text-secondary);
+        font-size: 11px;
+        font-weight: 550;
+        padding: 4px 7px;
+        border-radius: 6px;
         cursor: pointer;
         white-space: nowrap;
       }
       .mob-ypt-week-pill-btn.active {
-        background: #23252A;
-        color: #F9FAFB;
+        background: #FFFFFF;
+        color: var(--text-primary);
+        font-weight: 650;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
       }
       .mob-ypt-grid-btn {
         width: 34px;
         height: 34px;
-        border-radius: 10px;
+        border-radius: 9px;
         background: transparent;
         border: none;
-        color: #E5E7EB;
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -5772,288 +5855,116 @@
         display: none !important;
       }
       body.mobile-ypt-planner .tl-panel-card {
-        background: #0A0B0D !important;
-        border: none !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
+        background: #FFFFFF !important;
+        border: 1px solid var(--border-subtle) !important;
+        border-radius: 10px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+        margin-top: 8px !important;
         margin-bottom: 0 !important;
       }
 
-      /* Day Vertical Timeline YPT Dark Styling */
+      /* Day Vertical Timeline — Exact Desktop White Theme */
       body.mobile-ypt-planner .tl-day-scroll {
-        background: #0A0B0D !important;
-        max-height: calc(100dvh - 52px) !important;
-        height: calc(100dvh - 52px);
-        overflow-y: auto;
+        background: #FFFFFF !important;
+        max-height: calc(100dvh - 68px - env(safe-area-inset-top, 0px)) !important;
+        height: calc(100dvh - 68px - env(safe-area-inset-top, 0px));
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
       }
       body.mobile-ypt-planner .tl-axis-col {
-        background: #0A0B0D !important;
-        border-right: 1px dashed rgba(255, 255, 255, 0.12) !important;
-        width: 58px !important;
+        width: 54px !important;
       }
-      body.mobile-ypt-planner .tl-axis-hour {
-        color: #6B7280 !important;
-        white-space: nowrap !important;
-      }
+      body.mobile-ypt-planner .tl-axis-hour,
       body.mobile-ypt-planner .tl-axis-hour span {
-        background: #0A0B0D !important;
         white-space: nowrap !important;
-      }
-      body.mobile-ypt-planner .tl-track-col {
-        border-right: 1px dashed rgba(255, 255, 255, 0.1);
-      }
-      body.mobile-ypt-planner .tl-hour-line {
-        border-top: 1px solid rgba(255, 255, 255, 0.055) !important;
-      }
-      body.mobile-ypt-planner .tl-hour-line:hover {
-        background: rgba(255, 255, 255, 0.02) !important;
-      }
-
-      /* Session Blocks & Clusters Dark YPT Style (Flush Rectangular - Image 2 & 4) */
-      body.mobile-ypt-planner .tl-session-block {
-        left: 0 !important;
-        right: 0 !important;
-        border-radius: 0 !important;
-        border: none !important;
-        border-bottom: 1px solid #0A0B0D !important;
-        background: #1B2327 !important;
-      }
-      body.mobile-ypt-planner .tl-session-block.tl-cluster-block {
-        background: #20292E !important;
-        border: 1px solid #E5E7EB !important;
-      }
-      body.mobile-ypt-planner .tl-session-title {
-        color: #93C5FD !important;
-        font-weight: 500 !important;
-      }
-      body.mobile-ypt-planner .tl-session-time {
-        color: #7DD3FC !important;
-      }
-      body.mobile-ypt-planner .tl-session-dur {
-        color: #93C5FD !important;
-        font-weight: 500 !important;
-      }
-      body.mobile-ypt-planner .tl-break-slot {
-        left: 0 !important;
-        right: 0 !important;
-        padding: 3px 10px;
-      }
-      body.mobile-ypt-planner .tl-break-range,
-      body.mobile-ypt-planner .tl-break-dur {
-        color: #555961 !important;
-      }
-
-      /* Sleep Block Dark YPT Style */
-      body.mobile-ypt-planner .tl-sleep-block {
-        left: 0 !important;
-        right: 0 !important;
-        border-radius: 4px !important;
-        border: 1px dashed rgba(255, 255, 255, 0.14) !important;
-        background: rgba(255, 255, 255, 0.015) !important;
-      }
-      body.mobile-ypt-planner .tl-sleep-title {
-        color: #555961 !important;
-      }
-      body.mobile-ypt-planner .tl-sleep-range,
-      body.mobile-ypt-planner .tl-sleep-dur {
-        color: #464950 !important;
-      }
-
-      /* Now Indicator & Countdown Dark YPT Style */
-      body.mobile-ypt-planner .tl-now-line {
-        background: #FFFFFF !important;
       }
       body.mobile-ypt-planner .tl-now-axis-pill {
-        background: #FFFFFF !important;
-        color: #0A0B0D !important;
-        left: -55px !important;
+        left: -51px !important;
       }
-      body.mobile-ypt-planner .tl-sleep-countdown {
-        background: rgba(10, 11, 13, 0.88) !important;
-        color: #6B7280 !important;
+      body.mobile-ypt-planner .tl-sleep-block {
+        left: 4px !important;
+        right: 4px !important;
+      }
+      body.mobile-ypt-planner .tl-break-slot {
+        left: 4px !important;
+        right: 4px !important;
       }
 
-      /* Week View Mobile YPT Dark Styling */
+      /* Week View — Exact Desktop White Theme */
       body.mobile-ypt-planner .tl-week-scroll {
-        background: #0A0B0D !important;
-        max-height: calc(100dvh - 52px) !important;
-        height: calc(100dvh - 52px);
-      }
-      body.mobile-ypt-planner .tl-week-header-row {
-        background: #0A0B0D !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+        background: #FFFFFF !important;
+        max-height: calc(100dvh - 68px - env(safe-area-inset-top, 0px)) !important;
+        height: calc(100dvh - 68px - env(safe-area-inset-top, 0px));
+        overflow: auto !important;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y;
+        padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
       }
       body.mobile-ypt-planner .tl-week-axis-spacer,
       body.mobile-ypt-planner .tl-week-axis-col {
-        background: #0A0B0D !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
-      }
-      body.mobile-ypt-planner .tl-week-day-head {
-        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-      }
-      body.mobile-ypt-planner .tl-week-dow {
-        color: #6B7280 !important;
-      }
-      body.mobile-ypt-planner .tl-week-date-num {
-        color: #E5E7EB !important;
-      }
-      body.mobile-ypt-planner .tl-week-day-head.is-today .tl-week-date-num {
-        background: transparent !important;
-        border: 1.5px solid #FFFFFF !important;
-        color: #FFFFFF !important;
-      }
-      body.mobile-ypt-planner .tl-week-day-head.is-selected {
-        background: rgba(255, 255, 255, 0.04) !important;
-      }
-      body.mobile-ypt-planner .tl-week-day-total {
-        background: transparent !important;
-        border: none !important;
-        color: #93C5FD !important;
-      }
-      body.mobile-ypt-planner .tl-week-day-col {
-        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-      }
-      body.mobile-ypt-planner .tl-week-day-col.is-today {
-        background: rgba(255, 255, 255, 0.025) !important;
-      }
-      body.mobile-ypt-planner .tl-week-hour-cell {
-        border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-      }
-      body.mobile-ypt-planner .tl-week-session {
-        background: #1B2327 !important;
-        border: none !important;
-        border-bottom: 1px solid #0A0B0D !important;
-        border-radius: 0 !important;
-      }
-      body.mobile-ypt-planner .tl-week-session-title {
-        color: #93C5FD !important;
-      }
-      body.mobile-ypt-planner .tl-week-session-dur {
-        color: #93C5FD !important;
-      }
-      body.mobile-ypt-planner .tl-week-break {
-        color: #555961 !important;
-      }
-      body.mobile-ypt-planner .tl-week-now-bar {
-        background: #FFFFFF !important;
-      }
-      body.mobile-ypt-planner .tl-week-now-sub {
-        color: #6B7280 !important;
+        width: 38px !important;
       }
 
-      /* Month View Mobile YPT Dark Styling — Calendar ONLY (Exact YPT) */
-      body.mobile-ypt-planner .tl-month-weekdays {
-        background: #0A0B0D !important;
-        color: #6B7280 !important;
-      }
-      body.mobile-ypt-planner .tl-month-grid-full {
-        background: rgba(255, 255, 255, 0.04) !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-      }
+      /* Month View — Exact Desktop White Calendar ONLY */
       body.mobile-ypt-planner .tl-month-cell {
-        background: #0A0B0D !important;
-        min-height: 92px !important;
-        padding: 8px 3px !important;
-      }
-      body.mobile-ypt-planner .tl-month-cell.is-outside {
-        background: #07080A !important;
-        opacity: 0.35;
-      }
-      body.mobile-ypt-planner .tl-month-cell.is-selected {
-        background: #14171C !important;
-        box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.65) !important;
-      }
-      body.mobile-ypt-planner .tl-month-day-num {
-        color: #E5E7EB !important;
-      }
-      body.mobile-ypt-planner .tl-month-cell.is-today .tl-month-day-num {
-        background: #FFFFFF !important;
-        color: #0A0B0D !important;
-      }
-      body.mobile-ypt-planner .ypt-cal-time-pill {
-        background: #1B2428 !important;
-        border: none !important;
-        color: #7DD3FC !important;
+        min-height: 78px !important;
+        padding: 6px 2px !important;
       }
       body.mobile-ypt-planner #plannerMonthViewPanel {
-        max-height: calc(100dvh - 52px);
-        overflow-y: auto;
-        padding-bottom: 130px;
+        max-height: calc(100dvh - 68px - env(safe-area-inset-top, 0px));
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
       }
       body.mobile-ypt-planner #tlMonthDetailCard {
         display: none !important;
       }
-      body.mobile-ypt-planner .tl-stat-chip {
-        background: #1C1E22 !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
-        color: #9CA3AF !important;
-      }
-      body.mobile-ypt-planner .tl-stat-chip strong {
-        color: #F3F4F6 !important;
-      }
 
-      /* Tasks (Việc) view on Mobile Dark Mode */
+      /* Tasks (Việc) & Goals View — Exact Desktop White Theme + Priority Colors Preserved + Scrollable */
       body.mobile-ypt-planner #plannerTasksContainer {
-        padding: 10px 14px 150px;
+        padding: 10px 4px calc(155px + env(safe-area-inset-bottom, 0px));
+        touch-action: pan-y;
       }
-      body.mobile-ypt-planner .notion-goals-card,
-      body.mobile-ypt-planner .notion-goal-col,
-      body.mobile-ypt-planner .notion-goal-item {
-        background: #141518 !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
-        color: #E5E7EB !important;
+      body.mobile-ypt-planner .notion-goal-item,
+      body.mobile-ypt-planner .planner-task-item {
+        touch-action: pan-y;
       }
-      body.mobile-ypt-planner .notion-goals-header-bar,
-      body.mobile-ypt-planner .notion-goal-col-header {
-        background: #1A1C20 !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
+      body.mobile-ypt-planner .planner-task-item {
+        flex-wrap: wrap;
+        row-gap: 6px;
+        column-gap: 8px;
       }
-      body.mobile-ypt-planner .notion-goals-main-title,
-      body.mobile-ypt-planner .notion-col-title,
-      body.mobile-ypt-planner .notion-goal-text,
-      body.mobile-ypt-planner .planner-section-title,
       body.mobile-ypt-planner .planner-task-text {
-        color: #F3F4F6 !important;
+        flex: 1 1 calc(100% - 150px);
+        min-width: 0;
       }
-      body.mobile-ypt-planner .planner-task-text.completed {
-        color: #6B7280 !important;
+      body.mobile-ypt-planner .planner-deadline-badge {
+        margin-left: 56px;
       }
-      body.mobile-ypt-planner .ypt-task-timer-badge {
-        background: #1E2025 !important;
-        border-color: rgba(255, 255, 255, 0.1) !important;
-        color: #93C5FD !important;
-      }
-      body.mobile-ypt-planner .ypt-task-timer-badge.running {
-        background: rgba(125, 211, 252, 0.16) !important;
-        border-color: #7DD3FC !important;
-        color: #7DD3FC !important;
+      body.mobile-ypt-planner .planner-task-del {
+        margin-left: auto;
+        opacity: 0.45;
       }
 
-      /* Floating Focus / Break Pill above Dock (Exact YPT) */
+      /* Floating Focus / Break Pill above Dock (White Frosted) */
       body.mobile-ypt-planner .tl-floating-bar {
-        bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
-        background: rgba(230, 232, 236, 0.94) !important;
-        border: 1px solid rgba(255, 255, 255, 0.6) !important;
-        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55) !important;
+        bottom: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+        background: rgba(255, 255, 255, 0.96) !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14) !important;
         padding: 5px 18px 5px 7px !important;
       }
-      body.mobile-ypt-planner .tl-floating-clock {
-        color: #111827 !important;
-      }
-      body.mobile-ypt-planner .tl-floating-clock.running {
-        color: #0284C7 !important;
-      }
-      body.mobile-ypt-planner .tl-floating-sub {
-        color: #4B5563 !important;
-      }
 
-      /* Floating Bottom Glass Dock (Exact YPT Images 1, 2, 5, 7) */
+      /* Floating Bottom Glass Dock (Light Apple Frosted Glass) */
       body.mobile-ypt-planner .mobile-ypt-dock {
         display: flex !important;
         position: fixed;
-        bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-        left: 14px;
-        right: 14px;
+        bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        left: 12px;
+        right: 12px;
         z-index: 98;
         align-items: center;
         gap: 10px;
@@ -6065,21 +5976,21 @@
         align-items: center;
         justify-content: space-around;
         height: 54px;
-        background: rgba(28, 30, 34, 0.9);
-        backdrop-filter: blur(22px);
-        -webkit-backdrop-filter: blur(22px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(22px) saturate(180%);
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        border: 1px solid rgba(226, 232, 240, 0.95);
         border-radius: 999px;
         padding: 4px;
         pointer-events: auto;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.1);
       }
       .mob-ypt-dock-item {
         flex: 1;
         height: 100%;
         border: none;
         background: transparent;
-        color: #9CA3AF;
+        color: #6B7280;
         border-radius: 999px;
         display: flex;
         flex-direction: column;
@@ -6090,42 +6001,43 @@
         font-weight: 550;
         cursor: pointer;
         -webkit-tap-highlight-color: transparent;
+        transition: background 0.14s ease, color 0.14s ease;
       }
       .mob-ypt-dock-item.active {
-        background: rgba(255, 255, 255, 0.13);
-        color: #FFFFFF;
+        background: #EFF6FF;
+        color: #0284C7;
         font-weight: 650;
       }
       .mob-ypt-dock-circle {
         width: 54px;
         height: 54px;
         border-radius: 50%;
-        background: rgba(28, 30, 34, 0.9);
-        backdrop-filter: blur(22px);
-        -webkit-backdrop-filter: blur(22px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #F3F4F6;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(22px) saturate(180%);
+        -webkit-backdrop-filter: blur(22px) saturate(180%);
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        color: #1F2937;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         flex-shrink: 0;
         pointer-events: auto;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.1);
       }
 
-      /* Dark Floating Cards & Bottom Sheets on Mobile (Exact YPT Popup Image 3) */
+      /* Light White Floating Bottom Sheets & Modals on Mobile */
       body.mobile-ypt-planner .cluster-sheet-overlay,
       body.mobile-ypt-planner #mobileYptMenuSheet {
         align-items: flex-end !important;
         padding: 0 !important;
-        background: rgba(0, 0, 0, 0.65) !important;
+        background: rgba(15, 23, 42, 0.34) !important;
       }
       body.mobile-ypt-planner #quickTimerPickerModal {
         align-items: flex-end !important;
         justify-content: center !important;
-        padding: 0 14px calc(80px + env(safe-area-inset-bottom, 0px)) !important;
-        background: rgba(0, 0, 0, 0.56) !important;
+        padding: 0 14px calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+        background: rgba(15, 23, 42, 0.3) !important;
         backdrop-filter: blur(4px) !important;
         -webkit-backdrop-filter: blur(4px) !important;
       }
@@ -6133,21 +6045,21 @@
       body.mobile-ypt-planner #mobileYptMenuSheet .modal-card,
       body.mobile-ypt-planner #sessionEditorModal .modal-card,
       body.mobile-ypt-planner #scheduleSettingsModal .modal-card {
-        background: #1B1C20 !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        color: #F3F4F6 !important;
+        background: #FFFFFF !important;
+        border: 1px solid var(--border-subtle) !important;
+        color: var(--text-primary) !important;
       }
       body.mobile-ypt-planner #quickTimerPickerModal .modal-card {
         width: 100% !important;
         max-width: 440px !important;
-        background: rgba(31, 33, 38, 0.88) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
         backdrop-filter: blur(28px) saturate(165%) !important;
         -webkit-backdrop-filter: blur(28px) saturate(165%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(226, 232, 240, 0.95) !important;
         border-radius: 26px !important;
         padding: 12px 18px 18px !important;
-        box-shadow: 0 22px 54px rgba(0, 0, 0, 0.65) !important;
-        color: #F3F4F6 !important;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18) !important;
+        color: var(--text-primary) !important;
         animation: yptPopupSpringIn 0.28s cubic-bezier(0.22, 1.28, 0.36, 1) !important;
       }
       body.mobile-ypt-planner .cluster-sheet-card,
@@ -6159,101 +6071,10 @@
       }
       body.mobile-ypt-planner .cluster-sheet-handle {
         display: block !important;
-        background: rgba(255, 255, 255, 0.24) !important;
-      }
-      body.mobile-ypt-planner .ypt-picker-subject-row:hover {
-        background: rgba(255, 255, 255, 0.05) !important;
-      }
-      body.mobile-ypt-planner .ypt-picker-subj-name {
-        color: #F3F4F6 !important;
-      }
-      body.mobile-ypt-planner .ypt-picker-subj-time {
-        color: #D1D5DB !important;
-      }
-      body.mobile-ypt-planner .ypt-picker-subtask-row {
-        color: #A1A7B3 !important;
-      }
-      body.mobile-ypt-planner .ypt-picker-subtask-row:hover {
-        background: rgba(255, 255, 255, 0.055) !important;
-      }
-      body.mobile-ypt-planner .ypt-picker-subtask-row.is-running {
-        color: #7DD3FC !important;
-      }
-      body.mobile-ypt-planner .ypt-picker-add-trigger {
-        color: #9CA3AF !important;
-      }
-      body.mobile-ypt-planner .ypt-picker-dashed-circle {
-        border-color: rgba(255, 255, 255, 0.32) !important;
-        color: #9CA3AF !important;
-      }
-      body.mobile-ypt-planner .ypt-cl-tick {
-        color: #6B7280 !important;
-      }
-      body.mobile-ypt-planner .ypt-cl-dashes {
-        border-top-color: rgba(156, 163, 175, 0.35) !important;
-      }
-      body.mobile-ypt-planner .ypt-cl-seam {
-        border-left-color: rgba(255, 255, 255, 0.16) !important;
-      }
-      body.mobile-ypt-planner .ypt-cl-bar {
-        border-bottom-color: rgba(255, 255, 255, 0.14) !important;
-      }
-      body.mobile-ypt-planner .ypt-cl-bar-title {
-        color: #93C5FD !important;
-      }
-      body.mobile-ypt-planner .ypt-cl-bar-right {
-        color: #7DD3FC !important;
-      }
-      body.mobile-ypt-planner .ypt-cl-legend {
-        color: #D1D5DB !important;
-      }
-      body.mobile-ypt-planner .modal-input,
-      body.mobile-ypt-planner select.modal-input {
-        background: #121316 !important;
-        border-color: rgba(255, 255, 255, 0.14) !important;
-        color: #F3F4F6 !important;
-      }
-      body.mobile-ypt-planner .rpc-group-label,
-      body.mobile-ypt-planner .modal-title {
-        color: #F3F4F6 !important;
-      }
-      body.mobile-ypt-planner #sesReadonlyCard {
-        background: #121316 !important;
-        border-color: rgba(255, 255, 255, 0.1) !important;
-      }
-      body.mobile-ypt-planner #mobileYptMenuSheet .tl-btn-small,
-      body.mobile-ypt-planner #clusterDetailModal .tl-btn-small,
-      body.mobile-ypt-planner #mobileYptMenuSheet .btn-outline,
-      body.mobile-ypt-planner #sessionEditorModal .btn-outline,
-      body.mobile-ypt-planner #scheduleSettingsModal .btn-outline,
-      body.mobile-ypt-planner #taskTimeRangeModal .btn-outline,
-      body.mobile-ypt-planner #taskTimeRangeModal .tr-preset-chip {
-        background: #262930 !important;
-        border-color: rgba(255, 255, 255, 0.1) !important;
-        color: #F3F4F6 !important;
-      }
-      body.mobile-ypt-planner #mobileYptMenuSheet .tl-btn-small:hover,
-      body.mobile-ypt-planner #clusterDetailModal .tl-btn-small:hover,
-      body.mobile-ypt-planner #taskTimeRangeModal .tr-preset-chip:hover {
-        background: #2F333C !important;
-      }
-      body.mobile-ypt-planner .planner-deadline-badge.deadline-active-slot {
-        background: rgba(56, 189, 248, 0.18) !important;
-        border-color: rgba(56, 189, 248, 0.4) !important;
-        color: #7DD3FC !important;
+        background: #CBD5E1 !important;
       }
       body.mobile-ypt-planner .task-alert-banner {
-        top: 62px !important;
-        background: #1B1D22 !important;
-        border-color: #38BDF8 !important;
-        color: #F3F4F6 !important;
-      }
-      body.mobile-ypt-planner .task-alert-title {
-        color: #F3F4F6 !important;
-      }
-      body.mobile-ypt-planner .task-alert-icon {
-        background: rgba(56, 189, 248, 0.16) !important;
-        color: #7DD3FC !important;
+        top: calc(60px + env(safe-area-inset-top, 0px)) !important;
       }
     }
 
@@ -6803,6 +6624,38 @@
 </head>
 
 <body>
+
+  <!-- Mobile Apple-style Opening Splash Animation (Hidden on Desktop) -->
+  <div id="mobileSplashOverlay" aria-hidden="true">
+    <div class="mob-splash-icon">
+      <img src="/app_icon_192.png" alt="Elias" onerror="this.style.display='none'">
+    </div>
+    <div class="mob-splash-wordmark">
+      <div class="mob-splash-title">Elias</div>
+      <div class="mob-splash-sub">Daily Study Planner</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      try {
+        var sp = document.getElementById('mobileSplashOverlay');
+        if (!sp) return;
+        var isMob = window.innerWidth <= 768;
+        var already = sessionStorage.getItem('elias_splash_played');
+        if (!isMob || already) {
+          sp.classList.add('is-hidden');
+          return;
+        }
+        sessionStorage.setItem('elias_splash_played', '1');
+        document.body.classList.add('mob-app-revealing');
+        setTimeout(function () { sp.classList.add('is-leaving'); }, 480);
+        setTimeout(function () {
+          sp.classList.add('is-hidden');
+          document.body.classList.remove('mob-app-revealing');
+        }, 840);
+      } catch (e) {}
+    })();
+  </script>
 
   <!-- Top Minimal Header -->
   <header>
@@ -10164,7 +10017,7 @@
       document.body.classList.toggle('mobile-ypt-planner', active);
       const themeMeta = document.querySelector('meta[name="theme-color"]');
       if (themeMeta) {
-        themeMeta.setAttribute('content', active ? '#0A0B0D' : '#FFFFFF');
+        themeMeta.setAttribute('content', '#FFFFFF');
       }
     }
 
@@ -10269,7 +10122,7 @@
 
     // Unified single YPT bright sky-blue palette on Daily Plan timeline (ignores legacy random colors)
     function inferSessionColorFE() {
-      return isMobileViewport() ? '#7DD3FC' : '#38BDF8';
+      return '#38BDF8';
     }
 
     function formatAxisHourLabel(hourInt) {
@@ -10651,7 +10504,7 @@
       if (titleEl) titleEl.innerText = items.length > 1 ? `${first.title} và ${items.length - 1} khác` : first.title;
       if (rangeEl) rangeEl.innerText = `${minStart}-${maxEnd}`;
 
-      const isDark = isMobileViewport();
+      const isDark = false;
       const maxDur = Math.max(1, ...items.map(i => i.durationSeconds || 0));
       const dotsSvg = `<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24" style="opacity:0.65;"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>`;
 
@@ -10767,7 +10620,7 @@
       // Group overlapping / adjacent blocks into "+ N" clusters (tight 18px YPT row threshold)
       const clusters = clusterTimelineSessions(data.sessions, toY, totalHeight, 18);
       const maxClDur = Math.max(1, ...clusters.map(c => c.totalDurationSeconds || 0));
-      const isDarkMob = isMobileViewport();
+      const isDarkMob = false;
       const sessionsHtml = clusters.map(cl => {
         const sTop = cl.top;
         const sHeight = Math.max(18, cl.visualBottom - sTop);
@@ -10973,7 +10826,7 @@
         }
         const clusters = clusterTimelineSessions(dd.sessions, toY, totalHeight, 18);
         const maxWeekDur = Math.max(1, ...clusters.map(c => c.totalDurationSeconds || 0));
-        const isDarkMobW = isMobileViewport();
+        const isDarkMobW = false;
         const sesHtml = clusters.map(cl => {
           const sTop = cl.top;
           const sh = Math.max(18, cl.visualBottom - sTop);
@@ -11007,12 +10860,7 @@
         let nowHtml = '';
         if (dd.isToday && dd.nowRelMin >= startTotalMin && dd.nowRelMin <= endHour * 60) {
           const ny = toY(dd.nowRelMin);
-          const cd = dd.countdownToSleepSeconds !== null ? formatVnDuration(dd.countdownToSleepSeconds, true) : '';
-          nowHtml = `
-            <div class="tl-week-now-bar" style="top: ${ny}px;">
-              ${cd ? `<div class="tl-week-now-sub">${cd}</div>` : ''}
-            </div>
-          `;
+          nowHtml = `<div class="tl-week-now-bar" style="top: ${ny}px;"></div>`;
         }
 
         return `
